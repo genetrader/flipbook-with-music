@@ -278,12 +278,14 @@ body {
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    overflow: hidden;
 }
 
 .newsletter-form-container iframe {
     width: 100% !important;
-    height: 400px !important;
+    height: 320px !important;
     max-width: none !important;
+    overflow: hidden !important;
 }
 
 .character-sketches {
