@@ -3,7 +3,7 @@ const HEYZINE_CLIENT_ID = '5b16e2e5c1eee9bd';
 const HEYZINE_API_KEY = 'c766f1423bedb75fc6e08660e86edff5345485a8.5b16e2e5c1eee9bd';
 
 // Simple password protection (in production, use proper authentication)
-const ADMIN_PASSWORD = 'admin123'; // Change this password!
+const ADMIN_PASSWORD = 'NameNeg-1!!@@!!'; // Change this password!
 
 document.addEventListener('DOMContentLoaded', function() {
     // Check if already logged in
