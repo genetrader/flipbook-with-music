@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Larger Than Life</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnc.heyzine.com/release/jquery.pdfflipbook.4.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="main-header">
+            <button class="hamburger-menu" id="hamburger-menu" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <h1 class="site-title">
+                <span class="title-letter">L</span><span class="title-letter">a</span><span class="title-letter">r</span><span class="title-letter">g</span><span class="title-letter">e</span><span class="title-letter">r</span>
+                <span class="title-letter">T</span><span class="title-letter">h</span><span class="title-letter">a</span><span class="title-letter">n</span>
+                <span class="title-letter">L</span><span class="title-letter">i</span><span class="title-letter">f</span><span class="title-letter">e</span>
+                <span class="title-comics">COMICS</span>
+            </h1>
+        </header>
+        
+        <div class="mobile-menu-overlay" id="mobile-menu">
+            <nav class="mobile-nav">
+                <ul class="mobile-nav-list">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#search">Search</a></li>
+                    <li><a href="#comics">Comics</a></li>
+                    <li><a href="#character">Character Profile</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#art">Art</a></li>
+                    <li><a href="#writing">Writing</a></li>
+                    <li><a href="#news">News</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#support">Support</a></li>
+                </ul>
+            </nav>
+        </div>
+        
+        <nav class="sidebar">
+            <ul class="nav-list">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#search">Search</a></li>
+                <li><a href="#comics">Comics</a></li>
+                <li><a href="#character">Character Profile</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#art">Art</a></li>
+                <li><a href="#writing">Writing</a></li>
+                <li><a href="#news">News</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#support">Support</a></li>
+            </ul>
+        </nav>
+        
+        <main class="content">
+            <section class="comic-section">
+                <h2 class="section-title">NEWEST COMIC</h2>
+                <div class="cover-page">
+                    <h3>COVER PAGE</h3>
+                    <div class="cover-click-area" id="cork-cover-click">
+                        <img src="images/cork-1-cover.jpeg" alt="Cork Episode 1 Cover" class="book-cover-preview">
+                        <p class="click-hint">Click cover to read!</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="books-showcase">
+                <h2 class="section-title">ALL BOOKS</h2>
+                <div class="books-grid">
+                    <div class="book-item" data-book="cork-1">
+                        <img src="images/cork-1-cover.jpeg" alt="Cork" class="book-cover">
+                        <h3>Cork</h3>
+                    </div>
+                    <div class="book-item" data-book="cork-2-3">
+                        <img src="images/cork-2-3-cover.jpeg" alt="Cork 2+3: Get Out of Town" class="book-cover">
+                        <h3>Cork 2+3: Get Out of Town</h3>
+                    </div>
+                    <div class="book-item" data-book="cork-4-5">
+                        <img src="images/cork-4-5-cover.jpeg" alt="Cork 4+5: Athens" class="book-cover">
+                        <h3>Cork 4+5: Athens</h3>
+                    </div>
+                    <div class="book-item" data-book="prodigy">
+                        <img src="images/prodigy-cover.jpeg" alt="Prodigy" class="book-cover">
+                        <h3>Prodigy</h3>
+                    </div>
+                    <div class="book-item" data-book="new-dawn">
+                        <img src="images/new-dawn-cover.jpeg" alt="A New Dawn" class="book-cover">
+                        <h3>A New Dawn</h3>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="comic-panels">
+                <div class="panel" id="loneliest-fix-panel">
+                    <div class="book-announcement">
+                        <h4>The Loneliness Fix</h4>
+                        <p>by Michael Waxman</p>
+                        <p style="font-weight: bold;">Now available on Amazon!</p>
+                        <div class="book-cover-small">
+                            <a href="https://www.amazon.com/Loneliness-Fix-Michael-Waxman-ebook/dp/B0DZYV1QZX" target="_blank">
+                                <img src="images/loneliness-fix-cover.jpg" alt="The Loneliness Fix" style="width: 150px; height: auto; margin: 10px 0; border: 3px solid #2a2a2a; border-radius: 10px; box-shadow: 3px 3px 5px rgba(0,0,0,0.2); transition: transform 0.3s ease;">
+                            </a>
+                        </div>
+                        <a href="https://www.amazon.com/Loneliness-Fix-Michael-Waxman-ebook/dp/B0DZYV1QZX" class="amazon-link" id="loneliest-fix-link" target="_blank">Get it on Amazon →</a>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <p>The War of False Faces &<br>
+                    Artur Livius CANCELED</p>
+                    <div class="character-faces">🎭 😊 😂</div>
+                </div>
+                
+                <div class="panel">
+                    <p>Third announcement be like...</p>
+                </div>
+            </section>
+            
+            <section class="newsletter-section">
+                <h2 class="section-title">Join Our Mailing List!</h2>
+                <p class="newsletter-intro">Be the first to know about new comics, freebies, and exclusive content!</p>
+                <div class="newsletter-form-container">
+                    <iframe src="https://cd11379f.sibforms.com/serve/MUIFAA8SleQ0BbWIrdoxITim4p4M0DLL6VYfRMCxDT6Dpr6ir_uHxEaKBrUrbtItli3A85G3xbmZtCHcz5x-Ys4NfGq-lQojsQJX08bycietlq4ooltdTtqFBrdeYNBdQ1I-4ycuRyO55W1lBXxXcie5CFEsVh6C8aj4qfO4FIbuKnHJpkmSHodhYiZv6q2r4RZv55eHr0n9dc_A" frameborder="0" scrolling="no" allowfullscreen></iframe>
+                </div>
+            </section>
+        </main>
+        
+        <aside class="character-sketches">
+            <!-- Character illustrations will go here -->
+        </aside>
+    </div>
+    
+    <!-- Lightbox for flipbook -->
+    <div class="lightbox" id="flipbook-lightbox">
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightbox-close" title="Close">&times;</button>
+            <a href="#" class="lightbox-home-link" id="lightbox-home">← Back to Home</a>
+            <iframe id="lightbox-flipbook-frame" 
+                    allowfullscreen="allowfullscreen" 
+                    allow="clipboard-write" 
+                    scrolling="no" 
+                    class="fp-iframe" 
+                    style="width: 100%; height: 100%; border: none; background: white;" 
+                    src="">
+            </iframe>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+
+# Editor files
+.vscode/
+.idea/
+
+# Zip files (since we extracted them)
+*.zip
+
+# Original mockup image (optional - remove this line if you want to include it)
+# larger then life mockup image.jpg

@@ -1,0 +1,653 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Permanent+Marker&family=Gloria+Hallelujah&family=Kalam:wght@300;400;700&family=Comic+Neue:wght@400;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Kalam', cursive;
+    background-color: #7BA7CC;
+    color: #1a1a1a;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 200px 1fr 200px;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+    position: relative;
+}
+
+.main-header {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 20px;
+    background-color: #6B94BB;
+    border-bottom: 3px solid #2a2a2a;
+    position: relative;
+}
+
+.site-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #1a1a1a;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    display: inline-block;
+}
+
+/* Colorful title letters */
+.title-letter {
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.title-letter:nth-child(1) { color: #FF6B6B; }
+.title-letter:nth-child(2) { color: #4ECDC4; }
+.title-letter:nth-child(3) { color: #45B7D1; }
+.title-letter:nth-child(4) { color: #FFA07A; }
+.title-letter:nth-child(5) { color: #98D8C8; }
+.title-letter:nth-child(6) { color: #F7DC6F; }
+.title-letter:nth-child(7) { color: #BB8FCE; }
+.title-letter:nth-child(8) { color: #85C1E9; }
+.title-letter:nth-child(9) { color: #F8B500; }
+.title-letter:nth-child(10) { color: #52D681; }
+.title-letter:nth-child(11) { color: #FF6F61; }
+.title-letter:nth-child(12) { color: #6C5CE7; }
+.title-letter:nth-child(13) { color: #A8E6CF; }
+.title-letter:nth-child(14) { color: #FFD93D; }
+.title-letter:nth-child(15) { color: #FDA7DF; }
+.title-letter:nth-child(16) { color: #4834D4; }
+.title-letter:nth-child(17) { color: #22A6B3; }
+.title-letter:nth-child(18) { color: #F97F51; }
+.title-letter:nth-child(19) { color: #3DC1D3; }
+
+.title-letter:hover {
+    transform: translateY(-5px) rotate(5deg) scale(1.2);
+    filter: brightness(1.2);
+}
+
+.title-comics {
+    color: #E74C3C;
+    font-family: 'Bangers', 'Comic Neue', cursive;
+    font-size: 4rem;
+    text-shadow: 3px 3px 0 #000, 2px 2px 0 #000, 1px 1px 0 #000;
+    margin-left: 10px;
+}
+
+.sidebar {
+    background-color: #5A85AA;
+    padding: 30px 15px;
+    border-right: 3px solid #2a2a2a;
+}
+
+.nav-list {
+    list-style: none;
+}
+
+.nav-list li {
+    margin-bottom: 25px;
+    border-bottom: 2px solid #4A7599;
+    padding-bottom: 15px;
+}
+
+.nav-list a {
+    color: #1a1a1a;
+    text-decoration: none;
+    font-family: 'Gloria Hallelujah', 'Permanent Marker', cursive;
+    font-size: 1.4rem;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    display: block;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}
+
+.nav-list a:hover {
+    color: #fff;
+    transform: translateX(5px);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.content {
+    background-color: #8AB2D8;
+    padding: 30px;
+    min-height: 100%;
+}
+
+.comic-section {
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    background-color: #fff;
+    padding: 15px;
+    border: 3px solid #2a2a2a;
+    border-radius: 10px;
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+    transform: rotate(-1deg);
+}
+
+.cover-page {
+    background-color: #fff;
+    border: 3px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+    min-height: 400px;
+    position: relative;
+    overflow: hidden;
+}
+
+.cover-page h3 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+#flipbook-container {
+    min-height: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+}
+
+.comic-panels {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.panel {
+    background-color: #fff;
+    border: 3px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+    transform: rotate(1deg);
+    transition: transform 0.3s ease;
+}
+
+.panel:nth-child(2) {
+    transform: rotate(-1deg);
+}
+
+.panel:nth-child(3) {
+    transform: rotate(0.5deg);
+}
+
+.panel:hover {
+    transform: rotate(0deg) scale(1.05);
+}
+
+.panel p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.panel-link {
+    color: #4A7599;
+    text-decoration: underline;
+    font-style: italic;
+}
+
+.character-faces {
+    font-size: 2rem;
+    margin-top: 10px;
+}
+
+/* Book Announcement Panel */
+.book-announcement {
+    text-align: center;
+}
+
+.book-announcement h4 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #2a2a2a;
+    font-family: 'Comic Neue', cursive;
+}
+
+.book-announcement p {
+    margin: 5px 0;
+}
+
+.book-cover-small {
+    margin: 15px auto;
+}
+
+.amazon-link {
+    display: inline-block;
+    background-color: #FF9900;
+    color: #000;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    margin: 10px 0;
+    transition: all 0.3s ease;
+    font-family: 'Comic Neue', cursive;
+}
+
+.amazon-link:hover {
+    background-color: #FF7700;
+    transform: scale(1.05);
+}
+
+.book-tagline {
+    font-style: italic;
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 10px !important;
+}
+
+.book-cover-small a:hover img {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+/* Newsletter Section */
+.newsletter-section {
+    margin-top: 60px;
+    text-align: center;
+}
+
+.newsletter-intro {
+    font-size: 1.3rem;
+    margin-bottom: 30px;
+    color: #4A7599;
+    font-family: 'Kalam', cursive;
+}
+
+.newsletter-form-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.newsletter-form-container iframe {
+    width: 100% !important;
+    height: 400px !important;
+    max-width: none !important;
+}
+
+.character-sketches {
+    padding: 20px;
+    background-color: #7BA7CC;
+    border-left: 3px solid #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.character-sketches::before {
+    content: "👦";
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.character-sketches::after {
+    content: "😊";
+    font-size: 4rem;
+    display: block;
+    margin-top: auto;
+}
+
+/* Hamburger Menu Styles */
+.hamburger-menu {
+    display: none;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+}
+
+.hamburger-menu span {
+    display: block;
+    width: 100%;
+    height: 4px;
+    background-color: #2a2a2a;
+    margin-bottom: 6px;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-menu span:last-child {
+    margin-bottom: 0;
+}
+
+.hamburger-menu.active span:nth-child(1) {
+    transform: rotate(45deg) translateY(10px);
+}
+
+.hamburger-menu.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-menu.active span:nth-child(3) {
+    transform: rotate(-45deg) translateY(-10px);
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.mobile-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.mobile-nav {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+
+.mobile-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mobile-nav-list li {
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-overlay.active .mobile-nav-list li {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mobile-nav-list li:nth-child(1) { transition-delay: 0.1s; }
+.mobile-nav-list li:nth-child(2) { transition-delay: 0.15s; }
+.mobile-nav-list li:nth-child(3) { transition-delay: 0.2s; }
+.mobile-nav-list li:nth-child(4) { transition-delay: 0.25s; }
+.mobile-nav-list li:nth-child(5) { transition-delay: 0.3s; }
+.mobile-nav-list li:nth-child(6) { transition-delay: 0.35s; }
+.mobile-nav-list li:nth-child(7) { transition-delay: 0.4s; }
+.mobile-nav-list li:nth-child(8) { transition-delay: 0.45s; }
+.mobile-nav-list li:nth-child(9) { transition-delay: 0.5s; }
+.mobile-nav-list li:nth-child(10) { transition-delay: 0.55s; }
+
+.mobile-nav-list a {
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Gloria Hallelujah', 'Permanent Marker', cursive;
+    font-size: 1.8rem;
+    font-weight: 700;
+    transition: color 0.3s ease;
+    display: block;
+    padding: 10px;
+}
+
+.mobile-nav-list a:hover {
+    color: #8AB2D8;
+    text-shadow: 2px 2px 4px rgba(255,255,255,0.3);
+}
+
+/* Book Cover Preview */
+.cover-click-area {
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.cover-click-area:hover {
+    transform: scale(1.05);
+}
+
+.book-cover-preview {
+    max-width: 300px;
+    width: 100%;
+    height: auto;
+    border: 3px solid #2a2a2a;
+    border-radius: 10px;
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+}
+
+.click-hint {
+    margin-top: 15px;
+    font-size: 1.2rem;
+    color: #4A7599;
+    font-style: italic;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* Books Showcase */
+.books-showcase {
+    margin-top: 60px;
+}
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.book-item {
+    background-color: #fff;
+    border: 3px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+    transform: rotate(-1deg);
+}
+
+.book-item:nth-child(even) {
+    transform: rotate(1deg);
+}
+
+.book-item:hover {
+    transform: rotate(0deg) scale(1.05);
+    box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
+}
+
+.book-cover {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.book-item h3 {
+    font-size: 1.2rem;
+    margin: 10px 0 0 0;
+    color: #2a2a2a;
+    font-family: 'Comic Neue', cursive;
+}
+
+/* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.lightbox.active {
+    display: flex;
+}
+
+.lightbox-content {
+    position: relative;
+    width: 95%;
+    max-width: 100%;
+    height: 95vh;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-close {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 3rem;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2001;
+}
+
+.lightbox-close:hover {
+    color: #8AB2D8;
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+}
+
+/* Flipbook iframe styling for better zoom */
+#lightbox-flipbook-frame {
+    transform: scale(1.05);
+    transform-origin: center center;
+    width: 85%;
+    height: 85%;
+}
+
+.lightbox-home-link {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-family: 'Comic Neue', cursive;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    z-index: 2001;
+}
+
+.lightbox-home-link:hover {
+    background: rgba(0, 0, 0, 0.9);
+    color: #8AB2D8;
+    transform: translateX(-5px);
+}
+
+@media (max-width: 768px) {
+    #lightbox-flipbook-frame {
+        transform: scale(1);
+        width: 95%;
+        height: 95%;
+    }
+    
+    .lightbox-home-link {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .container {
+        grid-template-columns: 180px 1fr;
+    }
+    
+    .character-sketches {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        display: none;
+    }
+    
+    .hamburger-menu {
+        display: block;
+    }
+    
+    .mobile-menu-overlay {
+        display: block;
+    }
+    
+    .site-title {
+        font-size: 1.8rem;
+    }
+    
+    .title-comics {
+        font-size: 2rem;
+        display: block;
+        margin-left: 0;
+        margin-top: 5px;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+        transform: rotate(0deg);
+    }
+    
+    .comic-panels {
+        grid-template-columns: 1fr;
+    }
+}
