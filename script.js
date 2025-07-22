@@ -159,3 +159,56 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// Handle Brevo form submission
+document.addEventListener('DOMContentLoaded', function() {
+    // Monitor for Brevo form changes
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            const formContainer = document.getElementById('sib-container');
+            const customSuccess = document.getElementById('custom-success-message');
+            const formSection = document.querySelector('.sib-form-container');
+            
+            // Check if form container was hidden (successful submission)
+            if (formContainer && mutation.target === formContainer && 
+                (formContainer.style.display === 'none' || mutation.attributeName === 'style')) {
+                
+                if (formContainer.style.display === 'none' && customSuccess) {
+                    // Hide the entire Brevo form wrapper
+                    if (formSection) {
+                        formSection.style.display = 'none';
+                    }
+                    
+                    // Show our custom success message
+                    customSuccess.style.display = 'block';
+                    
+                    // Scroll to success message
+                    customSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // Auto-hide after 7 seconds and show form again
+                    setTimeout(function() {
+                        customSuccess.style.display = 'none';
+                        if (formSection) {
+                            formSection.style.display = 'block';
+                        }
+                        formContainer.style.display = 'block';
+                        // Clear the form
+                        const form = document.getElementById('sib-form');
+                        if (form) form.reset();
+                    }, 7000);
+                }
+            }
+        });
+    });
+    
+    // Start observing the form container
+    setTimeout(function() {
+        const formContainer = document.getElementById('sib-container');
+        if (formContainer) {
+            observer.observe(formContainer, { 
+                attributes: true, 
+                attributeOldValue: true,
+                attributeFilter: ['style'] 
+            });
+        }
+    }, 1000);
+});
