@@ -274,18 +274,74 @@ body {
     font-family: 'Kalam', cursive;
 }
 
-.newsletter-form-container {
-    width: 100%;
+/* Brevo Form Styling */
+.newsletter-form-box {
+    background-color: #fff;
+    border: 3px solid #2a2a2a;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+    transform: rotate(-0.5deg);
     max-width: 600px;
     margin: 0 auto;
-    overflow: hidden;
 }
 
-.newsletter-form-container iframe {
-    width: 100% !important;
-    height: 450px !important;
-    max-width: none !important;
-    overflow: hidden !important;
+.newsletter-form-box:hover {
+    transform: rotate(0deg);
+}
+
+/* Override Brevo styles to match comic theme */
+.sib-form-block {
+    font-family: 'Kalam', cursive !important;
+}
+
+.newsletter-email-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+    border: 2px solid #2a2a2a;
+    border-radius: 8px;
+    font-family: 'Kalam', cursive;
+    background-color: #f9f9f9;
+}
+
+.newsletter-email-input:focus {
+    outline: none;
+    border-color: #4A7599;
+    background-color: #fff;
+}
+
+.newsletter-submit-btn {
+    background-color: #4A7599 !important;
+    color: #fff !important;
+    border: 3px solid #2a2a2a !important;
+    padding: 12px 30px !important;
+    font-size: 1.2rem !important;
+    font-weight: bold !important;
+    border-radius: 8px !important;
+    cursor: pointer;
+    transition: all 0.3s ease !important;
+    font-family: 'Comic Neue', cursive !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+}
+
+.newsletter-submit-btn:hover {
+    background-color: #3a6589 !important;
+    transform: translateY(-2px);
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.3);
+}
+
+/* reCAPTCHA container */
+.sib-captcha {
+    margin-top: 20px;
+    padding-top: 10px;
+}
+
+.g-recaptcha {
+    display: inline-block;
+    margin: 0 auto;
 }
 
 .character-sketches {

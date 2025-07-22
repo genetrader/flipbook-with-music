@@ -13,7 +13,9 @@
       "Bash(git remote:*)",
       "Bash(git push:*)",
       "Bash(dir C:Usersgenet.ssh)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(deploy.bat)",
+      "Bash(cmd.exe /c deploy.bat)"
     ],
     "deny": []
   }
