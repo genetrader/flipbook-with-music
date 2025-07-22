@@ -161,6 +161,17 @@ document.head.appendChild(style);
 
 // Handle Brevo form submission
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if already submitted in this session
+    if (sessionStorage.getItem('newsletterSubmitted') === 'true') {
+        const formSection = document.querySelector('.sib-form-container');
+        const customSuccess = document.getElementById('custom-success-message');
+        
+        if (formSection && customSuccess) {
+            formSection.style.display = 'none';
+            customSuccess.style.display = 'block';
+        }
+    }
+    
     // Monitor for Brevo form changes
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
@@ -184,17 +195,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Scroll to success message
                     customSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     
-                    // Auto-hide after 7 seconds and show form again
-                    setTimeout(function() {
-                        customSuccess.style.display = 'none';
-                        if (formSection) {
-                            formSection.style.display = 'block';
-                        }
-                        formContainer.style.display = 'block';
-                        // Clear the form
-                        const form = document.getElementById('sib-form');
-                        if (form) form.reset();
-                    }, 7000);
+                    // Mark as submitted in session storage
+                    sessionStorage.setItem('newsletterSubmitted', 'true');
+                    
+                    // Keep success message visible (don't auto-hide)
                 }
             }
         });
