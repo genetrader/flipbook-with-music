@@ -2,15 +2,15 @@
 echo Deploying to Larger Than Life Comics...
 cd /d "C:\CODING\LARGER THEN LIFE MOCKUP"
 
-REM Start SSH agent and add key
-echo Starting SSH agent...
-FOR /f "tokens=*" %%i IN ('ssh-agent -s') DO %%i
+REM Configure Git to handle line endings
+git config core.autocrlf true
 
 REM Auto-deploy
 git add -A
 git commit -m "Auto-deploy: %date% %time%"
-git push siteground master
+git push siteground master 2>&1
 
 echo.
 echo Deployment complete!
+echo Your website has been updated: https://largerthanlifecomics.com
 pause
