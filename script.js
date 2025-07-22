@@ -1,6 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Load saved flipbook URL from localStorage, or use default
-    const savedFlipbookUrl = localStorage.getItem('flipbookUrl') || 'https://heyzine.com/flip-book/b1f71ef0a6.html';
+    // Flipbook URLs
+    const flipbooks = {
+        'quark-2': 'https://heyzine.com/flip-book/1793b849ee.html',
+        'quark-3': 'https://heyzine.com/flip-book/fe18813757.html',
+        'quark-6': 'https://heyzine.com/flip-book/91e79197a9.html',
+        'cork-1': localStorage.getItem('flipbookUrl') || 'https://heyzine.com/flip-book/b1f71ef0a6.html'
+    };
     
     // Lightbox elements
     const lightbox = document.getElementById('flipbook-lightbox');
@@ -8,19 +13,51 @@ document.addEventListener('DOMContentLoaded', function() {
     const lightboxClose = document.getElementById('lightbox-close');
     const corkCoverClick = document.getElementById('cork-cover-click');
     
-    // Handle Cork cover click to open lightbox
-    if (corkCoverClick) {
-        corkCoverClick.addEventListener('click', function() {
-            if (lightbox && lightboxFrame) {
+    // Create selection modal
+    const selectionModal = document.createElement('div');
+    selectionModal.className = 'flipbook-selection-modal';
+    selectionModal.innerHTML = `
+        <div class="selection-modal-content">
+            <h3>Select a Comic</h3>
+            <div class="flipbook-options">
+                <button class="flipbook-option" data-book="quark-2">Quark 2</button>
+                <button class="flipbook-option" data-book="quark-3">Quark 3</button>
+                <button class="flipbook-option" data-book="quark-6">Quark 6</button>
+            </div>
+            <button class="selection-close">&times;</button>
+        </div>
+    `;
+    document.body.appendChild(selectionModal);
+    
+    // Handle selection modal
+    const selectionClose = selectionModal.querySelector('.selection-close');
+    selectionClose.addEventListener('click', function() {
+        selectionModal.classList.remove('active');
+    });
+    
+    // Handle flipbook selection
+    const flipbookOptions = selectionModal.querySelectorAll('.flipbook-option');
+    flipbookOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const bookId = this.getAttribute('data-book');
+            const flipbookUrl = flipbooks[bookId];
+            if (flipbookUrl && lightbox && lightboxFrame) {
+                selectionModal.classList.remove('active');
                 lightbox.classList.add('active');
-                // Add zoom parameter to URL if not already present
-                let zoomedUrl = savedFlipbookUrl;
+                let zoomedUrl = flipbookUrl;
                 if (!zoomedUrl.includes('#')) {
                     zoomedUrl += '#zoom=page-width';
                 }
                 lightboxFrame.src = zoomedUrl;
                 document.body.style.overflow = 'hidden';
             }
+        });
+    });
+    
+    // Handle Cork cover click to open selection modal
+    if (corkCoverClick) {
+        corkCoverClick.addEventListener('click', function() {
+            selectionModal.classList.add('active');
         });
     }
     
@@ -132,17 +169,21 @@ document.addEventListener('DOMContentLoaded', function() {
         item.addEventListener('click', function() {
             const bookId = this.getAttribute('data-book');
             
-            // For Cork 1, open the flipbook
+            // For Cork 1, open the flipbook directly
             if (bookId === 'cork-1' && lightbox && lightboxFrame) {
                 lightbox.classList.add('active');
-                // Add zoom parameter to URL if not already present
-                let zoomedUrl = savedFlipbookUrl;
+                let zoomedUrl = flipbooks['cork-1'];
                 if (!zoomedUrl.includes('#')) {
                     zoomedUrl += '#zoom=page-width';
                 }
                 lightboxFrame.src = zoomedUrl;
                 document.body.style.overflow = 'hidden';
-            } else {
+            } 
+            // For Cork 2+3, open the selection modal
+            else if (bookId === 'cork-2-3') {
+                selectionModal.classList.add('active');
+            } 
+            else {
                 // For other books, show a message
                 alert(`${this.querySelector('h3').textContent} - Coming Soon!`);
             }

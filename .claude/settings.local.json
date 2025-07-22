@@ -15,7 +15,9 @@
       "Bash(dir C:Usersgenet.ssh)",
       "Bash(powershell:*)",
       "Bash(deploy.bat)",
-      "Bash(cmd.exe /c deploy.bat)"
+      "Bash(cmd.exe /c deploy.bat)",
+      "Bash(tail:*)",
+      "Bash(cmd:*)"
     ],
     "deny": []
   }

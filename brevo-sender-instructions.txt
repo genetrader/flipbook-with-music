@@ -1,0 +1,42 @@
+INSTRUCTIONS TO CHANGE SENDER NAME IN BREVO
+===========================================
+
+To change from "ODP Commerce" to "Larger Than Life Comics":
+
+1. Log into your Brevo account at https://app.brevo.com
+
+2. Go to Settings:
+   - Click on your account name (top right)
+   - Select "Senders & IP"
+
+3. Update Sender Information:
+   - Find the sender profile showing "ODP Commerce"
+   - Click "Edit" or "Modify"
+   - Change the "From Name" field to: Larger Than Life Comics
+   - Keep your existing "From Email" address
+   - Save changes
+
+4. For Automated Emails (Welcome series):
+   - Go to "Automation" → "Workflows"
+   - Find your welcome email workflow
+   - Click "Edit"
+   - In the email step, click "Sender and Subject"
+   - Change "From Name" to: Larger Than Life Comics
+   - Change "Subject Line" to: Welcome to Larger Than Life Comics!
+   - Optional emoji subjects:
+     • 🎉 Welcome to Larger Than Life Comics!
+     • Welcome to Larger Than Life Comics! 🦸‍♂️
+     • 📚 Welcome to Larger Than Life Comics!
+   - Save the workflow
+
+5. For Campaign Emails:
+   - When creating new campaigns
+   - In the "Sender" section
+   - Select or enter: Larger Than Life Comics
+
+IMPORTANT: The sender name change will apply to:
+- Welcome emails
+- Newsletter campaigns
+- Any automated messages
+
+This ensures all emails show "Larger Than Life Comics" in recipients' inboxes instead of "ODP Commerce".
