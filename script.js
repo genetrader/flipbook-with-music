@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Flipbook URLs
     const flipbooks = {
-        'quark-2': 'https://heyzine.com/flip-book/1793b849ee.html',
-        'quark-3': 'https://heyzine.com/flip-book/fe18813757.html',
-        'quark-6': 'https://heyzine.com/flip-book/91e79197a9.html',
+        'cork-2': 'https://heyzine.com/flip-book/1793b849ee.html',
+        'cork-3': 'https://heyzine.com/flip-book/fe18813757.html',
+        'cork-6': 'https://heyzine.com/flip-book/91e79197a9.html',
         'cork-1': localStorage.getItem('flipbookUrl') || 'https://heyzine.com/flip-book/b1f71ef0a6.html'
     };
     
@@ -20,9 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="selection-modal-content">
             <h3>Select a Comic</h3>
             <div class="flipbook-options">
-                <button class="flipbook-option" data-book="quark-2">Quark 2</button>
-                <button class="flipbook-option" data-book="quark-3">Quark 3</button>
-                <button class="flipbook-option" data-book="quark-6">Quark 6</button>
+                <button class="flipbook-option" data-book="cork-2">Cork 2</button>
+                <button class="flipbook-option" data-book="cork-3">Cork 3</button>
             </div>
             <button class="selection-close">&times;</button>
         </div>
@@ -182,7 +181,17 @@ document.addEventListener('DOMContentLoaded', function() {
             // For Cork 2+3, open the selection modal
             else if (bookId === 'cork-2-3') {
                 selectionModal.classList.add('active');
-            } 
+            }
+            // For Prodigy (Cork 6), open the flipbook directly
+            else if (bookId === 'prodigy' && lightbox && lightboxFrame) {
+                lightbox.classList.add('active');
+                let zoomedUrl = flipbooks['cork-6'];
+                if (!zoomedUrl.includes('#')) {
+                    zoomedUrl += '#zoom=page-width';
+                }
+                lightboxFrame.src = zoomedUrl;
+                document.body.style.overflow = 'hidden';
+            }
             else {
                 // For other books, show a message
                 alert(`${this.querySelector('h3').textContent} - Coming Soon!`);
