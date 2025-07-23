@@ -19,7 +19,7 @@
             background: #2a2a2a;
             min-height: 100vh;
             position: relative;
-            padding: 20px;
+            padding: 20px 0;
             margin: 0 -30px;
             display: flex;
             justify-content: center;
@@ -29,17 +29,16 @@
         .scroll-container {
             position: relative;
             width: 100%;
-            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: stretch;
+            padding: 0 20px;
         }
         
         /* Header section */
         .scroll-header {
             width: 100%;
-            max-width: 1200px;
             height: auto;
             position: relative;
             z-index: 10;
@@ -55,7 +54,6 @@
         /* Middle repeating section container */
         .scroll-middle-container {
             width: 100%;
-            max-width: 1200px;
             position: relative;
             background-color: #f5e6d3;
             min-height: 600px;
@@ -83,7 +81,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            padding: 60px 200px;
+            padding: 60px 15%;
             overflow: visible;
             z-index: 5;
         }
@@ -91,7 +89,6 @@
         /* Footer section */
         .scroll-footer {
             width: 100%;
-            max-width: 1200px;
             height: auto;
             position: relative;
             z-index: 10;
@@ -173,19 +170,23 @@
         /* Responsive adjustments */
         @media (max-width: 1400px) {
             .scroll-content {
-                padding: 50px 150px;
+                padding: 50px 12%;
             }
         }
         
         @media (max-width: 1200px) {
             .scroll-content {
-                padding: 40px 120px;
+                padding: 40px 10%;
+            }
+            
+            .scroll-container {
+                padding: 0 15px;
             }
         }
         
         @media (max-width: 768px) {
             .scroll-content {
-                padding: 30px 80px;
+                padding: 30px 8%;
             }
             
             .writing-title {
@@ -200,11 +201,15 @@
                 font-size: 4rem;
                 padding: 10px;
             }
+            
+            .scroll-container {
+                padding: 0 10px;
+            }
         }
         
         @media (max-width: 480px) {
             .scroll-content {
-                padding: 20px 50px;
+                padding: 20px 6%;
             }
             
             .writing-title {
@@ -214,6 +219,10 @@
             .writing-text {
                 font-size: 1rem;
                 text-align: left;
+            }
+            
+            .scroll-container {
+                padding: 0 5px;
             }
         }
     </style>
