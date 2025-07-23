@@ -53,10 +53,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Handle Cork cover click to open selection modal
+    // Handle Cork cover click to open Cork 1 directly
     if (corkCoverClick) {
         corkCoverClick.addEventListener('click', function() {
-            selectionModal.classList.add('active');
+            if (lightbox && lightboxFrame) {
+                lightbox.classList.add('active');
+                let zoomedUrl = flipbooks['cork-1'];
+                if (!zoomedUrl.includes('#')) {
+                    zoomedUrl += '#zoom=page-width';
+                }
+                lightboxFrame.src = zoomedUrl;
+                document.body.style.overflow = 'hidden';
+            }
         });
     }
     
@@ -198,6 +206,44 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // Carousel functionality
+    const booksGrid = document.querySelector('.books-grid');
+    const prevButton = document.querySelector('.carousel-nav.prev');
+    const nextButton = document.querySelector('.carousel-nav.next');
+    const bookItems = document.querySelectorAll('.book-item');
+    
+    let currentIndex = 0;
+    const itemsPerView = 5;
+    const totalItems = bookItems.length;
+    
+    // Initialize carousel
+    updateCarousel();
+    
+    if (prevButton && nextButton) {
+        prevButton.addEventListener('click', function() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateCarousel();
+            }
+        });
+        
+        nextButton.addEventListener('click', function() {
+            if (currentIndex < totalItems - itemsPerView) {
+                currentIndex++;
+                updateCarousel();
+            }
+        });
+    }
+    
+    function updateCarousel() {
+        // Update button states
+        if (prevButton) prevButton.disabled = currentIndex === 0;
+        if (nextButton) nextButton.disabled = currentIndex >= totalItems - itemsPerView;
+        
+        // For now, since we have 5 or fewer items, just show them all
+        // In the future when more books are added, implement scrolling
+    }
 });
 
 const style = document.createElement('style');

@@ -61,7 +61,7 @@
             <section class="comic-section">
                 <h2 class="section-title">NEWEST COMIC</h2>
                 <div class="cover-page">
-                    <h3>COVER PAGE</h3>
+                    <h3 class="recently-added-title">RECENTLY ADDED</h3>
                     <div class="cover-click-area" id="cork-cover-click">
                         <img src="images/cork-1-cover.jpeg" alt="Cork Episode 1 Cover" class="book-cover-preview">
                         <p class="click-hint">Click cover to read!</p>
@@ -70,7 +70,9 @@
             </section>
             
             <section class="books-showcase">
-                <h2 class="section-title">ALL BOOKS</h2>
+                <h2 class="section-title">LARGER THAN LIFE</h2>
+                <button class="carousel-nav prev" aria-label="Previous">&lt;</button>
+                <button class="carousel-nav next" aria-label="Next">&gt;</button>
                 <div class="books-grid">
                     <div class="book-item" data-book="cork-1">
                         <img src="images/cork-1-cover.jpeg" alt="Cork" class="book-cover">
@@ -84,21 +86,23 @@
                         <img src="images/cork-4-5-cover.jpeg" alt="Cork 4+5: Athens" class="book-cover">
                         <h3>Cork 4+5: Athens</h3>
                     </div>
+                    <div class="book-item" data-book="new-dawn">
+                        <img src="images/new-dawn-cover.jpeg" alt="New Dawn" class="book-cover">
+                        <h3>New Dawn</h3>
+                    </div>
                     <div class="book-item" data-book="prodigy">
                         <img src="images/prodigy-cover.jpeg" alt="Prodigy" class="book-cover">
                         <h3>Prodigy</h3>
                     </div>
-                    <div class="book-item" data-book="new-dawn">
-                        <img src="images/new-dawn-cover.jpeg" alt="A New Dawn" class="book-cover">
-                        <h3>A New Dawn</h3>
-                    </div>
                 </div>
             </section>
+            
+            <div class="section-spacer"></div>
             
             <section class="comic-panels">
                 <div class="panel" id="loneliest-fix-panel">
                     <div class="book-announcement">
-                        <h4>The Loneliness Fix</h4>
+                        <h4 class="loneliness-fix-title">The Loneliness Fix</h4>
                         <p>by Michael Waxman</p>
                         <p style="font-weight: bold;">Now available on Amazon!</p>
                         <div class="book-cover-small">
@@ -110,19 +114,10 @@
                     </div>
                 </div>
                 
-                <div class="panel">
-                    <p>The War of False Faces &<br>
-                    Artur Livius CANCELED</p>
-                    <div class="character-faces">🎭 😊 😂</div>
-                </div>
-                
-                <div class="panel">
-                    <p>Third announcement be like...</p>
-                </div>
             </section>
             
             <section class="newsletter-section">
-                <h2 class="section-title">Join Our Mailing List!</h2>
+                <h2 class="section-title mailing-list-title">Join Our Mailing List!</h2>
                 <p class="newsletter-intro">Be the first to know about new comics, freebies, and exclusive content!</p>
                 
                 <!-- Begin Brevo Form -->

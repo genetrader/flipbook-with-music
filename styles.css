@@ -8,7 +8,7 @@
 
 body {
     font-family: 'Kalam', cursive;
-    background-color: #7BA7CC;
+    background-color: #270885;
     color: #1a1a1a;
     min-height: 100vh;
     overflow-x: hidden;
@@ -47,25 +47,7 @@ body {
     transition: all 0.3s ease;
 }
 
-.title-letter:nth-child(1) { color: #FF6B6B; }
-.title-letter:nth-child(2) { color: #4ECDC4; }
-.title-letter:nth-child(3) { color: #45B7D1; }
-.title-letter:nth-child(4) { color: #FFA07A; }
-.title-letter:nth-child(5) { color: #98D8C8; }
-.title-letter:nth-child(6) { color: #F7DC6F; }
-.title-letter:nth-child(7) { color: #BB8FCE; }
-.title-letter:nth-child(8) { color: #85C1E9; }
-.title-letter:nth-child(9) { color: #F8B500; }
-.title-letter:nth-child(10) { color: #52D681; }
-.title-letter:nth-child(11) { color: #FF6F61; }
-.title-letter:nth-child(12) { color: #6C5CE7; }
-.title-letter:nth-child(13) { color: #A8E6CF; }
-.title-letter:nth-child(14) { color: #FFD93D; }
-.title-letter:nth-child(15) { color: #FDA7DF; }
-.title-letter:nth-child(16) { color: #4834D4; }
-.title-letter:nth-child(17) { color: #22A6B3; }
-.title-letter:nth-child(18) { color: #F97F51; }
-.title-letter:nth-child(19) { color: #3DC1D3; }
+.title-letter { color: #1083F6; }
 
 .title-letter:hover {
     transform: translateY(-5px) rotate(5deg) scale(1.2);
@@ -73,7 +55,7 @@ body {
 }
 
 .title-comics {
-    color: #E74C3C;
+    color: #1083F6;
     font-family: 'Bangers', 'Comic Neue', cursive;
     font-size: 4rem;
     text-shadow: 3px 3px 0 #000, 2px 2px 0 #000, 1px 1px 0 #000;
@@ -136,6 +118,8 @@ body {
     border-radius: 10px;
     box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
     transform: rotate(-1deg);
+    color: #1083F6;
+    font-family: 'Bangers', 'Comic Neue', cursive;
 }
 
 .cover-page {
@@ -167,8 +151,8 @@ body {
 }
 
 .comic-panels {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    display: flex;
+    justify-content: center;
     gap: 20px;
 }
 
@@ -241,7 +225,7 @@ body {
     font-weight: bold;
     margin: 10px 0;
     transition: all 0.3s ease;
-    font-family: 'Comic Neue', cursive;
+    font-family: Arial, sans-serif;
 }
 
 .amazon-link:hover {
@@ -559,10 +543,12 @@ body {
 }
 
 .book-item h3 {
-    font-size: 1.2rem;
+    font-size: 1rem;
     margin: 10px 0 0 0;
-    color: #2a2a2a;
-    font-family: 'Comic Neue', cursive;
+    color: #1083F6;
+    font-family: 'Bangers', 'Comic Neue', cursive;
+    font-weight: normal;
+    letter-spacing: 0.5px;
 }
 
 /* Lightbox */
@@ -802,4 +788,104 @@ body {
 
 .selection-close:hover {
     color: #FF6B6B;
+}
+
+/* Recently Added Title */
+.recently-added-title {
+    font-family: 'Bangers', 'Comic Neue', cursive;
+    font-size: 2rem;
+    color: #1083F6;
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
+/* Section Spacer */
+.section-spacer {
+    height: 60px;
+}
+
+/* Loneliness Fix Title */
+.loneliness-fix-title {
+    font-family: 'Bangers', 'Comic Neue', cursive;
+    color: #1083F6;
+    font-size: 1.8rem;
+    font-weight: normal;
+}
+
+/* Mailing List Title */
+.mailing-list-title {
+    font-family: 'Bangers', 'Comic Neue', cursive;
+    color: #1083F6;
+}
+
+/* Books Carousel Styling */
+.books-showcase {
+    position: relative;
+    padding: 0 60px;
+}
+
+.books-grid {
+    display: flex;
+    gap: 30px;
+    margin-top: 30px;
+    overflow: hidden;
+    justify-content: center;
+}
+
+.book-item {
+    background-color: #fff;
+    border: 3px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+    transform: rotate(-1deg);
+    flex: 0 0 220px;
+    max-width: 220px;
+}
+
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #1083F6;
+    color: white;
+    border: 3px solid #2a2a2a;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.carousel-nav:hover {
+    background-color: #0a5fc2;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-nav.prev {
+    left: 0;
+}
+
+.carousel-nav.next {
+    right: 0;
+}
+
+.carousel-nav:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Subscribe Button Override */
+.sib-form-block button {
+    font-family: Arial, sans-serif !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
 }

@@ -17,7 +17,8 @@
       "Bash(deploy.bat)",
       "Bash(cmd.exe /c deploy.bat)",
       "Bash(tail:*)",
-      "Bash(cmd:*)"
+      "Bash(cmd:*)",
+      "Bash(start \"\" \"C:\\CODING\\LARGER THEN LIFE MOCKUP\\MIKES FEEDBACK.mp4\")"
     ],
     "deny": []
   }
