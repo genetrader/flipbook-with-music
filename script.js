@@ -170,6 +170,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     });
     
+    // Add special effect to COMICS word
+    const comicsWord = document.querySelector('.title-comics');
+    if (comicsWord) {
+        comicsWord.addEventListener('click', function() {
+            this.style.animation = 'spinBounce 0.8s ease-in-out';
+            setTimeout(() => {
+                this.style.animation = '';
+            }, 800);
+        });
+    }
+    
     // Handle book showcase clicks
     const bookItems = document.querySelectorAll('.book-item');
     bookItems.forEach(item => {
