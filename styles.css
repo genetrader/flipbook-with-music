@@ -841,9 +841,11 @@ body {
 .loneliness-fix-title {
     font-family: 'Bangers', 'Comic Neue', cursive;
     color: #1083F6;
-    font-size: 1.8rem;
+    font-size: 2.5rem;
     font-weight: normal;
     text-shadow: 3px 3px 0 #000, 2px 2px 0 #000, 1px 1px 0 #000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* Mailing List Title */
