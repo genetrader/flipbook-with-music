@@ -153,12 +153,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav-list a, .mobile-nav-list a');
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
-            e.preventDefault();
             const target = this.getAttribute('href');
             
-            if (target === '#home') {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Only prevent default for anchor links (starting with #)
+            if (target.startsWith('#')) {
+                e.preventDefault();
+                if (target === '#home') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             }
+            // Let normal links (like index.html, art-gallery.html) work normally
         });
     });
     
