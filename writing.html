@@ -29,7 +29,7 @@
         .scroll-container {
             position: relative;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
@@ -39,7 +39,7 @@
         /* Header section */
         .scroll-header {
             width: 100%;
-            max-width: 900px;
+            max-width: 1200px;
             height: auto;
             position: relative;
             z-index: 10;
@@ -55,7 +55,7 @@
         /* Middle repeating section container */
         .scroll-middle-container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1200px;
             position: relative;
             background-color: #f5e6d3;
             min-height: 600px;
@@ -83,7 +83,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            padding: 40px 120px;
+            padding: 60px 200px;
             overflow: visible;
             z-index: 5;
         }
@@ -91,7 +91,7 @@
         /* Footer section */
         .scroll-footer {
             width: 100%;
-            max-width: 900px;
+            max-width: 1200px;
             height: auto;
             position: relative;
             z-index: 10;
@@ -171,9 +171,21 @@
         }
         
         /* Responsive adjustments */
+        @media (max-width: 1400px) {
+            .scroll-content {
+                padding: 50px 150px;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .scroll-content {
+                padding: 40px 120px;
+            }
+        }
+        
         @media (max-width: 768px) {
             .scroll-content {
-                padding: 30px 60px;
+                padding: 30px 80px;
             }
             
             .writing-title {
@@ -192,7 +204,7 @@
         
         @media (max-width: 480px) {
             .scroll-content {
-                padding: 20px 40px;
+                padding: 20px 50px;
             }
             
             .writing-title {
