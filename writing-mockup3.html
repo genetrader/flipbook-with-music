@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writing - Elegant Literary Scroll | Larger Than Life Comics</title>
+    
+    <link rel="stylesheet" href="styles.css?v=12">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    
+    <style>
+        /* Elegant Literary Scroll Design */
+        .writing-content {
+            background: linear-gradient(to bottom, #1a1a1a 0%, #2a2a2a 100%);
+            min-height: 100%;
+            position: relative;
+            padding: 60px 30px 80px;
+            margin: 0 -30px;
+        }
+        
+        .scroll-wrapper {
+            position: relative;
+            background: linear-gradient(to bottom, #fdfcfa 0%, #f9f7f3 50%, #fdfcfa 100%);
+            box-shadow: 
+                0 0 60px rgba(0,0,0,0.4),
+                inset 0 0 40px rgba(218, 165, 32, 0.05),
+                inset 0 0 100px rgba(0,0,0,0.05);
+            border-left: 3px solid #DAA520;
+            border-right: 3px solid #DAA520;
+            padding: 100px 80px 120px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Elegant rolled edges with gold trim */
+        .scroll-top {
+            position: absolute;
+            top: 0;
+            left: -3px;
+            right: -3px;
+            height: 80px;
+            background: linear-gradient(to bottom, 
+                #DAA520 0%, 
+                #DAA520 3px, 
+                #fdfcfa 3px, 
+                #fdfcfa 100%);
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            box-shadow: 
+                0 -20px 30px rgba(0,0,0,0.3),
+                inset 0 20px 30px rgba(0,0,0,0.1);
+            transform-origin: center bottom;
+            transform: perspective(100px) rotateX(15deg);
+        }
+        
+        .scroll-bottom {
+            position: absolute;
+            bottom: 0;
+            left: -3px;
+            right: -3px;
+            height: 80px;
+            background: linear-gradient(to top, 
+                #DAA520 0%, 
+                #DAA520 3px, 
+                #f9f7f3 3px, 
+                #f9f7f3 100%);
+            border-radius: 0 0 50% 50% / 0 0 100% 100%;
+            box-shadow: 
+                0 20px 30px rgba(0,0,0,0.3),
+                inset 0 -20px 30px rgba(0,0,0,0.1);
+            transform-origin: center top;
+            transform: perspective(100px) rotateX(-15deg);
+        }
+        
+        /* Gold corner flourishes */
+        .corner-flourish {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 2px solid #DAA520;
+        }
+        
+        .corner-flourish.top-left {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+        }
+        
+        .corner-flourish.top-right {
+            top: 20px;
+            right: 20px;
+            border-left: none;
+            border-bottom: none;
+        }
+        
+        .corner-flourish.bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-right: none;
+            border-top: none;
+        }
+        
+        .corner-flourish.bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+        }
+        
+        .writing-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: #1a2b3c;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(218, 165, 32, 0.3);
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-style: italic;
+            color: #4a5b6c;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .writing-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.35rem;
+            line-height: 2.1;
+            color: #1a2b3c;
+            text-align: justify;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .writing-text p {
+            margin-bottom: 35px;
+            text-indent: 60px;
+        }
+        
+        /* Elegant drop cap */
+        .writing-text p:first-of-type::first-letter {
+            font-family: 'Playfair Display', serif;
+            font-size: 5.5rem;
+            font-weight: 700;
+            float: left;
+            line-height: 0.8;
+            margin: 8px 12px -5px 0;
+            color: #1a2b3c;
+            text-shadow: 
+                2px 2px 0 #DAA520,
+                3px 3px 6px rgba(0,0,0,0.2);
+        }
+        
+        /* Decorative divider */
+        .section-divider {
+            text-align: center;
+            margin: 50px 0;
+            font-size: 2rem;
+            color: #DAA520;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .section-divider::before {
+            content: '◆ ◇ ◆';
+        }
+        
+        /* Page number */
+        .page-number {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            color: #4a5b6c;
+            font-style: italic;
+        }
+        
+        /* Subtle watermark pattern */
+        .scroll-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 100px,
+                    rgba(218, 165, 32, 0.01) 100px,
+                    rgba(218, 165, 32, 0.01) 200px
+                );
+            pointer-events: none;
+        }
+        
+        /* Gold accent line */
+        .gold-accent {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 3px;
+            height: 100px;
+            background: linear-gradient(to bottom, 
+                transparent 0%, 
+                #DAA520 50%, 
+                transparent 100%);
+            opacity: 0.5;
+        }
+        
+        .gold-accent.right {
+            left: auto;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="main-header">
+            <button class="hamburger-menu" id="hamburger-menu" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <h1 class="site-title">
+                <span class="title-letter">L</span><span class="title-letter">a</span><span class="title-letter">r</span><span class="title-letter">g</span><span class="title-letter">e</span><span class="title-letter">r</span>
+                <span class="title-letter">T</span><span class="title-letter">h</span><span class="title-letter">a</span><span class="title-letter">n</span>
+                <span class="title-letter">L</span><span class="title-letter">i</span><span class="title-letter">f</span><span class="title-letter">e</span>
+                <span class="title-comics">COMICS</span>
+            </h1>
+            <div class="header-character">
+                <img src="images/2025-07-23_13-31-41.png" alt="Blue Character">
+            </div>
+        </header>
+        
+        <nav class="sidebar">
+            <ul class="nav-list">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#search">Search</a></li>
+                <li><a href="#comics">Comics</a></li>
+                <li><a href="#character">Character Profile</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="art-gallery.html">Art</a></li>
+                <li><a href="writing-mockup3.html">Writing</a></li>
+                <li><a href="#news">News</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#support">Support</a></li>
+            </ul>
+        </nav>
+        
+        <main class="content">
+            <div class="writing-content">
+                <div class="scroll-wrapper">
+                    <div class="scroll-top"></div>
+                    <div class="scroll-bottom"></div>
+                    
+                    <div class="corner-flourish top-left"></div>
+                    <div class="corner-flourish top-right"></div>
+                    <div class="corner-flourish bottom-left"></div>
+                    <div class="corner-flourish bottom-right"></div>
+                    
+                    <div class="gold-accent"></div>
+                    <div class="gold-accent right"></div>
+                    
+                    <h2 class="writing-title">Head in the Clouds</h2>
+                    <p class="subtitle">A Literary Journey</p>
+                    
+                    <div class="writing-text">
+                        <p>This elegant literary design features sophisticated typography and refined decorative elements. The Cormorant Garamond font provides exceptional readability while maintaining a classical, literary aesthetic perfect for long-form content.</p>
+                        
+                        <p>The scroll is adorned with gold trim and corner flourishes, creating a luxurious presentation reminiscent of fine literary editions. The paper texture is subtle and clean, with a slight warm tone that's easy on the eyes during extended reading sessions.</p>
+                        
+                        <p>Typography hierarchy is established through the use of Playfair Display for the title, creating a strong visual anchor. The generous line spacing and careful text justification ensure optimal reading flow.</p>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <p>Decorative elements are kept minimal and elegant, with gold accents providing visual interest without distraction. The rolled edges feature a sophisticated perspective effect that adds depth to the design.</p>
+                        
+                        <p>This design would be ideal for literary fiction, essays, poetry, or any content that deserves a refined and sophisticated presentation. The color palette of deep blue-black text on warm white paper with gold accents creates a timeless, prestigious appearance.</p>
+                    </div>
+                    
+                    <div class="page-number">Page 1</div>
+                </div>
+            </div>
+        </main>
+        
+        <aside class="character-sketches">
+            <div class="character-image">
+                <img src="images/2025-07-23_13-26-14.png" alt="Character 1">
+            </div>
+            <div class="character-image">
+                <img src="images/2025-07-23_13-28-09.png" alt="Character 2">
+            </div>
+            <div class="character-image">
+                <img src="images/2025-07-23_13-29-46.png" alt="Character 3">
+            </div>
+            <div class="character-image">
+                <img src="images/2025-07-23_13-31-00.png" alt="Character 4">
+            </div>
+        </aside>
+    </div>
+    
+    <script src="script.js?v=7"></script>
+</body>
+</html>

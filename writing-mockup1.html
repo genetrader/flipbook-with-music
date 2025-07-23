@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Writing - Classic Parchment | Larger Than Life Comics</title>
+    
+    <link rel="stylesheet" href="styles.css?v=12">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    
+    <style>
+        /* Classic Parchment Design */
+        .writing-content {
+            background: linear-gradient(to bottom, 
+                transparent 0%, 
+                #f4e8d0 5%, 
+                #f4e8d0 95%, 
+                transparent 100%);
+            min-height: 100%;
+            position: relative;
+            padding: 80px 60px 100px;
+            margin: 0 -30px;
+        }
+        
+        .parchment-wrapper {
+            position: relative;
+            background: #f4e8d0;
+            box-shadow: 
+                0 0 30px rgba(0,0,0,0.3),
+                inset 0 0 120px rgba(139, 121, 94, 0.2),
+                inset 0 0 40px rgba(139, 121, 94, 0.1);
+            border-radius: 3px;
+        }
+        
+        .parchment-top {
+            position: absolute;
+            top: -50px;
+            left: -20px;
+            right: -20px;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 100"><path d="M0,80 Q100,20 200,30 T400,25 T600,35 T800,20 T1000,30 T1200,25 L1200,100 L0,100 Z" fill="%23f4e8d0" opacity="1"/><path d="M0,70 Q150,10 300,20 T600,15 T900,25 T1200,20 L1200,100 L0,100 Z" fill="%23f4e8d0" opacity="0.7"/></svg>') no-repeat;
+            background-size: cover;
+            filter: drop-shadow(0 -5px 10px rgba(0,0,0,0.2));
+        }
+        
+        .parchment-bottom {
+            position: absolute;
+            bottom: -50px;
+            left: -20px;
+            right: -20px;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 100"><path d="M0,20 Q100,60 200,50 T400,55 T600,45 T800,60 T1000,50 T1200,55 L1200,0 L0,0 Z" fill="%23f4e8d0" opacity="1"/><path d="M0,30 Q150,70 300,60 T600,65 T900,55 T1200,60 L1200,0 L0,0 Z" fill="%23f4e8d0" opacity="0.7"/></svg>') no-repeat;
+            background-size: cover;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
+            transform: scaleY(-1);
+        }
+        
+        .writing-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 3rem;
+            color: #3a2317;
+            text-align: center;
+            margin-bottom: 50px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: 3px;
+        }
+        
+        .writing-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            line-height: 2;
+            color: #3a2317;
+            text-align: justify;
+            max-width: 800px;
+            margin: 0 auto;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .writing-text p {
+            margin-bottom: 30px;
+            text-indent: 50px;
+        }
+        
+        .writing-text p:first-of-type::first-letter {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 5rem;
+            float: left;
+            line-height: 1;
+            margin: 0 10px -10px 0;
+            color: #8B4513;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+        
+        /* Texture overlay */
+        .parchment-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(139, 121, 94, 0.03) 10px,
+                    rgba(139, 121, 94, 0.03) 20px
+                );
+            pointer-events: none;
+        }
+        
+        /* Age spots */
+        .parchment-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 20%;
+            right: 10%;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(ellipse at center, rgba(139, 121, 94, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="main-header">
+            <button class="hamburger-menu" id="hamburger-menu" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <h1 class="site-title">
+                <span class="title-letter">L</span><span class="title-letter">a</span><span class="title-letter">r</span><span class="title-letter">g</span><span class="title-letter">e</span><span class="title-letter">r</span>
+                <span class="title-letter">T</span><span class="title-letter">h</span><span class="title-letter">a</span><span class="title-letter">n</span>
+                <span class="title-letter">L</span><span class="title-letter">i</span><span class="title-letter">f</span><span class="title-letter">e</span>
+                <span class="title-comics">COMICS</span>
+            </h1>
+            <div class="header-character">
+                <img src="images/2025-07-23_13-31-41.png" alt="Blue Character">
+            </div>
+        </header>
+        
+        <nav class="sidebar">
+            <ul class="nav-list">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#search">Search</a></li>
+                <li><a href="#comics">Comics</a></li>
+                <li><a href="#character">Character Profile</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="art-gallery.html">Art</a></li>
+                <li><a href="writing-mockup1.html">Writing</a></li>
+                <li><a href="#news">News</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#support">Support</a></li>
+            </ul>
+        </nav>
+        
+        <main class="content">
+            <div class="writing-content">
+                <div class="parchment-wrapper">
+                    <div class="parchment-top"></div>
+                    <div class="parchment-bottom"></div>
+                    
+                    <h2 class="writing-title">Head in the Clouds</h2>
+                    
+                    <div class="writing-text">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In the absence of the actual text from the PDF, this mockup demonstrates the classic parchment design with elegant Cinzel font. The parchment has unfurled edges at the top and bottom, creating an authentic scroll appearance.</p>
+                        
+                        <p>The background features a warm cream color with subtle aging effects, including texture overlays and soft shadows. The text is rendered in a dark brown color reminiscent of traditional ink, with generous line spacing for optimal readability.</p>
+                        
+                        <p>Special attention has been paid to the first letter of the document, which features an enlarged decorative capital in the Cinzel Decorative font family. This creates a manuscript-like appearance that enhances the classical aesthetic.</p>
+                        
+                        <p>The parchment edges are created using SVG paths that simulate torn and curled paper, with drop shadows adding depth and dimension. The overall effect is one of timeless elegance, perfect for literary content.</p>
+                        
+                        <p>Additional paragraphs would continue here, maintaining consistent spacing and formatting throughout the document. The design allows for extensive content while maintaining visual appeal and readability.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <aside class="character-sketches">
+            <div class="character-image">
+                <img src="images/2025-07-23_13-26-14.png" alt="Character 1">
+            </div>
+            <div class="character-image">
+                <img src="images/2025-07-23_13-28-09.png" alt="Character 2">
+            </div>
+            <div class="character-image">
+                <img src="images/2025-07-23_13-29-46.png" alt="Character 3">
+            </div>
+            <div class="character-image">
+                <img src="images/2025-07-23_13-31-00.png" alt="Character 4">
+            </div>
+        </aside>
+    </div>
+    
+    <script src="script.js?v=7"></script>
+</body>
+</html>
