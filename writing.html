@@ -50,9 +50,9 @@
         /* Content wrapper */
         .scroll-content {
             position: relative;
-            width: 50%; /* Narrower to fit within scroll area */
-            max-width: 700px; /* Set max width for readability */
-            padding: 250px 60px 100px 60px; /* Added ~2 inches top padding and side padding */
+            width: 65%; /* Widened by ~2 inches total */
+            max-width: 900px; /* Increased max width */
+            padding: 200px 40px 100px 40px; /* Reduced top padding to move title up */
             margin: 0 auto;
         }
         
@@ -62,7 +62,7 @@
             font-size: 3rem;
             color: #3a2317;
             text-align: center;
-            margin: 0 0 50px 0;
+            margin: 0 0 120px 0; /* Increased bottom margin to push body text down */
             text-shadow: 2px 2px 4px rgba(139, 69, 19, 0.3);
             letter-spacing: 2px;
         }
@@ -106,22 +106,26 @@
         /* Responsive adjustments */
         @media (max-width: 1600px) {
             .scroll-content {
-                width: 55%;
-                padding: 250px 50px 100px 50px;
+                width: 70%;
+                padding: 200px 35px 100px 35px;
             }
         }
         
         @media (max-width: 1200px) {
             .scroll-content {
-                width: 65%;
-                padding: 220px 40px 100px 40px;
+                width: 75%;
+                padding: 180px 30px 100px 30px;
             }
         }
         
         @media (max-width: 768px) {
             .scroll-content {
-                width: 70%;
-                padding: 180px 30px 80px 30px;
+                width: 80%;
+                padding: 150px 25px 80px 25px;
+            }
+            
+            .writing-title {
+                margin: 0 0 80px 0;
             }
             
             .writing-title {
@@ -140,8 +144,12 @@
         
         @media (max-width: 480px) {
             .scroll-content {
-                width: 75%;
-                padding: 150px 20px 60px 20px;
+                width: 85%;
+                padding: 120px 15px 60px 15px;
+            }
+            
+            .writing-title {
+                margin: 0 0 60px 0;
             }
             
             .writing-title {
