@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const booksGrid = document.querySelector('.books-grid');
     const prevButton = document.querySelector('.carousel-nav.prev');
     const nextButton = document.querySelector('.carousel-nav.next');
-    const bookItems = document.querySelectorAll('.book-item');
+    // bookItems already declared above
     
     let currentIndex = 0;
     const itemsPerView = 5;
