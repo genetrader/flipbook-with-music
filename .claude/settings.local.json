@@ -18,7 +18,8 @@
       "Bash(cmd.exe /c deploy.bat)",
       "Bash(tail:*)",
       "Bash(cmd:*)",
-      "Bash(start \"\" \"C:\\CODING\\LARGER THEN LIFE MOCKUP\\MIKES FEEDBACK.mp4\")"
+      "Bash(start \"\" \"C:\\CODING\\LARGER THEN LIFE MOCKUP\\MIKES FEEDBACK.mp4\")",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
