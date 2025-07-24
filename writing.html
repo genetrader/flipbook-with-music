@@ -14,59 +14,46 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     
     <style>
-        /* Parchment Scroll Design with Header/Middle/Footer */
+        /* Parchment Scroll Design with Full Image */
         .writing-content {
             background: #2a2a2a;
             min-height: 100vh;
             position: relative;
             padding: 40px 0;
             margin: 0 -30px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
         
         .scroll-container {
             position: relative;
             width: 100%; /* Full width of middle section */
             max-width: none;
-            margin: 0 auto;
+            margin: 0;
         }
         
-        /* Parchment sections */
-        .parchment-header,
-        .parchment-middle,
-        .parchment-footer {
+        /* Full parchment image background */
+        .parchment-background {
+            position: relative;
             width: 100%;
+            background-image: url('writing/394245f033796246f88198467918f6e7.png');
             background-size: 100% 100%;
             background-repeat: no-repeat;
-            position: relative;
-        }
-        
-        .parchment-header {
-            background-image: url('writing/header.png');
-            height: 985px; /* Native height of header.png */
-        }
-        
-        .parchment-middle {
-            background-image: url('writing/middle.png');
-            background-repeat: repeat-y;
-            background-size: 100% auto;
-            min-height: 2346px; /* Height of one middle section */
-        }
-        
-        .parchment-footer {
-            background-image: url('writing/footer.png');
-            height: 915px; /* Native height of footer.png */
+            background-position: center top;
+            min-height: 1600px; /* Adjust based on content */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
         
         /* Content wrapper */
         .scroll-content {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 65%;
-            max-width: 900px;
-            padding: 250px 80px 100px 140px;
-            z-index: 10;
+            position: relative;
+            width: 65%; /* Widened by ~2 inches total */
+            max-width: 900px; /* Increased max width */
+            padding: 200px 40px 100px 100px; /* Move both sides right by 1/2" */
+            margin: 0 auto;
         }
         
         /* Typography */
@@ -116,32 +103,25 @@
                 inset 0 0 20px rgba(0,0,0,0.2);
         }
         
-        /* Dynamic height adjustment for content */
-        .parchment-middle {
-            display: flex;
-            align-items: flex-start;
-            position: relative;
-        }
-        
         /* Responsive adjustments */
         @media (max-width: 1600px) {
             .scroll-content {
                 width: 70%;
-                padding: 250px 70px 100px 130px;
+                padding: 200px 35px 100px 95px; /* Move both sides right by 1/2" */
             }
         }
         
         @media (max-width: 1200px) {
             .scroll-content {
                 width: 75%;
-                padding: 230px 60px 100px 115px;
+                padding: 180px 30px 100px 85px; /* Move both sides right by 1/2" */
             }
         }
         
         @media (max-width: 768px) {
             .scroll-content {
                 width: 80%;
-                padding: 200px 40px 80px 80px;
+                padding: 150px 25px 80px 70px; /* Move both sides right by 1/2" */
             }
             
             .writing-title {
@@ -165,7 +145,7 @@
         @media (max-width: 480px) {
             .scroll-content {
                 width: 85%;
-                padding: 150px 20px 60px 50px;
+                padding: 120px 15px 60px 50px; /* Move both sides right by 1/2" */
             }
             
             .writing-title {
@@ -181,9 +161,8 @@
                 text-align: left;
             }
             
-            .parchment-header,
-            .parchment-footer {
-                background-size: 100% auto;
+            .parchment-background {
+                min-height: 1400px;
             }
         }
     </style>
@@ -242,8 +221,7 @@
         <main class="content">
             <div class="writing-content">
                 <div class="scroll-container">
-                    <div class="parchment-header"></div>
-                    <div class="parchment-middle">
+                    <div class="parchment-background">
                         <div class="scroll-content">
                             <h2 class="writing-title">Head in the Clouds</h2>
                             
@@ -276,7 +254,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="parchment-footer"></div>
                 </div>
             </div>
         </main>
@@ -298,29 +275,5 @@
     </div>
     
     <script src="script.js?v=7"></script>
-    <script>
-        // Adjust middle section height based on content
-        $(document).ready(function() {
-            function adjustParchmentHeight() {
-                const content = $('.scroll-content');
-                const contentHeight = content.outerHeight();
-                const headerHeight = 985;
-                const footerHeight = 915;
-                const middleUnitHeight = 2346;
-                
-                // Calculate how many middle units we need
-                const neededMiddleHeight = Math.max(contentHeight - headerHeight, middleUnitHeight);
-                const middleUnits = Math.ceil(neededMiddleHeight / middleUnitHeight);
-                const totalMiddleHeight = middleUnits * middleUnitHeight;
-                
-                // Set the middle section height
-                $('.parchment-middle').css('min-height', totalMiddleHeight + 'px');
-            }
-            
-            // Run on load and resize
-            adjustParchmentHeight();
-            $(window).resize(adjustParchmentHeight);
-        });
-    </script>
 </body>
 </html>

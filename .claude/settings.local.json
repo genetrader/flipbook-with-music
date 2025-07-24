@@ -28,7 +28,8 @@
       "Bash(git add writing-mockup*.html)",
       "Bash(git commit -m \"Add writing page mockups with three scroll edge variations\n\n- Original mockup 2 plus three variations with improved edges\n- V1: Torn parchment edges with realistic tears\n- V2: Wave-like flowing scroll edges\n- V3: Burnt/aged edges with darkened areas\n- All variations have full-height decorative margins\n- Colors matched perfectly to page background\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude <noreply@anthropic.com>\")",
       "Bash(git rm:*)",
-      "Bash(./deploy.bat)"
+      "Bash(./deploy.bat)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }
