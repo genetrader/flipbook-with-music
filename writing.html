@@ -96,13 +96,14 @@
         
         /* Typography */
         .writing-title {
-            font-family: 'UnifrakturMaguntia', cursive;
-            font-size: 3rem;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
             color: #2a2a2a;
             text-align: center;
             margin: 0 0 60px 0;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
         
         .writing-text {
@@ -119,26 +120,6 @@
             text-indent: 50px;
         }
         
-        /* Illuminated first letter */
-        .writing-text p:first-of-type::first-letter {
-            font-family: 'UnifrakturMaguntia', cursive;
-            font-size: 5rem;
-            float: left;
-            line-height: 0.8;
-            margin: 5px 15px -5px 0;
-            padding: 15px;
-            background: 
-                linear-gradient(135deg, #d4af37 0%, #f4e4bc 50%, #d4af37 100%);
-            color: #2a2a2a;
-            text-shadow: 
-                2px 2px 4px rgba(255,255,255,0.5),
-                -1px -1px 2px rgba(0,0,0,0.3);
-            border: 2px solid #b8941f;
-            border-radius: 5px;
-            box-shadow: 
-                3px 3px 10px rgba(0,0,0,0.2),
-                inset 0 0 15px rgba(255,255,255,0.3);
-        }
         
         /* Responsive adjustments */
         @media (max-width: 1200px) {
@@ -161,11 +142,6 @@
             
             .writing-text {
                 font-size: 1.1rem;
-            }
-            
-            .writing-text p:first-of-type::first-letter {
-                font-size: 4rem;
-                padding: 10px;
             }
         }
         
