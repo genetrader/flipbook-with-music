@@ -517,7 +517,7 @@ foreach ($pages as $index => $page) {
         const viewerMuteBtn = document.getElementById('viewerMuteBtn');
         const viewerAudioTrack = document.getElementById('viewerAudioTrack');
 
-        // Create pages with progress tracking
+        // Create pages with lazy loading - load first page ASAP, others in background
         function createPages() {
             let loadedCount = 0;
             const totalPages = pages.length;
@@ -525,6 +525,8 @@ foreach ($pages as $index => $page) {
             const loadingProgressBar = document.getElementById('loadingProgressBar');
             const loadingSpinner = document.getElementById('loadingSpinner');
 
+            // First, create all page divs quickly
+            const pageElements = [];
             pages.forEach((page, index) => {
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page';
@@ -535,15 +537,21 @@ foreach ($pages as $index => $page) {
                     pageDiv.style.display = 'none';
                 }
 
+                pageDiv.innerHTML = `<div class="page-content"></div>`;
+                container.appendChild(pageDiv);
+                pageElements.push(pageDiv);
+            });
+
+            // Load first page immediately with high priority
+            function loadPage(index) {
+                const page = pages[index];
+                const pageDiv = pageElements[index];
                 const img = new Image();
-                img.className = 'loading';
 
-                // Update progress when each image loads
                 img.onload = function() {
-                    img.classList.remove('loading');
                     loadedCount++;
-
                     const progress = Math.round((loadedCount / totalPages) * 100);
+
                     if (loadingProgressBar) {
                         loadingProgressBar.style.width = progress + '%';
                     }
@@ -551,7 +559,7 @@ foreach ($pages as $index => $page) {
                         loadingText.textContent = `Loading ${loadedCount} of ${totalPages} pages...`;
                     }
 
-                    // Hide spinner when first image loads
+                    // Hide spinner when first page loads
                     if (index === 0) {
                         if (loadingSpinner) {
                             loadingSpinner.classList.add('hidden');
@@ -560,16 +568,30 @@ foreach ($pages as $index => $page) {
                     }
                 };
 
-                // Start loading
                 img.src = page.image_data;
-
-                pageDiv.innerHTML = `
-                    <div class="page-content">
-                    </div>
-                `;
                 pageDiv.querySelector('.page-content').appendChild(img);
-                container.appendChild(pageDiv);
-            });
+            }
+
+            // Load first page immediately
+            loadPage(0);
+
+            // Fallback: if first page doesn't load in 5 seconds, show it anyway
+            setTimeout(() => {
+                if (loadedCount === 0) {
+                    console.log('First page taking too long, showing spinner...');
+                    if (loadingSpinner) {
+                        loadingSpinner.classList.add('hidden');
+                    }
+                    container.classList.add('loaded');
+                }
+            }, 5000);
+
+            // Load remaining pages after a short delay
+            setTimeout(() => {
+                for (let i = 1; i < pages.length; i++) {
+                    loadPage(i);
+                }
+            }, 100);
         }
 
         createPages();
