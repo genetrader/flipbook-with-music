@@ -79,6 +79,23 @@ class FlipbookDB {
     }
 
     /**
+     * Update an existing flipbook
+     */
+    public function updateFlipbook($id, $title, $description) {
+        try {
+            $stmt = $this->conn->prepare("
+                UPDATE flipbooks
+                SET title = ?, description = ?
+                WHERE id = ?
+            ");
+            return $stmt->execute([$title, $description, $id]);
+        } catch (PDOException $e) {
+            error_log("Error updating flipbook: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Update flipbook page count
      */
     public function updatePageCount($flipbookId, $pageCount) {
@@ -91,6 +108,23 @@ class FlipbookDB {
             return $stmt->execute([$pageCount, $flipbookId]);
         } catch (PDOException $e) {
             error_log("Error updating page count: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Clear all audio assignments for a flipbook
+     */
+    public function clearAudioAssignments($flipbookId) {
+        try {
+            $stmt = $this->conn->prepare("
+                DELETE paa FROM page_audio_assignments paa
+                INNER JOIN pages p ON paa.page_id = p.id
+                WHERE p.flipbook_id = ?
+            ");
+            return $stmt->execute([$flipbookId]);
+        } catch (PDOException $e) {
+            error_log("Error clearing audio assignments: " . $e->getMessage());
             return false;
         }
     }

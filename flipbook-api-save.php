@@ -41,15 +41,35 @@ try {
     // Initialize database
     $db = new FlipbookDB();
 
-    // Create flipbook
-    $flipbookId = $db->createFlipbook(
-        $data['title'],
-        $data['description'] ?? '',
-        $data['orientation'] ?? 'portrait'
-    );
+    // Check if this is an update (flipbookId provided) or new creation
+    $isUpdate = !empty($data['flipbookId']);
+    $flipbookId = $isUpdate ? (int)$data['flipbookId'] : null;
 
-    if (!$flipbookId) {
-        throw new Exception('Failed to create flipbook');
+    if ($isUpdate) {
+        // Update existing flipbook
+        $success = $db->updateFlipbook(
+            $flipbookId,
+            $data['title'],
+            $data['description'] ?? ''
+        );
+
+        if (!$success) {
+            throw new Exception('Failed to update flipbook');
+        }
+
+        // Clear existing audio assignments
+        $db->clearAudioAssignments($flipbookId);
+    } else {
+        // Create new flipbook
+        $flipbookId = $db->createFlipbook(
+            $data['title'],
+            $data['description'] ?? '',
+            $data['orientation'] ?? 'portrait'
+        );
+
+        if (!$flipbookId) {
+            throw new Exception('Failed to create flipbook');
+        }
     }
 
     // Save pages

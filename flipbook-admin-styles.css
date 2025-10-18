@@ -380,6 +380,14 @@ body {
     display: flex;
     gap: 15px;
     align-items: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.audio-assignment-item.selected {
+    background: #d0e7ff;
+    border-color: #667eea;
+    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
 }
 
 .audio-assignment-item .page-number {
