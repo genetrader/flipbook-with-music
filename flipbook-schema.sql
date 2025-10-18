@@ -1,9 +1,8 @@
 -- Flipbook Admin Database Schema
 -- Run this SQL to create the required database tables
 
-CREATE DATABASE IF NOT EXISTS flipbook_database CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-USE flipbook_database;
+-- Database already exists, just use it
+USE dbqdamfvejqcqx;
 
 -- Main flipbooks table
 CREATE TABLE IF NOT EXISTS flipbooks (

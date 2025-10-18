@@ -8,9 +8,9 @@
 
 // Database connection settings
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'flipbook_database');
-define('DB_USER', 'your_username');
-define('DB_PASS', 'your_password');
+define('DB_NAME', 'dbqdamfvejqcqx');
+define('DB_USER', 'u7l02cbfbhokg');
+define('DB_PASS', '3&)j5G*~3k#@');
 define('DB_CHARSET', 'utf8mb4');
 
 // Application settings
