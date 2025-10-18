@@ -92,14 +92,21 @@ try {
     $audioIdMap = []; // Maps array index to database ID
     if (!empty($data['audioLibrary']) && is_array($data['audioLibrary'])) {
         foreach ($data['audioLibrary'] as $index => $audio) {
-            $audioId = $db->addAudioFile(
-                $flipbookId,
-                $audio['name'],
-                $audio['data']
-            );
+            // Check if this audio file already exists (has an ID from database)
+            if (!empty($audio['id'])) {
+                // Reuse existing audio file
+                $audioIdMap[$index] = $audio['id'];
+            } else {
+                // Create new audio file
+                $audioId = $db->addAudioFile(
+                    $flipbookId,
+                    $audio['name'],
+                    $audio['data']
+                );
 
-            if ($audioId) {
-                $audioIdMap[$index] = $audioId;
+                if ($audioId) {
+                    $audioIdMap[$index] = $audioId;
+                }
             }
         }
     }
