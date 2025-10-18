@@ -160,6 +160,38 @@ foreach ($pages as $index => $page) {
             position: relative;
         }
 
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1000;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-spinner.hidden {
+            display: none;
+        }
+
         .page-nav-arrow {
             position: absolute;
             top: 50%;
@@ -232,7 +264,12 @@ foreach ($pages as $index => $page) {
             width: 700px;
             height: 900px;
             transform-style: preserve-3d;
-            transition: all 0.3s ease;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .page-flip-container.loaded {
+            opacity: 1;
         }
 
         .page-flip-container.landscape {
@@ -416,6 +453,11 @@ foreach ($pages as $index => $page) {
             </div>
 
             <div class="flipbook-container">
+                <div class="loading-spinner" id="loadingSpinner">
+                    <div class="spinner"></div>
+                    <p style="color: #667eea; font-weight: 600;">Loading flipbook...</p>
+                </div>
+
                 <button class="page-nav-arrow left" id="leftArrow" title="Previous Page">◀</button>
                 <button class="page-nav-arrow right" id="rightArrow" title="Next Page">▶</button>
 
@@ -450,6 +492,8 @@ foreach ($pages as $index => $page) {
 
         // Create pages
         function createPages() {
+            let firstImageLoaded = false;
+
             pages.forEach((page, index) => {
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'page';
@@ -459,11 +503,30 @@ foreach ($pages as $index => $page) {
                     pageDiv.classList.add('hidden');
                     pageDiv.style.display = 'none';
                 }
+
+                const img = new Image();
+
+                // Hide spinner and show content when first image loads
+                if (index === 0) {
+                    img.onload = function() {
+                        if (!firstImageLoaded) {
+                            firstImageLoaded = true;
+                            const loadingSpinner = document.getElementById('loadingSpinner');
+                            if (loadingSpinner) {
+                                loadingSpinner.classList.add('hidden');
+                            }
+                            container.classList.add('loaded');
+                        }
+                    };
+                }
+
+                img.src = page.image_data;
+
                 pageDiv.innerHTML = `
                     <div class="page-content">
-                        <img src="${page.image_data}" alt="Page ${page.page_number}">
                     </div>
                 `;
+                pageDiv.querySelector('.page-content').appendChild(img);
                 container.appendChild(pageDiv);
             });
         }
@@ -553,36 +616,77 @@ foreach ($pages as $index => $page) {
             clickAreaRight.style.display = currentPageIndex === pages.length - 1 ? 'none' : 'block';
         }
 
-        // Audio handling
+        // Audio handling with fade transitions
         function handlePageAudio(pageIndex) {
             if (pageAudioAssignments[pageIndex]) {
                 const audio = pageAudioAssignments[pageIndex];
 
                 if (!currentAudio || currentAudio.dataset.audioId != audio.id) {
+                    // Fade out current audio before switching
                     if (currentAudio) {
-                        currentAudio.pause();
-                        currentAudio = null;
-                    }
+                        const audioToFade = currentAudio;
+                        currentAudio = null; // Clear reference immediately
 
-                    currentAudio = new Audio(audio.audio_data);
-                    currentAudio.dataset.audioId = audio.id;
-                    currentAudio.loop = true;
-                    currentAudio.volume = 0.5;
-
-                    if (!isMuted) {
-                        currentAudio.play().catch(e => {
-                            console.log('Audio play failed:', e);
+                        fadeOutAudio(audioToFade, 1000, () => {
+                            audioToFade.pause();
                         });
+
+                        // Start new audio after fade completes
+                        setTimeout(() => {
+                            startNewAudio(audio);
+                        }, 1000);
+                    } else {
+                        startNewAudio(audio);
                     }
 
                     viewerAudioTrack.textContent = audio.name;
                 }
             } else {
                 if (currentAudio) {
-                    currentAudio.pause();
+                    const audioToFade = currentAudio;
                     currentAudio = null;
+
+                    fadeOutAudio(audioToFade, 1000, () => {
+                        audioToFade.pause();
+                    });
                 }
                 viewerAudioTrack.textContent = 'No music';
+            }
+        }
+
+        // Fade out audio over specified duration
+        function fadeOutAudio(audioElement, duration, callback) {
+            if (!audioElement) return;
+
+            const startVolume = audioElement.volume;
+            const fadeInterval = 50; // Update every 50ms
+            const steps = duration / fadeInterval;
+            const volumeStep = startVolume / steps;
+            let currentStep = 0;
+
+            const fadeTimer = setInterval(() => {
+                currentStep++;
+                const newVolume = Math.max(0, startVolume - (volumeStep * currentStep));
+                audioElement.volume = newVolume;
+
+                if (currentStep >= steps || newVolume <= 0) {
+                    clearInterval(fadeTimer);
+                    if (callback) callback();
+                }
+            }, fadeInterval);
+        }
+
+        // Start new audio track
+        function startNewAudio(audio) {
+            currentAudio = new Audio(audio.audio_data);
+            currentAudio.dataset.audioId = audio.id;
+            currentAudio.loop = true;
+            currentAudio.volume = 0.5;
+
+            if (!isMuted) {
+                currentAudio.play().catch(e => {
+                    console.log('Audio play failed:', e);
+                });
             }
         }
 
@@ -626,9 +730,11 @@ foreach ($pages as $index => $page) {
             }
         });
 
-        container.addEventListener('click', (e) => {
+        // Toggle zoom on click/tap
+        let touchMoved = false;
+
+        function toggleZoom(e) {
             if (!isZoomMode) return;
-            e.stopPropagation();
 
             if (!isZoomed) {
                 isZoomed = true;
@@ -643,8 +749,26 @@ foreach ($pages as $index => $page) {
                     currentPageImg.style.transformOrigin = 'center';
                 }
             }
+
+            // Don't stop propagation - allow audio init to work
+        }
+
+        container.addEventListener('click', toggleZoom);
+
+        // Track touch movement to distinguish tap from drag
+        container.addEventListener('touchstart', (e) => {
+            touchMoved = false;
+        }, { passive: true });
+
+        container.addEventListener('touchend', (e) => {
+            // Only toggle zoom if it's a tap (not a drag/pan)
+            if (isZoomMode && e.changedTouches.length === 1 && !touchMoved) {
+                e.preventDefault();
+                toggleZoom(e);
+            }
         });
 
+        // Mouse panning for desktop
         container.addEventListener('mousemove', (e) => {
             if (!isZoomMode || !isZoomed) return;
 
@@ -657,6 +781,35 @@ foreach ($pages as $index => $page) {
                 currentPageImg.style.transformOrigin = `${x}% ${y}%`;
             }
         });
+
+        // Touch panning for mobile
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        container.addEventListener('touchmove', (e) => {
+            // Mark that touch moved (for distinguishing tap from drag)
+            touchMoved = true;
+
+            if (!isZoomMode || !isZoomed) return;
+
+            e.preventDefault(); // Prevent default scrolling
+
+            const touch = e.touches[0];
+            const rect = container.getBoundingClientRect();
+
+            // Calculate position relative to container
+            const x = ((touch.clientX - rect.left) / rect.width) * 100;
+            const y = ((touch.clientY - rect.top) / rect.height) * 100;
+
+            // Clamp values between 0 and 100
+            const clampedX = Math.max(0, Math.min(100, x));
+            const clampedY = Math.max(0, Math.min(100, y));
+
+            const currentPageImg = container.querySelector('.page.current img');
+            if (currentPageImg) {
+                currentPageImg.style.transformOrigin = `${clampedX}% ${clampedY}%`;
+            }
+        }, { passive: false });
 
         // Navigation
         leftArrow.addEventListener('click', () => goToPage(currentPageIndex - 1, 'backward'));
@@ -692,11 +845,29 @@ foreach ($pages as $index => $page) {
             }
         });
 
-        // Enable audio on first click
-        document.addEventListener('click', function initAudio() {
-            handlePageAudio(currentPageIndex);
-            document.removeEventListener('click', initAudio);
-        }, { once: true });
+        // Initialize audio - try immediate playback aggressively
+        let audioInitialized = false;
+
+        function initializeAudio() {
+            if (!audioInitialized) {
+                audioInitialized = true;
+                handlePageAudio(currentPageIndex);
+            }
+        }
+
+        // Try multiple times to start audio immediately
+        setTimeout(() => initializeAudio(), 50);
+        setTimeout(() => initializeAudio(), 200);
+        setTimeout(() => initializeAudio(), 500);
+
+        // Also try on any user interaction
+        const startAudioOnInteraction = () => {
+            initializeAudio();
+        };
+
+        document.addEventListener('click', startAudioOnInteraction, { once: true });
+        document.addEventListener('keydown', startAudioOnInteraction, { once: true });
+        document.addEventListener('touchstart', startAudioOnInteraction, { once: true });
 
         // Initialize
         updateDisplay();

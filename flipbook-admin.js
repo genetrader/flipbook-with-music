@@ -142,7 +142,8 @@ async function convertPDF() {
                 viewport: viewport
             }).promise;
 
-            const imageData = canvas.toDataURL('image/jpeg', 0.9);
+            // Reduced quality from 0.9 to 0.7 for faster loading
+            const imageData = canvas.toDataURL('image/jpeg', 0.7);
             pages.push({
                 pageNumber: pageNum,
                 data: imageData
@@ -437,7 +438,17 @@ async function saveFlipbook() {
             body: JSON.stringify(data)
         });
 
-        const result = await response.json();
+        const responseText = await response.text();
+
+        // Try to parse as JSON
+        let result;
+        try {
+            result = JSON.parse(responseText);
+        } catch (e) {
+            console.error('Server returned non-JSON response:', responseText);
+            alert('Server error: The server returned an invalid response. Check console for details.');
+            return;
+        }
 
         if (result.success) {
             currentFlipbookId = result.flipbookId;
