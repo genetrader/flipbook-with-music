@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const flipbooks = {
         'cork-2': 'https://heyzine.com/flip-book/1793b849ee.html',
         'cork-3': 'https://heyzine.com/flip-book/fe18813757.html',
+        'cork-4': 'https://heyzine.com/flip-book/PLACEHOLDER4.html',
+        'cork-5': 'https://heyzine.com/flip-book/77ee3f8242.html',
         'cork-6': 'https://heyzine.com/flip-book/91e79197a9.html',
         'cork-1': localStorage.getItem('flipbookUrl') || 'https://heyzine.com/flip-book/b1f71ef0a6.html'
     };
@@ -13,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const lightboxClose = document.getElementById('lightbox-close');
     const corkCoverClick = document.getElementById('cork-cover-click');
     
-    // Create selection modal
+    // Create selection modal for Cork 2+3
     const selectionModal = document.createElement('div');
     selectionModal.className = 'flipbook-selection-modal';
     selectionModal.innerHTML = `
@@ -27,14 +29,35 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     `;
     document.body.appendChild(selectionModal);
+
+    // Create selection modal for Cork 4+5
+    const selectionModal45 = document.createElement('div');
+    selectionModal45.className = 'flipbook-selection-modal';
+    selectionModal45.innerHTML = `
+        <div class="selection-modal-content">
+            <h3>Select a Comic</h3>
+            <div class="flipbook-options">
+                <button class="flipbook-option" data-book="cork-4">Cork 4</button>
+                <button class="flipbook-option" data-book="cork-5">Cork 5</button>
+            </div>
+            <button class="selection-close">&times;</button>
+        </div>
+    `;
+    document.body.appendChild(selectionModal45);
     
-    // Handle selection modal
+    // Handle selection modal for Cork 2+3
     const selectionClose = selectionModal.querySelector('.selection-close');
     selectionClose.addEventListener('click', function() {
         selectionModal.classList.remove('active');
     });
+
+    // Handle selection modal for Cork 4+5
+    const selectionClose45 = selectionModal45.querySelector('.selection-close');
+    selectionClose45.addEventListener('click', function() {
+        selectionModal45.classList.remove('active');
+    });
     
-    // Handle flipbook selection
+    // Handle flipbook selection for Cork 2+3
     const flipbookOptions = selectionModal.querySelectorAll('.flipbook-option');
     flipbookOptions.forEach(option => {
         option.addEventListener('click', function() {
@@ -42,6 +65,25 @@ document.addEventListener('DOMContentLoaded', function() {
             const flipbookUrl = flipbooks[bookId];
             if (flipbookUrl && lightbox && lightboxFrame) {
                 selectionModal.classList.remove('active');
+                lightbox.classList.add('active');
+                let zoomedUrl = flipbookUrl;
+                if (!zoomedUrl.includes('#')) {
+                    zoomedUrl += '#zoom=page-width';
+                }
+                lightboxFrame.src = zoomedUrl;
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    });
+
+    // Handle flipbook selection for Cork 4+5
+    const flipbookOptions45 = selectionModal45.querySelectorAll('.flipbook-option');
+    flipbookOptions45.forEach(option => {
+        option.addEventListener('click', function() {
+            const bookId = this.getAttribute('data-book');
+            const flipbookUrl = flipbooks[bookId];
+            if (flipbookUrl && lightbox && lightboxFrame) {
+                selectionModal45.classList.remove('active');
                 lightbox.classList.add('active');
                 let zoomedUrl = flipbookUrl;
                 if (!zoomedUrl.includes('#')) {
@@ -204,6 +246,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // For Cork 2+3, open the selection modal
             else if (bookId === 'cork-2-3') {
                 selectionModal.classList.add('active');
+            }
+            // For Cork 4+5, open the selection modal
+            else if (bookId === 'cork-4-5') {
+                selectionModal45.classList.add('active');
             }
             // For Prodigy (Cork 6), open the flipbook directly
             else if (bookId === 'prodigy' && lightbox && lightboxFrame) {
