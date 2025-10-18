@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Page Flipbook with Audio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .flipbook-wrapper {
+            perspective: 1200px;
+            perspective-origin: 50% 50%;
+            margin-bottom: 20px;
+        }
+
+        .flipbook-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 1000px;
+        }
+
+        .page-flip-container {
+            position: relative;
+            width: 700px;
+            height: 900px;
+            transform-style: preserve-3d;
+        }
+
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            transform-style: preserve-3d;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            transform-origin: center center;
+        }
+
+        .page-content {
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .page-number {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .page-content h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .music-note {
+            font-size: 64px;
+            margin: 20px 0;
+        }
+
+        .page-description {
+            font-size: 18px;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        .audio-label {
+            margin-top: 20px;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Animation classes */
+        .page.current {
+            z-index: 10;
+            transform: rotateY(0deg);
+        }
+
+        .page.next-page {
+            z-index: 9;
+            transform: rotateY(180deg);
+        }
+
+        .page.flipping {
+            z-index: 20;
+            animation: cardFlip 1s ease-in-out forwards;
+        }
+
+        .page.flipping-back {
+            z-index: 20;
+            animation: cardFlipBack 1s ease-in-out forwards;
+        }
+
+        .page.hidden {
+            display: none;
+        }
+
+        @keyframes cardFlip {
+            0% {
+                transform: rotateY(0deg) scale(1);
+            }
+            50% {
+                transform: rotateY(90deg) scale(0.95);
+            }
+            100% {
+                transform: rotateY(180deg) scale(1);
+            }
+        }
+
+        @keyframes cardFlipBack {
+            0% {
+                transform: rotateY(180deg) scale(1);
+            }
+            50% {
+                transform: rotateY(90deg) scale(0.95);
+            }
+            100% {
+                transform: rotateY(0deg) scale(1);
+            }
+        }
+
+        .controls {
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .controls h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.5;
+            box-shadow: none;
+        }
+
+        .audio-controls {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .audio-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .audio-info span {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            width: 150px;
+        }
+
+        .page-info {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-flip-container {
+                width: 350px;
+                height: 500px;
+            }
+
+            .flipbook-container {
+                padding: 20px;
+                min-height: 550px;
+            }
+
+            .page-content h2 {
+                font-size: 32px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Single Page Flipbook with Audio</h1>
+
+        <div class="controls">
+            <h3>Navigation Controls</h3>
+            <div class="button-group">
+                <button id="prevBtn">⬅️ Previous Page</button>
+                <button id="nextBtn">Next Page ➡️</button>
+                <button id="firstBtn">⏮️ First Page</button>
+                <button id="lastBtn">Last Page ⏭️</button>
+            </div>
+
+            <div class="page-info">
+                <span id="pageDisplay">Page: 1 / 13</span>
+            </div>
+
+            <div class="audio-controls">
+                <h3>🎵 Audio Controls</h3>
+                <div class="audio-info">
+                    <span>Now Playing:</span>
+                    <span id="currentTrack">No music</span>
+                </div>
+                <div class="volume-control">
+                    <label for="volumeSlider">🔊 Volume:</label>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="50">
+                    <span id="volumeDisplay">50%</span>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button id="muteBtn">🔇 Mute</button>
+                    <button id="stopMusicBtn">⏹️ Stop Music</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="flipbook-wrapper">
+            <div class="flipbook-container">
+                <div class="page-flip-container" id="pageFlipContainer">
+                    <!-- Pages will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Page-specific audio configuration
+        const pageAudioConfig = {
+            0: { track: 'Intro Theme', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+            1: { track: 'Intro Theme', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+            2: { track: 'Action Scene', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+            3: { track: 'Action Scene', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+            4: { track: 'Dramatic Moment', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+            5: { track: 'Dramatic Moment', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+            6: { track: 'Ending Credits', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+            7: { track: 'Ending Credits', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+            8: { track: 'Intro Theme', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+            9: { track: 'Action Scene', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+            10: { track: 'Dramatic Moment', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+            11: { track: 'Ending Credits', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+            12: { track: 'Intro Theme', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' }
+        };
+
+        // Audio player
+        let currentAudio = null;
+        let isMuted = false;
+
+        // Page data - Extended with more pages
+        const pages = [
+            { title: 'Cover Page', desc: 'Welcome to the Audio Comic!', music: '🎵', color: '#FFE5E5' },
+            { title: 'Page 1', desc: 'Our story begins...', music: '🎵', color: '#E5F5FF' },
+            { title: 'Page 2', desc: 'Action intensifies!', music: '🎶', color: '#FFE5F5' },
+            { title: 'Page 3', desc: 'The battle continues...', music: '🎶', color: '#F5FFE5' },
+            { title: 'Page 4', desc: 'A dramatic revelation!', music: '🎸', color: '#FFE5CC' },
+            { title: 'Page 5', desc: 'The hero rises...', music: '🎸', color: '#E5FFCC' },
+            { title: 'Page 6', desc: 'The plot thickens...', music: '🎺', color: '#CCE5FF' },
+            { title: 'Page 7', desc: 'An unexpected twist!', music: '🎺', color: '#FFCCE5' },
+            { title: 'Page 8', desc: 'The climax approaches!', music: '🎵', color: '#E5CCFF' },
+            { title: 'Page 9', desc: 'The final battle!', music: '🎶', color: '#FFE5E5' },
+            { title: 'Page 10', desc: 'Victory at last!', music: '🎸', color: '#E5FFE5' },
+            { title: 'Page 11', desc: 'Peace is restored...', music: '🎺', color: '#FFE5E5' },
+            { title: 'Page 12', desc: 'The End', music: '🎵', color: '#E5E5FF' }
+        ];
+
+        // Current page index
+        let currentPageIndex = 0;
+        let isFlipping = false;
+
+        // Create pages
+        const container = document.getElementById('pageFlipContainer');
+        pages.forEach((page, index) => {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'page';
+            if (index === 0) {
+                pageDiv.classList.add('current');
+            } else {
+                pageDiv.classList.add('hidden');
+                pageDiv.style.display = 'none';
+            }
+            pageDiv.innerHTML = `
+                <div class="page-content" style="background: ${page.color};">
+                    <div class="page-number">Page ${index + 1}</div>
+                    <h2>${page.title}</h2>
+                    <div class="music-note">${page.music}</div>
+                    <p class="page-description">${page.desc}</p>
+                    ${pageAudioConfig[index] ? `<p class="audio-label">♪ ${pageAudioConfig[index].track}</p>` : ''}
+                </div>
+            `;
+            container.appendChild(pageDiv);
+        });
+
+        // UI Elements
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const firstBtn = document.getElementById('firstBtn');
+        const lastBtn = document.getElementById('lastBtn');
+        const pageDisplay = document.getElementById('pageDisplay');
+        const currentTrackDisplay = document.getElementById('currentTrack');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeDisplay = document.getElementById('volumeDisplay');
+        const muteBtn = document.getElementById('muteBtn');
+        const stopMusicBtn = document.getElementById('stopMusicBtn');
+
+        // Navigation functions
+        function goToPage(newIndex, direction = 'forward') {
+            if (isFlipping || newIndex === currentPageIndex || newIndex < 0 || newIndex >= pages.length) {
+                return;
+            }
+
+            isFlipping = true;
+            const allPages = container.querySelectorAll('.page');
+            const currentPage = allPages[currentPageIndex];
+            const nextPage = allPages[newIndex];
+
+            console.log(`Flipping from page ${currentPageIndex} to ${newIndex}, direction: ${direction}`);
+
+            if (direction === 'forward') {
+                // Position next page on the back of current page (rotated 180deg)
+                nextPage.classList.remove('hidden');
+                nextPage.style.display = 'block';
+                nextPage.classList.add('next-page');
+
+                // Small delay to ensure positioning, then flip
+                setTimeout(() => {
+                    currentPage.classList.remove('current');
+                    currentPage.classList.add('flipping');
+
+                    // After flip completes
+                    setTimeout(() => {
+                        currentPage.classList.remove('flipping');
+                        currentPage.classList.add('hidden');
+                        currentPage.style.display = 'none';
+
+                        nextPage.classList.remove('next-page');
+                        nextPage.classList.add('current');
+                        nextPage.style.transform = 'rotateY(0deg)';
+
+                        isFlipping = false;
+                        updateDisplay();
+                        console.log('Flip complete, isFlipping:', isFlipping);
+                    }, 1000);
+                }, 50);
+            } else {
+                // Flip backwards
+                nextPage.classList.remove('hidden');
+                nextPage.style.display = 'block';
+                nextPage.classList.add('next-page');
+
+                setTimeout(() => {
+                    currentPage.classList.remove('current');
+                    nextPage.classList.remove('next-page');
+                    nextPage.classList.add('flipping-back');
+
+                    setTimeout(() => {
+                        currentPage.classList.add('hidden');
+                        currentPage.style.display = 'none';
+
+                        nextPage.classList.remove('flipping-back');
+                        nextPage.classList.add('current');
+                        nextPage.style.transform = 'rotateY(0deg)';
+
+                        isFlipping = false;
+                        updateDisplay();
+                        console.log('Flip complete, isFlipping:', isFlipping);
+                    }, 1000);
+                }, 50);
+            }
+
+            currentPageIndex = newIndex;
+            handlePageAudio(currentPageIndex);
+        }
+
+        prevBtn.addEventListener('click', () => goToPage(currentPageIndex - 1, 'backward'));
+        nextBtn.addEventListener('click', () => goToPage(currentPageIndex + 1, 'forward'));
+        firstBtn.addEventListener('click', () => {
+            if (currentPageIndex > 0) {
+                goToPage(0, 'backward');
+            }
+        });
+        lastBtn.addEventListener('click', () => {
+            if (currentPageIndex < pages.length - 1) {
+                goToPage(pages.length - 1, 'forward');
+            }
+        });
+
+        function updateDisplay() {
+            pageDisplay.textContent = `Page: ${currentPageIndex + 1} / ${pages.length}`;
+
+            // Update button states
+            prevBtn.disabled = currentPageIndex === 0;
+            firstBtn.disabled = currentPageIndex === 0;
+            nextBtn.disabled = currentPageIndex === pages.length - 1;
+            lastBtn.disabled = currentPageIndex === pages.length - 1;
+
+            console.log('Display updated - Page:', currentPageIndex + 1, 'isFlipping:', isFlipping);
+        }
+
+        function handlePageAudio(pageIndex) {
+            const audioConfig = pageAudioConfig[pageIndex];
+
+            if (audioConfig) {
+                if (!currentAudio || currentAudio.src !== audioConfig.url) {
+                    if (currentAudio) {
+                        currentAudio.pause();
+                        currentAudio = null;
+                    }
+
+                    currentAudio = new Audio(audioConfig.url);
+                    currentAudio.loop = true;
+                    currentAudio.volume = volumeSlider.value / 100;
+
+                    if (!isMuted) {
+                        currentAudio.play().catch(e => {
+                            console.log('Audio play failed:', e);
+                            currentTrackDisplay.textContent = 'Click to enable audio';
+                        });
+                    }
+
+                    currentTrackDisplay.textContent = audioConfig.track;
+                }
+            } else {
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
+                currentTrackDisplay.textContent = 'No music';
+            }
+        }
+
+        // Volume control
+        volumeSlider.addEventListener('input', (e) => {
+            const volume = e.target.value;
+            volumeDisplay.textContent = volume + '%';
+            if (currentAudio) {
+                currentAudio.volume = volume / 100;
+            }
+        });
+
+        // Mute button
+        muteBtn.addEventListener('click', () => {
+            isMuted = !isMuted;
+            if (currentAudio) {
+                currentAudio.muted = isMuted;
+            }
+            muteBtn.textContent = isMuted ? '🔊 Unmute' : '🔇 Mute';
+        });
+
+        // Stop music button
+        stopMusicBtn.addEventListener('click', () => {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                prevBtn.click();
+            } else if (e.key === 'ArrowRight') {
+                nextBtn.click();
+            }
+        });
+
+        // Initialize
+        updateDisplay();
+
+        // Auto-play audio on first load (after user interaction)
+        document.addEventListener('click', function initAudio() {
+            handlePageAudio(0);
+            document.removeEventListener('click', initAudio);
+        }, { once: true });
+
+        console.log('📚 Single-page flipbook initialized with audio!');
+        console.log('👆 Click anywhere to enable audio');
+    </script>
+</body>
+</html>

@@ -168,9 +168,10 @@ foreach ($pages as $index => $page) {
             text-align: center;
             z-index: 1000;
             background: white;
-            padding: 30px;
+            padding: 40px 60px;
             border-radius: 10px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            min-width: 300px;
         }
 
         .spinner {
@@ -186,6 +187,23 @@ foreach ($pages as $index => $page) {
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .loading-progress {
+            width: 100%;
+            height: 8px;
+            background: #f3f3f3;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
         }
 
         .loading-spinner.hidden {
@@ -303,7 +321,12 @@ foreach ($pages as $index => $page) {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .page-content img.loading {
+            filter: blur(10px);
+            opacity: 0.5;
         }
 
         .page-flip-container.zoom-mode {
@@ -455,7 +478,11 @@ foreach ($pages as $index => $page) {
             <div class="flipbook-container">
                 <div class="loading-spinner" id="loadingSpinner">
                     <div class="spinner"></div>
-                    <p style="color: #667eea; font-weight: 600;">Loading flipbook...</p>
+                    <p style="color: #667eea; font-weight: 600; margin-bottom: 5px;">Loading flipbook...</p>
+                    <p style="color: #999; font-size: 14px; margin-bottom: 0;" id="loadingText">Preparing images...</p>
+                    <div class="loading-progress">
+                        <div class="loading-progress-bar" id="loadingProgressBar"></div>
+                    </div>
                 </div>
 
                 <button class="page-nav-arrow left" id="leftArrow" title="Previous Page">◀</button>
@@ -490,9 +517,13 @@ foreach ($pages as $index => $page) {
         const viewerMuteBtn = document.getElementById('viewerMuteBtn');
         const viewerAudioTrack = document.getElementById('viewerAudioTrack');
 
-        // Create pages
+        // Create pages with progress tracking
         function createPages() {
-            let firstImageLoaded = false;
+            let loadedCount = 0;
+            const totalPages = pages.length;
+            const loadingText = document.getElementById('loadingText');
+            const loadingProgressBar = document.getElementById('loadingProgressBar');
+            const loadingSpinner = document.getElementById('loadingSpinner');
 
             pages.forEach((page, index) => {
                 const pageDiv = document.createElement('div');
@@ -505,21 +536,31 @@ foreach ($pages as $index => $page) {
                 }
 
                 const img = new Image();
+                img.className = 'loading';
 
-                // Hide spinner and show content when first image loads
-                if (index === 0) {
-                    img.onload = function() {
-                        if (!firstImageLoaded) {
-                            firstImageLoaded = true;
-                            const loadingSpinner = document.getElementById('loadingSpinner');
-                            if (loadingSpinner) {
-                                loadingSpinner.classList.add('hidden');
-                            }
-                            container.classList.add('loaded');
+                // Update progress when each image loads
+                img.onload = function() {
+                    img.classList.remove('loading');
+                    loadedCount++;
+
+                    const progress = Math.round((loadedCount / totalPages) * 100);
+                    if (loadingProgressBar) {
+                        loadingProgressBar.style.width = progress + '%';
+                    }
+                    if (loadingText) {
+                        loadingText.textContent = `Loading ${loadedCount} of ${totalPages} pages...`;
+                    }
+
+                    // Hide spinner when first image loads
+                    if (index === 0) {
+                        if (loadingSpinner) {
+                            loadingSpinner.classList.add('hidden');
                         }
-                    };
-                }
+                        container.classList.add('loaded');
+                    }
+                };
 
+                // Start loading
                 img.src = page.image_data;
 
                 pageDiv.innerHTML = `
