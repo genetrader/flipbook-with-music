@@ -335,6 +335,30 @@ foreach ($pages as $index => $page) {
             }
         }
 
+        @keyframes cardFlipReverse {
+            0% {
+                transform: rotateY(0deg) scale(1);
+            }
+            50% {
+                transform: rotateY(-90deg) scale(0.95);
+            }
+            100% {
+                transform: rotateY(-180deg) scale(1);
+            }
+        }
+
+        @keyframes cardFlipBackReverse {
+            0% {
+                transform: rotateY(180deg) scale(1);
+            }
+            50% {
+                transform: rotateY(90deg) scale(0.95);
+            }
+            100% {
+                transform: rotateY(0deg) scale(1);
+            }
+        }
+
         @media (max-width: 768px) {
             .page-flip-container {
                 width: 350px;
@@ -480,23 +504,36 @@ foreach ($pages as $index => $page) {
                     }, 1000);
                 }, 50);
             } else {
+                // Flip backwards - reverse of forward animation
+                // Position next page on the back (rotated 180deg)
                 nextPage.classList.remove('hidden');
                 nextPage.style.display = 'block';
-                nextPage.classList.add('current');
-                nextPage.style.transform = 'rotateY(0deg)';
+                nextPage.classList.add('next-page');
+                nextPage.style.transform = 'rotateY(180deg)';
 
-                currentPage.style.transform = 'rotateY(-180deg)';
-                currentPage.style.zIndex = '9';
-
+                // Trigger both animations simultaneously
                 setTimeout(() => {
+                    // Current page flips away backwards (0 to -180deg)
                     currentPage.classList.remove('current');
-                    currentPage.classList.add('flipping-back');
+                    currentPage.classList.add('flipping');
+                    currentPage.style.animation = 'cardFlipReverse 1s ease-in-out forwards';
 
+                    // Back page unfolds into view (180 to 0deg)
+                    nextPage.classList.add('flipping-back');
+                    nextPage.style.animation = 'cardFlipBackReverse 1s ease-in-out forwards';
+
+                    // After flip completes
                     setTimeout(() => {
-                        currentPage.classList.remove('flipping-back');
+                        currentPage.classList.remove('flipping');
                         currentPage.classList.add('hidden');
                         currentPage.style.display = 'none';
+                        currentPage.style.animation = '';
                         currentPage.style.transform = '';
+
+                        nextPage.classList.remove('next-page', 'flipping-back');
+                        nextPage.classList.add('current');
+                        nextPage.style.animation = '';
+                        nextPage.style.transform = 'rotateY(0deg)';
 
                         isFlipping = false;
                         updateDisplay();
