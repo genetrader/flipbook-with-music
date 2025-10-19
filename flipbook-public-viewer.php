@@ -616,7 +616,18 @@ foreach ($pages as $index => $page) {
                         console.log('Page audio assignments:', pageAudioAssignments);
                         console.log('Current page index:', currentPageIndex);
 
-                        // Audio will be initialized on first user interaction (mobile requirement)
+                        // Try to auto-play audio on desktop (after first page loads)
+                        if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
+                            console.log('Desktop detected - trying immediate audio playback');
+                            setTimeout(() => {
+                                if (!audioInitialized) {
+                                    userHasInteracted = true;
+                                    audioInitialized = true;
+                                    console.log('Desktop auto-start - initializing audio for page 0');
+                                    handlePageAudio(currentPageIndex);
+                                }
+                            }, 100);
+                        }
                     }
                 };
 
@@ -1036,19 +1047,6 @@ foreach ($pages as $index => $page) {
         // Initialize audio - handle mobile autoplay restrictions
         let audioInitialized = false;
         let userHasInteracted = false;
-
-        // For desktop, try to start immediately after page loads
-        if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
-            console.log('Desktop detected - trying immediate audio playback');
-            setTimeout(() => {
-                if (!audioInitialized) {
-                    userHasInteracted = true;
-                    audioInitialized = true;
-                    console.log('Desktop auto-start - initializing audio for page 0');
-                    handlePageAudio(currentPageIndex);
-                }
-            }, 500);
-        }
 
         // Initialize
         updateDisplay();
