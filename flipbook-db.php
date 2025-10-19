@@ -130,16 +130,27 @@ class FlipbookDB {
     }
 
     /**
-     * Add a page to a flipbook
+     * Add a page to a flipbook (supports both base64 and file path)
      */
-    public function addPage($flipbookId, $pageNumber, $imageData) {
+    public function addPage($flipbookId, $pageNumber, $imageData, $imagePath = null) {
         try {
-            $stmt = $this->conn->prepare("
-                INSERT INTO pages (flipbook_id, page_number, image_data)
-                VALUES (?, ?, ?)
-                ON DUPLICATE KEY UPDATE image_data = VALUES(image_data)
-            ");
-            return $stmt->execute([$flipbookId, $pageNumber, $imageData]);
+            if ($imagePath) {
+                // New method: store file path
+                $stmt = $this->conn->prepare("
+                    INSERT INTO pages (flipbook_id, page_number, image_path, image_data)
+                    VALUES (?, ?, ?, '')
+                    ON DUPLICATE KEY UPDATE image_path = VALUES(image_path)
+                ");
+                return $stmt->execute([$flipbookId, $pageNumber, $imagePath]);
+            } else {
+                // Old method: store base64 (backwards compatibility)
+                $stmt = $this->conn->prepare("
+                    INSERT INTO pages (flipbook_id, page_number, image_data)
+                    VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE image_data = VALUES(image_data)
+                ");
+                return $stmt->execute([$flipbookId, $pageNumber, $imageData]);
+            }
         } catch (PDOException $e) {
             error_log("Error adding page: " . $e->getMessage());
             return false;
@@ -152,7 +163,7 @@ class FlipbookDB {
     public function getPages($flipbookId) {
         try {
             $stmt = $this->conn->prepare("
-                SELECT id, page_number, image_data
+                SELECT id, page_number, image_data, image_path
                 FROM pages
                 WHERE flipbook_id = ?
                 ORDER BY page_number ASC

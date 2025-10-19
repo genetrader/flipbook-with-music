@@ -72,16 +72,51 @@ try {
         }
     }
 
-    // Save pages
-    foreach ($data['pages'] as $page) {
-        $success = $db->addPage(
-            $flipbookId,
-            $page['pageNumber'],
-            $page['data']
-        );
+    // Create directory for flipbook images
+    $imageDir = __DIR__ . '/flipbook-images/' . $flipbookId;
+    if (!file_exists($imageDir)) {
+        if (!mkdir($imageDir, 0755, true)) {
+            throw new Exception('Failed to create image directory');
+        }
+    }
 
-        if (!$success) {
-            throw new Exception('Failed to save page ' . $page['pageNumber']);
+    // Save pages as actual image files
+    foreach ($data['pages'] as $page) {
+        $pageNumber = $page['pageNumber'];
+        $imageData = $page['data'];
+
+        // Extract base64 data and save as JPG file
+        if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
+            $base64Data = substr($imageData, strpos($imageData, ',') + 1);
+            $decodedImage = base64_decode($base64Data);
+
+            if ($decodedImage === false) {
+                throw new Exception('Failed to decode image for page ' . $pageNumber);
+            }
+
+            // Save as JPG file
+            $filename = 'page-' . $pageNumber . '.jpg';
+            $filepath = $imageDir . '/' . $filename;
+
+            if (file_put_contents($filepath, $decodedImage) === false) {
+                throw new Exception('Failed to write image file for page ' . $pageNumber);
+            }
+
+            // Store the relative path in database (not base64)
+            $imagePath = 'flipbook-images/' . $flipbookId . '/' . $filename;
+
+            $success = $db->addPage(
+                $flipbookId,
+                $pageNumber,
+                '', // Empty base64 data
+                $imagePath // File path
+            );
+
+            if (!$success) {
+                throw new Exception('Failed to save page ' . $pageNumber);
+            }
+        } else {
+            throw new Exception('Invalid image format for page ' . $pageNumber);
         }
     }
 

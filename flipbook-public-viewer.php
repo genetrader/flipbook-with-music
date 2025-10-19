@@ -582,7 +582,8 @@ foreach ($pages as $index => $page) {
                     }
                 };
 
-                img.src = page.image_data;
+                // Use image_path if available (new system), otherwise image_data (old system)
+                img.src = page.image_path || page.image_data;
                 pageDiv.querySelector('.page-content').appendChild(img);
             }
 
