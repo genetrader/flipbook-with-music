@@ -783,18 +783,31 @@ foreach ($pages as $index => $page) {
         // Start new audio using Web Audio API with crossfade
         async function startNewAudioWithWebAPI(audio) {
             console.log('startNewAudioWithWebAPI called for:', audio.name);
+            console.log('AudioContext state:', audioContext ? audioContext.state : 'null');
 
             // Use audio_path if available, otherwise audio_data
             const audioSrc = audio.audio_path || audio.audio_data;
             console.log('Using audio source:', audioSrc ? audioSrc.substring(0, 50) + '...' : 'none');
 
+            // Check if audioContext exists
+            if (!audioContext) {
+                console.error('AudioContext not initialized!');
+                fallbackToRegularAudio(audio);
+                return;
+            }
+
             try {
                 // Fetch and decode audio
+                console.log('Fetching audio...');
                 const response = await fetch(audioSrc);
-                const arrayBuffer = await response.arrayBuffer();
-                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                console.log('Fetch response status:', response.status);
 
-                console.log('Audio decoded successfully');
+                const arrayBuffer = await response.arrayBuffer();
+                console.log('ArrayBuffer size:', arrayBuffer.byteLength);
+
+                console.log('Decoding audio...');
+                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                console.log('Audio decoded successfully, duration:', audioBuffer.duration);
 
                 // Store old gain node for crossfade
                 const oldGainNode = currentGainNode;
@@ -821,10 +834,11 @@ foreach ($pages as $index => $page) {
                 if (!isMuted) {
                     // Start playing
                     source.start(0);
-                    console.log('New audio started');
+                    console.log('New audio started at time:', now);
 
                     // Crossfade: fade in new, fade out old over 2 seconds
                     gainNode.gain.linearRampToValueAtTime(0.5, now + 2);
+                    console.log('Scheduled fade in from 0 to 0.5');
 
                     if (oldGainNode) {
                         console.log('Crossfading from old to new audio');
@@ -836,6 +850,7 @@ foreach ($pages as $index => $page) {
                             if (oldSource) {
                                 try {
                                     oldSource.stop();
+                                    console.log('Old source stopped');
                                 } catch (e) {
                                     console.log('Old source already stopped');
                                 }
@@ -851,6 +866,7 @@ foreach ($pages as $index => $page) {
 
             } catch (e) {
                 console.error('Web Audio API failed:', e);
+                console.error('Error details:', e.message, e.stack);
                 // Fallback to regular Audio element
                 fallbackToRegularAudio(audio);
             }
