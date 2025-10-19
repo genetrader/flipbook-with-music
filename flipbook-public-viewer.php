@@ -1102,7 +1102,7 @@ foreach ($pages as $index => $page) {
         let userHasInteracted = false;
 
         // Universal interaction handler - start audio on first active user interaction
-        async function startAudioOnFirstInteraction(e) {
+        function startAudioOnFirstInteraction(e) {
             if (!audioInitialized) {
                 userHasInteracted = true;
                 audioInitialized = true;
@@ -1115,24 +1115,33 @@ foreach ($pages as $index => $page) {
 
                 // Initialize Web Audio API context on first interaction (required for iOS)
                 try {
-                    initAudioContext();
+                    // Create AudioContext
+                    if (!audioContext) {
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        alert('Step 1: AudioContext created. State: ' + audioContext.state);
+                    }
 
-                    console.log('AudioContext created, state:', audioContext.state);
+                    // Resume it (critical for iOS)
+                    if (audioContext.state === 'suspended') {
+                        alert('Step 2: State is suspended, calling resume...');
+                        audioContext.resume().then(() => {
+                            alert('Step 3: Resume succeeded! State: ' + audioContext.state);
 
-                    // ALWAYS resume on iOS, even if state says "running"
-                    if (audioContext) {
-                        console.log('Attempting to resume AudioContext...');
-                        await audioContext.resume();
-                        console.log('AudioContext resumed! New state:', audioContext.state);
-
-                        // Small delay to ensure iOS is ready
-                        await new Promise(resolve => setTimeout(resolve, 100));
-
+                            // Now try to play audio
+                            setTimeout(() => {
+                                alert('Step 4: Calling handlePageAudio...');
+                                handlePageAudio(currentPageIndex);
+                            }, 200);
+                        }).catch(err => {
+                            alert('Resume ERROR: ' + err.message);
+                        });
+                    } else {
+                        alert('Step 2b: State is already ' + audioContext.state + ', playing audio...');
                         handlePageAudio(currentPageIndex);
                     }
                 } catch (err) {
+                    alert('Setup ERROR: ' + err.message);
                     console.error('Audio init error:', err);
-                    alert('iOS Audio Error: ' + err.message);
                 }
             }
         }
