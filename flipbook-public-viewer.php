@@ -746,9 +746,6 @@ foreach ($pages as $index => $page) {
             console.log('handlePageAudio called for page:', pageIndex);
             console.log('Audio assigned to this page:', pageAudioAssignments[pageIndex]);
 
-            // Initialize audio context on first use
-            initAudioContext();
-
             if (pageAudioAssignments[pageIndex]) {
                 const audio = pageAudioAssignments[pageIndex];
                 console.log('Found audio for page:', audio.name);
@@ -1094,7 +1091,19 @@ foreach ($pages as $index => $page) {
                 userHasInteracted = true;
                 audioInitialized = true;
                 console.log('First user interaction detected (event:', e.type, ') - starting audio for page:', currentPageIndex);
-                handlePageAudio(currentPageIndex);
+
+                // Initialize Web Audio API context on first interaction (required for iOS)
+                initAudioContext();
+
+                // Resume audio context if it's suspended (iOS requirement)
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        console.log('AudioContext resumed');
+                        handlePageAudio(currentPageIndex);
+                    });
+                } else {
+                    handlePageAudio(currentPageIndex);
+                }
 
                 // Remove listeners after first interaction
                 document.removeEventListener('click', startAudioOnFirstInteraction);
