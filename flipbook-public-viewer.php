@@ -571,9 +571,14 @@ foreach ($pages as $index => $page) {
                         console.log('Page audio assignments:', pageAudioAssignments);
                         console.log('Current page index:', currentPageIndex);
 
+                        // Try immediately and also after delay
+                        handlePageAudio(currentPageIndex);
                         setTimeout(() => {
                             handlePageAudio(currentPageIndex);
-                        }, 100);
+                        }, 500);
+                        setTimeout(() => {
+                            handlePageAudio(currentPageIndex);
+                        }, 1000);
                     }
                 };
 
