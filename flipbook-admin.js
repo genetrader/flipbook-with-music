@@ -509,10 +509,10 @@ async function editFlipbook(id) {
         document.getElementById('flipbookTitle').value = data.flipbook.title;
         document.getElementById('flipbookDescription').value = data.flipbook.description || '';
 
-        // Load pages
+        // Load pages - use image_path if available (new system), otherwise image_data (old system)
         pages = data.pages.map(p => ({
             pageNumber: p.page_number,
-            data: p.image_data
+            data: p.image_path || p.image_data
         }));
 
         // Load audio library
