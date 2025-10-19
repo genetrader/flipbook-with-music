@@ -177,16 +177,27 @@ class FlipbookDB {
     }
 
     /**
-     * Add an audio file
+     * Add an audio file (supports both base64 and file path)
      */
-    public function addAudioFile($flipbookId, $name, $audioData) {
+    public function addAudioFile($flipbookId, $name, $audioData, $audioPath = null) {
         try {
-            $stmt = $this->conn->prepare("
-                INSERT INTO audio_files (flipbook_id, name, audio_data)
-                VALUES (?, ?, ?)
-            ");
-            $stmt->execute([$flipbookId, $name, $audioData]);
-            return $this->conn->lastInsertId();
+            if ($audioPath) {
+                // New method: store file path
+                $stmt = $this->conn->prepare("
+                    INSERT INTO audio_files (flipbook_id, name, audio_path, audio_data)
+                    VALUES (?, ?, ?, '')
+                    ON DUPLICATE KEY UPDATE audio_path = VALUES(audio_path), audio_data = ''
+                ");
+                return $stmt->execute([$flipbookId, $name, $audioPath]) ? $this->conn->lastInsertId() : false;
+            } else {
+                // Old method: store base64 (backwards compatibility)
+                $stmt = $this->conn->prepare("
+                    INSERT INTO audio_files (flipbook_id, name, audio_data)
+                    VALUES (?, ?, ?)
+                ");
+                $stmt->execute([$flipbookId, $name, $audioData]);
+                return $this->conn->lastInsertId();
+            }
         } catch (PDOException $e) {
             error_log("Error adding audio file: " . $e->getMessage());
             return false;
@@ -199,7 +210,7 @@ class FlipbookDB {
     public function getAudioFiles($flipbookId) {
         try {
             $stmt = $this->conn->prepare("
-                SELECT id, name, audio_data
+                SELECT id, name, audio_data, audio_path
                 FROM audio_files
                 WHERE flipbook_id = ?
                 ORDER BY name ASC

@@ -142,18 +142,69 @@ try {
     // Save audio files
     $audioIdMap = []; // Maps array index to database ID
     if (!empty($data['audioLibrary']) && is_array($data['audioLibrary'])) {
+        // Create audio directory
+        $audioDir = __DIR__ . '/flipbook-audio/' . $flipbookId;
+        if (!file_exists($audioDir)) {
+            if (!mkdir($audioDir, 0755, true)) {
+                throw new Exception('Failed to create audio directory');
+            }
+        }
+
         foreach ($data['audioLibrary'] as $index => $audio) {
             // Check if this audio file already exists (has an ID from database)
             if (!empty($audio['id'])) {
                 // Reuse existing audio file
                 $audioIdMap[$index] = $audio['id'];
+                error_log("Reusing existing audio ID {$audio['id']} for: {$audio['name']}");
             } else {
-                // Create new audio file
-                $audioId = $db->addAudioFile(
-                    $flipbookId,
-                    $audio['name'],
-                    $audio['data']
-                );
+                // Save new audio file
+                $audioData = $audio['data'];
+
+                // Check if already a file path
+                if (strpos($audioData, 'flipbook-audio/') === 0) {
+                    // Already saved, just add to database
+                    $audioId = $db->addAudioFile(
+                        $flipbookId,
+                        $audio['name'],
+                        '', // Empty base64
+                        $audioData // File path
+                    );
+                } else {
+                    // Decode and save base64 audio
+                    if (preg_match('/^data:audio\/(\w+);base64,/', $audioData, $type)) {
+                        $base64Data = substr($audioData, strpos($audioData, ',') + 1);
+                        $decodedAudio = base64_decode($base64Data);
+
+                        if ($decodedAudio === false) {
+                            error_log("Failed to decode audio: {$audio['name']}");
+                            continue;
+                        }
+
+                        // Save as MP3 file (no optimization for now - browser already compressed)
+                        $filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $audio['name']) . '.mp3';
+                        $filepath = $audioDir . '/' . $filename;
+
+                        if (file_put_contents($filepath, $decodedAudio) === false) {
+                            error_log("Failed to write audio file: $filepath");
+                            continue;
+                        }
+
+                        error_log("Successfully saved audio file: $filepath (" . filesize($filepath) . " bytes)");
+
+                        // Store the relative path in database
+                        $audioPath = 'flipbook-audio/' . $flipbookId . '/' . $filename;
+
+                        $audioId = $db->addAudioFile(
+                            $flipbookId,
+                            $audio['name'],
+                            '', // Empty base64
+                            $audioPath // File path
+                        );
+                    } else {
+                        error_log("Invalid audio format for: {$audio['name']}");
+                        continue;
+                    }
+                }
 
                 if ($audioId) {
                     $audioIdMap[$index] = $audioId;

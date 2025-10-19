@@ -768,9 +768,13 @@ foreach ($pages as $index => $page) {
         // Start new audio track
         function startNewAudio(audio) {
             console.log('startNewAudio called for:', audio.name);
-            console.log('Audio data length:', audio.audio_data ? audio.audio_data.length : 'null');
+            console.log('Audio has audio_path:', !!audio.audio_path, 'audio_data:', !!audio.audio_data);
 
-            currentAudio = new Audio(audio.audio_data);
+            // Use audio_path if available (new system), otherwise audio_data (old system)
+            const audioSrc = audio.audio_path || audio.audio_data;
+            console.log('Using audio source:', audioSrc ? audioSrc.substring(0, 50) + '...' : 'none');
+
+            currentAudio = new Audio(audioSrc);
             currentAudio.dataset.audioId = audio.id;
             currentAudio.loop = true;
             currentAudio.volume = 0.5;
