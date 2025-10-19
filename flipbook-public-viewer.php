@@ -723,7 +723,11 @@ foreach ($pages as $index => $page) {
             }
 
             currentPageIndex = newIndex;
-            handlePageAudio(currentPageIndex);
+
+            // Handle audio for new page (if audio has been initialized)
+            if (audioInitialized) {
+                handlePageAudio(currentPageIndex);
+            }
         }
 
         function updateDisplay() {
@@ -955,16 +959,45 @@ foreach ($pages as $index => $page) {
         }, { passive: false });
 
         // Navigation
-        leftArrow.addEventListener('click', () => goToPage(currentPageIndex - 1, 'backward'));
-        rightArrow.addEventListener('click', () => goToPage(currentPageIndex + 1, 'forward'));
+        leftArrow.addEventListener('click', () => {
+            if (!audioInitialized) {
+                userHasInteracted = true;
+                audioInitialized = true;
+                console.log('First click detected - initializing audio for current page before navigation');
+                handlePageAudio(currentPageIndex);
+            }
+            goToPage(currentPageIndex - 1, 'backward');
+        });
+
+        rightArrow.addEventListener('click', () => {
+            if (!audioInitialized) {
+                userHasInteracted = true;
+                audioInitialized = true;
+                console.log('First click detected - initializing audio for current page before navigation');
+                handlePageAudio(currentPageIndex);
+            }
+            goToPage(currentPageIndex + 1, 'forward');
+        });
 
         clickAreaLeft.addEventListener('click', (e) => {
             e.stopPropagation();
+            if (!audioInitialized) {
+                userHasInteracted = true;
+                audioInitialized = true;
+                console.log('First click detected - initializing audio for current page before navigation');
+                handlePageAudio(currentPageIndex);
+            }
             goToPage(currentPageIndex - 1, 'backward');
         });
 
         clickAreaRight.addEventListener('click', (e) => {
             e.stopPropagation();
+            if (!audioInitialized) {
+                userHasInteracted = true;
+                audioInitialized = true;
+                console.log('First click detected - initializing audio for current page before navigation');
+                handlePageAudio(currentPageIndex);
+            }
             goToPage(currentPageIndex + 1, 'forward');
         });
 
@@ -980,8 +1013,20 @@ foreach ($pages as $index => $page) {
             }
 
             if (e.key === 'ArrowLeft') {
+                if (!audioInitialized) {
+                    userHasInteracted = true;
+                    audioInitialized = true;
+                    console.log('First keyboard interaction - initializing audio for current page before navigation');
+                    handlePageAudio(currentPageIndex);
+                }
                 goToPage(currentPageIndex - 1, 'backward');
             } else if (e.key === 'ArrowRight') {
+                if (!audioInitialized) {
+                    userHasInteracted = true;
+                    audioInitialized = true;
+                    console.log('First keyboard interaction - initializing audio for current page before navigation');
+                    handlePageAudio(currentPageIndex);
+                }
                 goToPage(currentPageIndex + 1, 'forward');
             } else if (e.key === 'Escape' && isZoomMode) {
                 zoomBtn.click();
