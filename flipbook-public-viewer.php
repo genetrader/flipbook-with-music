@@ -728,7 +728,7 @@ foreach ($pages as $index => $page) {
             clickAreaRight.style.display = currentPageIndex === pages.length - 1 ? 'none' : 'block';
         }
 
-        // Audio handling with fade transitions
+        // Audio handling with crossfade transitions (iOS compatible)
         function handlePageAudio(pageIndex) {
             console.log('handlePageAudio called for page:', pageIndex);
             console.log('Audio assigned to this page:', pageAudioAssignments[pageIndex]);
@@ -738,24 +738,11 @@ foreach ($pages as $index => $page) {
                 console.log('Found audio for page:', audio.name);
 
                 if (!currentAudio || currentAudio.dataset.audioId != audio.id) {
-                    // Fade out current audio before switching
-                    if (currentAudio) {
-                        console.log('Fading out current audio');
-                        const audioToFade = currentAudio;
-                        currentAudio = null; // Clear reference immediately
+                    // Crossfade: start new audio while fading out old
+                    const oldAudio = currentAudio;
 
-                        fadeOutAudio(audioToFade, 2000, () => {
-                            audioToFade.pause();
-                        });
-
-                        // Start new audio after fade completes
-                        setTimeout(() => {
-                            startNewAudio(audio);
-                        }, 2000);
-                    } else {
-                        console.log('Starting new audio immediately');
-                        startNewAudio(audio);
-                    }
+                    // Start new audio immediately at volume 0
+                    startNewAudio(audio, oldAudio);
 
                     viewerAudioTrack.textContent = audio.name;
                 } else {
@@ -767,20 +754,18 @@ foreach ($pages as $index => $page) {
                     const audioToFade = currentAudio;
                     currentAudio = null;
 
-                    fadeOutAudio(audioToFade, 2000, () => {
-                        audioToFade.pause();
-                    });
+                    fadeOutAndStop(audioToFade, 2000);
                 }
                 viewerAudioTrack.textContent = 'No music';
             }
         }
 
-        // Fade out audio over specified duration
-        function fadeOutAudio(audioElement, duration, callback) {
+        // Fade out audio and stop it (for pages with no audio)
+        function fadeOutAndStop(audioElement, duration) {
             if (!audioElement) return;
 
             const startVolume = audioElement.volume;
-            const fadeInterval = 50; // Update every 50ms
+            const fadeInterval = 50;
             const steps = duration / fadeInterval;
             const volumeStep = startVolume / steps;
             let currentStep = 0;
@@ -788,17 +773,61 @@ foreach ($pages as $index => $page) {
             const fadeTimer = setInterval(() => {
                 currentStep++;
                 const newVolume = Math.max(0, startVolume - (volumeStep * currentStep));
-                audioElement.volume = newVolume;
+
+                try {
+                    audioElement.volume = newVolume;
+                } catch (e) {
+                    console.log('Volume adjustment failed (iOS):', e);
+                }
 
                 if (currentStep >= steps || newVolume <= 0) {
                     clearInterval(fadeTimer);
-                    if (callback) callback();
+                    audioElement.pause();
+                    audioElement.src = ''; // iOS: properly destroy audio object
                 }
             }, fadeInterval);
         }
 
-        // Start new audio track
-        function startNewAudio(audio) {
+        // Crossfade between audio tracks (iOS compatible)
+        function crossfadeAudio(oldAudio, newAudio, duration) {
+            if (!oldAudio || !newAudio) return;
+
+            const fadeInterval = 50;
+            const steps = duration / fadeInterval;
+            const volumeStep = 0.5 / steps; // Fade from/to 0.5 volume
+            let currentStep = 0;
+
+            const crossfadeTimer = setInterval(() => {
+                currentStep++;
+                const progress = currentStep / steps;
+
+                try {
+                    // Fade out old audio
+                    oldAudio.volume = Math.max(0, 0.5 * (1 - progress));
+                    // Fade in new audio
+                    newAudio.volume = Math.min(0.5, 0.5 * progress);
+                } catch (e) {
+                    console.log('Crossfade volume adjustment failed (iOS):', e);
+                }
+
+                if (currentStep >= steps) {
+                    clearInterval(crossfadeTimer);
+                    // Ensure final volumes
+                    try {
+                        oldAudio.volume = 0;
+                        newAudio.volume = 0.5;
+                    } catch (e) {}
+
+                    // Stop and destroy old audio
+                    oldAudio.pause();
+                    oldAudio.src = ''; // iOS: properly destroy audio object
+                    console.log('Crossfade complete');
+                }
+            }, fadeInterval);
+        }
+
+        // Start new audio track with optional crossfade
+        function startNewAudio(audio, oldAudio = null) {
             console.log('startNewAudio called for:', audio.name);
             console.log('Audio has audio_path:', !!audio.audio_path, 'audio_data:', !!audio.audio_data);
 
@@ -806,24 +835,35 @@ foreach ($pages as $index => $page) {
             const audioSrc = audio.audio_path || audio.audio_data;
             console.log('Using audio source:', audioSrc ? audioSrc.substring(0, 50) + '...' : 'none');
 
-            currentAudio = new Audio(audioSrc);
-            currentAudio.dataset.audioId = audio.id;
-            currentAudio.loop = true;
-            currentAudio.volume = 0.5;
+            const newAudio = new Audio(audioSrc);
+            newAudio.dataset.audioId = audio.id;
+            newAudio.loop = true;
+            newAudio.volume = oldAudio ? 0 : 0.5; // Start at 0 if crossfading, otherwise 0.5
 
             console.log('isMuted:', isMuted);
 
             if (!isMuted) {
                 console.log('Attempting to play audio...');
-                currentAudio.play()
+                newAudio.play()
                     .then(() => {
                         console.log('Audio playing successfully!');
+
+                        // Update current audio reference
+                        currentAudio = newAudio;
+
+                        // Start crossfade if there's old audio
+                        if (oldAudio) {
+                            console.log('Starting crossfade from old to new audio');
+                            crossfadeAudio(oldAudio, newAudio, 2000);
+                        }
                     })
                     .catch(e => {
                         console.error('Audio play failed:', e);
+                        currentAudio = newAudio; // Still update reference even if play failed
                     });
             } else {
                 console.log('Audio is muted, not playing');
+                currentAudio = newAudio;
             }
         }
 
