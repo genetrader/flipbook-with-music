@@ -958,21 +958,41 @@ foreach ($pages as $index => $page) {
 
         // Navigation
         leftArrow.addEventListener('click', () => {
-            goToPage(currentPageIndex - 1, 'backward');
+            // If audio not initialized yet, wait a moment for the universal handler to run first
+            if (!audioInitialized) {
+                setTimeout(() => goToPage(currentPageIndex - 1, 'backward'), 50);
+            } else {
+                goToPage(currentPageIndex - 1, 'backward');
+            }
         });
 
         rightArrow.addEventListener('click', () => {
-            goToPage(currentPageIndex + 1, 'forward');
+            // If audio not initialized yet, wait a moment for the universal handler to run first
+            if (!audioInitialized) {
+                setTimeout(() => goToPage(currentPageIndex + 1, 'forward'), 50);
+            } else {
+                goToPage(currentPageIndex + 1, 'forward');
+            }
         });
 
         clickAreaLeft.addEventListener('click', (e) => {
             e.stopPropagation();
-            goToPage(currentPageIndex - 1, 'backward');
+            // If audio not initialized yet, wait a moment for the universal handler to run first
+            if (!audioInitialized) {
+                setTimeout(() => goToPage(currentPageIndex - 1, 'backward'), 50);
+            } else {
+                goToPage(currentPageIndex - 1, 'backward');
+            }
         });
 
         clickAreaRight.addEventListener('click', (e) => {
             e.stopPropagation();
-            goToPage(currentPageIndex + 1, 'forward');
+            // If audio not initialized yet, wait a moment for the universal handler to run first
+            if (!audioInitialized) {
+                setTimeout(() => goToPage(currentPageIndex + 1, 'forward'), 50);
+            } else {
+                goToPage(currentPageIndex + 1, 'forward');
+            }
         });
 
         // Keyboard navigation
