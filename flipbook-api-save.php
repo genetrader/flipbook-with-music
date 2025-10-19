@@ -80,34 +80,22 @@ try {
         }
     }
 
-    // Save pages as actual image files
-    foreach ($data['pages'] as $page) {
-        $pageNumber = $page['pageNumber'];
-        $imageData = $page['data'];
+    // Save pages as actual image files (only for new flipbooks or base64 data)
+    // If editing an existing flipbook with file paths, skip page re-saving
+    $hasFilePaths = false;
+    if (!empty($data['pages'][0]['data'])) {
+        $firstPageData = $data['pages'][0]['data'];
+        $hasFilePaths = (strpos($firstPageData, 'flipbook-images/') === 0);
+    }
 
-        // Log what we're receiving for debugging
-        error_log("Page $pageNumber data preview: " . substr($imageData, 0, 100));
+    if (!$hasFilePaths) {
+        // New flipbook or old base64 flipbook - save pages as files
+        foreach ($data['pages'] as $page) {
+            $pageNumber = $page['pageNumber'];
+            $imageData = $page['data'];
 
-        // Check if this is already a file path (editing existing flipbook with file-based storage)
-        if (strpos($imageData, 'flipbook-images/') === 0) {
-            // Already a file path, just update the database reference
-            error_log("Page $pageNumber already has file path: $imageData");
-
-            $success = $db->addPage(
-                $flipbookId,
-                $pageNumber,
-                '', // Empty base64 data
-                $imageData // Existing file path
-            );
-
-            if (!$success) {
-                throw new Exception('Failed to update page ' . $pageNumber);
-            }
-            continue; // Skip to next page
-        }
-
-        // Extract base64 data and save as JPG file
-        if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
+            // Extract base64 data and save as JPG file
+            if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
             $base64Data = substr($imageData, strpos($imageData, ',') + 1);
             $decodedImage = base64_decode($base64Data);
 
@@ -136,16 +124,20 @@ try {
                 $imagePath // File path
             );
 
-            if (!$success) {
-                throw new Exception('Failed to save page ' . $pageNumber);
+                if (!$success) {
+                    throw new Exception('Failed to save page ' . $pageNumber);
+                }
+            } else {
+                throw new Exception('Invalid image format for page ' . $pageNumber);
             }
-        } else {
-            throw new Exception('Invalid image format for page ' . $pageNumber);
         }
-    }
 
-    // Update page count
-    $db->updatePageCount($flipbookId, count($data['pages']));
+        // Update page count
+        $db->updatePageCount($flipbookId, count($data['pages']));
+    } else {
+        // Editing flipbook with file paths - pages already exist, skip re-saving
+        error_log("Editing flipbook with file paths - skipping page re-save");
+    }
 
     // Save audio files
     $audioIdMap = []; // Maps array index to database ID
