@@ -112,18 +112,36 @@ try {
     }
 
     // Save audio assignments
+    error_log('Audio assignments received: ' . json_encode($data['audioAssignments']));
+    error_log('Audio ID map: ' . json_encode($audioIdMap));
+
     if (!empty($data['audioAssignments']) && is_array($data['audioAssignments'])) {
         // Get all pages for this flipbook
         $pages = $db->getPages($flipbookId);
+        error_log('Pages retrieved: ' . count($pages));
 
+        $assignmentCount = 0;
         foreach ($data['audioAssignments'] as $pageIndex => $audioIndex) {
+            error_log("Processing assignment: page $pageIndex -> audio $audioIndex");
+
             if (isset($audioIdMap[$audioIndex]) && isset($pages[$pageIndex])) {
-                $db->assignAudioToPage(
+                $result = $db->assignAudioToPage(
                     $pages[$pageIndex]['id'],
                     $audioIdMap[$audioIndex]
                 );
+                if ($result) {
+                    $assignmentCount++;
+                    error_log("Successfully assigned audio {$audioIdMap[$audioIndex]} to page {$pages[$pageIndex]['id']}");
+                } else {
+                    error_log("Failed to assign audio to page $pageIndex");
+                }
+            } else {
+                error_log("Missing audio or page: audioIndex=$audioIndex, pageIndex=$pageIndex");
             }
         }
+        error_log("Total assignments saved: $assignmentCount");
+    } else {
+        error_log('No audio assignments to save');
     }
 
     // Success

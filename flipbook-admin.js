@@ -413,6 +413,9 @@ async function saveFlipbook() {
         }
     });
 
+    console.log('Audio assignments being sent:', audioAssignments);
+    console.log('Audio library:', audioLibrary.map((a, i) => ({ index: i, name: a.name })));
+
     // Prepare data to send
     const data = {
         title: title,
