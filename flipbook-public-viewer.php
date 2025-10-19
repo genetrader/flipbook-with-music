@@ -567,6 +567,10 @@ foreach ($pages as $index => $page) {
                         container.classList.add('loaded');
 
                         // Initialize audio when first page loads
+                        console.log('First page loaded, initializing audio...');
+                        console.log('Page audio assignments:', pageAudioAssignments);
+                        console.log('Current page index:', currentPageIndex);
+
                         setTimeout(() => {
                             handlePageAudio(currentPageIndex);
                         }, 100);
@@ -686,12 +690,17 @@ foreach ($pages as $index => $page) {
 
         // Audio handling with fade transitions
         function handlePageAudio(pageIndex) {
+            console.log('handlePageAudio called for page:', pageIndex);
+            console.log('Audio assigned to this page:', pageAudioAssignments[pageIndex]);
+
             if (pageAudioAssignments[pageIndex]) {
                 const audio = pageAudioAssignments[pageIndex];
+                console.log('Found audio for page:', audio.name);
 
                 if (!currentAudio || currentAudio.dataset.audioId != audio.id) {
                     // Fade out current audio before switching
                     if (currentAudio) {
+                        console.log('Fading out current audio');
                         const audioToFade = currentAudio;
                         currentAudio = null; // Clear reference immediately
 
@@ -704,12 +713,16 @@ foreach ($pages as $index => $page) {
                             startNewAudio(audio);
                         }, 1000);
                     } else {
+                        console.log('Starting new audio immediately');
                         startNewAudio(audio);
                     }
 
                     viewerAudioTrack.textContent = audio.name;
+                } else {
+                    console.log('Audio already playing, no change needed');
                 }
             } else {
+                console.log('No audio assigned to page', pageIndex);
                 if (currentAudio) {
                     const audioToFade = currentAudio;
                     currentAudio = null;
@@ -746,15 +759,27 @@ foreach ($pages as $index => $page) {
 
         // Start new audio track
         function startNewAudio(audio) {
+            console.log('startNewAudio called for:', audio.name);
+            console.log('Audio data length:', audio.audio_data ? audio.audio_data.length : 'null');
+
             currentAudio = new Audio(audio.audio_data);
             currentAudio.dataset.audioId = audio.id;
             currentAudio.loop = true;
             currentAudio.volume = 0.5;
 
+            console.log('isMuted:', isMuted);
+
             if (!isMuted) {
-                currentAudio.play().catch(e => {
-                    console.log('Audio play failed:', e);
-                });
+                console.log('Attempting to play audio...');
+                currentAudio.play()
+                    .then(() => {
+                        console.log('Audio playing successfully!');
+                    })
+                    .catch(e => {
+                        console.error('Audio play failed:', e);
+                    });
+            } else {
+                console.log('Audio is muted, not playing');
             }
         }
 
