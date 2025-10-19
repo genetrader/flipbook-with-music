@@ -85,6 +85,24 @@ try {
         $pageNumber = $page['pageNumber'];
         $imageData = $page['data'];
 
+        // Check if this is already a file path (editing existing flipbook with file-based storage)
+        if (strpos($imageData, 'flipbook-images/') === 0) {
+            // Already a file path, just update the database reference
+            error_log("Page $pageNumber already has file path: $imageData");
+
+            $success = $db->addPage(
+                $flipbookId,
+                $pageNumber,
+                '', // Empty base64 data
+                $imageData // Existing file path
+            );
+
+            if (!$success) {
+                throw new Exception('Failed to update page ' . $pageNumber);
+            }
+            continue; // Skip to next page
+        }
+
         // Extract base64 data and save as JPG file
         if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
             $base64Data = substr($imageData, strpos($imageData, ',') + 1);
