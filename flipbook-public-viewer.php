@@ -1109,16 +1109,34 @@ foreach ($pages as $index => $page) {
                 console.log('First user interaction detected (event:', e.type, ') - starting audio for page:', currentPageIndex);
 
                 // Initialize Web Audio API context on first interaction (required for iOS)
-                initAudioContext();
+                try {
+                    initAudioContext();
 
-                // Resume audio context if it's suspended (iOS requirement)
-                if (audioContext && audioContext.state === 'suspended') {
-                    audioContext.resume().then(() => {
-                        console.log('AudioContext resumed');
+                    // iOS Debug: Show alert with AudioContext state
+                    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                        alert('iOS detected. AudioContext state: ' + (audioContext ? audioContext.state : 'null'));
+                    }
+
+                    // Resume audio context if it's suspended (iOS requirement)
+                    if (audioContext && audioContext.state === 'suspended') {
+                        audioContext.resume().then(() => {
+                            console.log('AudioContext resumed');
+                            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                                alert('AudioContext resumed! State: ' + audioContext.state);
+                            }
+                            handlePageAudio(currentPageIndex);
+                        }).catch(err => {
+                            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                                alert('Resume failed: ' + err.message);
+                            }
+                        });
+                    } else {
                         handlePageAudio(currentPageIndex);
-                    });
-                } else {
-                    handlePageAudio(currentPageIndex);
+                    }
+                } catch (err) {
+                    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                        alert('Audio init error: ' + err.message);
+                    }
                 }
 
                 // Remove listeners after first interaction
