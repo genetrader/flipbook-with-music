@@ -960,7 +960,11 @@ foreach ($pages as $index => $page) {
         leftArrow.addEventListener('click', () => {
             // If audio not initialized yet, wait a moment for the universal handler to run first
             if (!audioInitialized) {
-                setTimeout(() => goToPage(currentPageIndex - 1, 'backward'), 50);
+                console.log('First navigation - delaying to allow audio init');
+                setTimeout(() => {
+                    console.log('Delayed navigation executing, audioInitialized:', audioInitialized);
+                    goToPage(currentPageIndex - 1, 'backward');
+                }, 100);
             } else {
                 goToPage(currentPageIndex - 1, 'backward');
             }
@@ -969,7 +973,11 @@ foreach ($pages as $index => $page) {
         rightArrow.addEventListener('click', () => {
             // If audio not initialized yet, wait a moment for the universal handler to run first
             if (!audioInitialized) {
-                setTimeout(() => goToPage(currentPageIndex + 1, 'forward'), 50);
+                console.log('First navigation - delaying to allow audio init');
+                setTimeout(() => {
+                    console.log('Delayed navigation executing, audioInitialized:', audioInitialized);
+                    goToPage(currentPageIndex + 1, 'forward');
+                }, 100);
             } else {
                 goToPage(currentPageIndex + 1, 'forward');
             }
@@ -979,7 +987,11 @@ foreach ($pages as $index => $page) {
             e.stopPropagation();
             // If audio not initialized yet, wait a moment for the universal handler to run first
             if (!audioInitialized) {
-                setTimeout(() => goToPage(currentPageIndex - 1, 'backward'), 50);
+                console.log('First navigation - delaying to allow audio init');
+                setTimeout(() => {
+                    console.log('Delayed navigation executing, audioInitialized:', audioInitialized);
+                    goToPage(currentPageIndex - 1, 'backward');
+                }, 100);
             } else {
                 goToPage(currentPageIndex - 1, 'backward');
             }
@@ -989,7 +1001,11 @@ foreach ($pages as $index => $page) {
             e.stopPropagation();
             // If audio not initialized yet, wait a moment for the universal handler to run first
             if (!audioInitialized) {
-                setTimeout(() => goToPage(currentPageIndex + 1, 'forward'), 50);
+                console.log('First navigation - delaying to allow audio init');
+                setTimeout(() => {
+                    console.log('Delayed navigation executing, audioInitialized:', audioInitialized);
+                    goToPage(currentPageIndex + 1, 'forward');
+                }, 100);
             } else {
                 goToPage(currentPageIndex + 1, 'forward');
             }
@@ -1020,25 +1036,25 @@ foreach ($pages as $index => $page) {
         let userHasInteracted = false;
 
         // Universal interaction handler - start audio on first active user interaction
-        function startAudioOnFirstInteraction() {
+        function startAudioOnFirstInteraction(e) {
             if (!audioInitialized) {
                 userHasInteracted = true;
                 audioInitialized = true;
-                console.log('First user interaction detected - starting audio for page:', currentPageIndex);
+                console.log('First user interaction detected (event:', e.type, ') - starting audio for page:', currentPageIndex);
                 handlePageAudio(currentPageIndex);
 
                 // Remove listeners after first interaction
                 document.removeEventListener('click', startAudioOnFirstInteraction);
                 document.removeEventListener('keydown', startAudioOnFirstInteraction);
-                document.removeEventListener('touchstart', startAudioOnFirstInteraction);
+                document.removeEventListener('touchend', startAudioOnFirstInteraction);
             }
         }
 
         // Listen for active user interactions to unlock audio (click, keypress, touch)
-        // Note: mousemove doesn't count as an "active" interaction for audio autoplay
+        // Note: Use touchend instead of touchstart for better mobile compatibility
         document.addEventListener('click', startAudioOnFirstInteraction);
         document.addEventListener('keydown', startAudioOnFirstInteraction);
-        document.addEventListener('touchstart', startAudioOnFirstInteraction);
+        document.addEventListener('touchend', startAudioOnFirstInteraction);
 
         // Initialize
         updateDisplay();
