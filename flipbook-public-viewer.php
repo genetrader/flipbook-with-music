@@ -999,7 +999,7 @@ foreach ($pages as $index => $page) {
         let audioInitialized = false;
         let userHasInteracted = false;
 
-        // Universal interaction handler - start audio on ANY user interaction
+        // Universal interaction handler - start audio on first active user interaction
         function startAudioOnFirstInteraction() {
             if (!audioInitialized) {
                 userHasInteracted = true;
@@ -1011,15 +1011,14 @@ foreach ($pages as $index => $page) {
                 document.removeEventListener('click', startAudioOnFirstInteraction);
                 document.removeEventListener('keydown', startAudioOnFirstInteraction);
                 document.removeEventListener('touchstart', startAudioOnFirstInteraction);
-                document.removeEventListener('mousemove', startAudioOnFirstInteraction);
             }
         }
 
-        // Listen for ANY user interaction to unlock audio
+        // Listen for active user interactions to unlock audio (click, keypress, touch)
+        // Note: mousemove doesn't count as an "active" interaction for audio autoplay
         document.addEventListener('click', startAudioOnFirstInteraction);
         document.addEventListener('keydown', startAudioOnFirstInteraction);
         document.addEventListener('touchstart', startAudioOnFirstInteraction);
-        document.addEventListener('mousemove', startAudioOnFirstInteraction, { once: true });
 
         // Initialize
         updateDisplay();
