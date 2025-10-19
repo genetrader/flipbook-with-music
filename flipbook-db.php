@@ -135,11 +135,11 @@ class FlipbookDB {
     public function addPage($flipbookId, $pageNumber, $imageData, $imagePath = null) {
         try {
             if ($imagePath) {
-                // New method: store file path
+                // New method: store file path and clear base64
                 $stmt = $this->conn->prepare("
                     INSERT INTO pages (flipbook_id, page_number, image_path, image_data)
                     VALUES (?, ?, ?, '')
-                    ON DUPLICATE KEY UPDATE image_path = VALUES(image_path)
+                    ON DUPLICATE KEY UPDATE image_path = VALUES(image_path), image_data = ''
                 ");
                 return $stmt->execute([$flipbookId, $pageNumber, $imagePath]);
             } else {

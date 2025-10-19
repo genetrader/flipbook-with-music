@@ -102,8 +102,11 @@ try {
                 throw new Exception('Failed to write image file for page ' . $pageNumber);
             }
 
+            error_log("Successfully saved image file: $filepath (" . filesize($filepath) . " bytes)");
+
             // Store the relative path in database (not base64)
             $imagePath = 'flipbook-images/' . $flipbookId . '/' . $filename;
+            error_log("Storing image path in database: $imagePath");
 
             $success = $db->addPage(
                 $flipbookId,

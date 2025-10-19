@@ -583,7 +583,9 @@ foreach ($pages as $index => $page) {
                 };
 
                 // Use image_path if available (new system), otherwise image_data (old system)
-                img.src = page.image_path || page.image_data;
+                const imageSrc = page.image_path || page.image_data;
+                console.log(`Page ${index + 1} - has image_path: ${!!page.image_path}, has image_data: ${!!page.image_data}, using: ${imageSrc ? imageSrc.substring(0, 50) + '...' : 'none'}`);
+                img.src = imageSrc;
                 pageDiv.querySelector('.page-content').appendChild(img);
             }
 
