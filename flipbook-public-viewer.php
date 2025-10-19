@@ -566,19 +566,12 @@ foreach ($pages as $index => $page) {
                         }
                         container.classList.add('loaded');
 
-                        // Initialize audio when first page loads
-                        console.log('First page loaded, initializing audio...');
+                        // Log audio availability for debugging
+                        console.log('First page loaded');
                         console.log('Page audio assignments:', pageAudioAssignments);
                         console.log('Current page index:', currentPageIndex);
 
-                        // Try immediately and also after delay
-                        handlePageAudio(currentPageIndex);
-                        setTimeout(() => {
-                            handlePageAudio(currentPageIndex);
-                        }, 500);
-                        setTimeout(() => {
-                            handlePageAudio(currentPageIndex);
-                        }, 1000);
+                        // Audio will be initialized on first user interaction (mobile requirement)
                     }
                 };
 
@@ -950,29 +943,38 @@ foreach ($pages as $index => $page) {
             }
         });
 
-        // Initialize audio - try immediate playback aggressively
+        // Initialize audio - handle mobile autoplay restrictions
         let audioInitialized = false;
+        let userHasInteracted = false;
 
         function initializeAudio() {
-            if (!audioInitialized) {
+            if (!audioInitialized && userHasInteracted) {
                 audioInitialized = true;
+                console.log('User has interacted, initializing audio for page:', currentPageIndex);
                 handlePageAudio(currentPageIndex);
             }
         }
 
-        // Try multiple times to start audio immediately
-        setTimeout(() => initializeAudio(), 50);
-        setTimeout(() => initializeAudio(), 200);
-        setTimeout(() => initializeAudio(), 500);
-
-        // Also try on any user interaction
+        // Wait for user interaction before playing audio (required on mobile)
         const startAudioOnInteraction = () => {
-            initializeAudio();
+            if (!userHasInteracted) {
+                userHasInteracted = true;
+                console.log('First user interaction detected - unlocking audio');
+                initializeAudio();
+            }
         };
 
+        // Listen for any user interaction
         document.addEventListener('click', startAudioOnInteraction, { once: true });
         document.addEventListener('keydown', startAudioOnInteraction, { once: true });
-        document.addEventListener('touchstart', startAudioOnInteraction, { once: true });
+        document.addEventListener('touchend', startAudioOnInteraction, { once: true });
+
+        // For desktop, try to start immediately
+        if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
+            console.log('Desktop detected - trying immediate audio playback');
+            userHasInteracted = true;
+            setTimeout(() => initializeAudio(), 100);
+        }
 
         // Initialize
         updateDisplay();
