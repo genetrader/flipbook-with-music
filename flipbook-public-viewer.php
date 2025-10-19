@@ -1102,47 +1102,38 @@ foreach ($pages as $index => $page) {
         let userHasInteracted = false;
 
         // Universal interaction handler - start audio on first active user interaction
-        function startAudioOnFirstInteraction(e) {
+        async function startAudioOnFirstInteraction(e) {
             if (!audioInitialized) {
                 userHasInteracted = true;
                 audioInitialized = true;
                 console.log('First user interaction detected (event:', e.type, ') - starting audio for page:', currentPageIndex);
 
+                // Remove listeners immediately
+                document.removeEventListener('click', startAudioOnFirstInteraction);
+                document.removeEventListener('keydown', startAudioOnFirstInteraction);
+                document.removeEventListener('touchend', startAudioOnFirstInteraction);
+
                 // Initialize Web Audio API context on first interaction (required for iOS)
                 try {
                     initAudioContext();
 
-                    // iOS Debug: Show alert with AudioContext state
-                    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                        alert('iOS detected. AudioContext state: ' + (audioContext ? audioContext.state : 'null'));
-                    }
+                    console.log('AudioContext created, state:', audioContext.state);
 
-                    // Resume audio context if it's suspended (iOS requirement)
-                    if (audioContext && audioContext.state === 'suspended') {
-                        audioContext.resume().then(() => {
-                            console.log('AudioContext resumed');
-                            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                                alert('AudioContext resumed! State: ' + audioContext.state);
-                            }
-                            handlePageAudio(currentPageIndex);
-                        }).catch(err => {
-                            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                                alert('Resume failed: ' + err.message);
-                            }
-                        });
-                    } else {
+                    // ALWAYS resume on iOS, even if state says "running"
+                    if (audioContext) {
+                        console.log('Attempting to resume AudioContext...');
+                        await audioContext.resume();
+                        console.log('AudioContext resumed! New state:', audioContext.state);
+
+                        // Small delay to ensure iOS is ready
+                        await new Promise(resolve => setTimeout(resolve, 100));
+
                         handlePageAudio(currentPageIndex);
                     }
                 } catch (err) {
-                    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                        alert('Audio init error: ' + err.message);
-                    }
+                    console.error('Audio init error:', err);
+                    alert('iOS Audio Error: ' + err.message);
                 }
-
-                // Remove listeners after first interaction
-                document.removeEventListener('click', startAudioOnFirstInteraction);
-                document.removeEventListener('keydown', startAudioOnFirstInteraction);
-                document.removeEventListener('touchend', startAudioOnFirstInteraction);
             }
         }
 
