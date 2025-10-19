@@ -85,6 +85,9 @@ try {
         $pageNumber = $page['pageNumber'];
         $imageData = $page['data'];
 
+        // Log what we're receiving for debugging
+        error_log("Page $pageNumber data preview: " . substr($imageData, 0, 100));
+
         // Check if this is already a file path (editing existing flipbook with file-based storage)
         if (strpos($imageData, 'flipbook-images/') === 0) {
             // Already a file path, just update the database reference
