@@ -65,42 +65,50 @@ foreach ($pages as $index => $page) {
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 10px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 100%;
             width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         h1 {
             text-align: center;
             color: white;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 24px;
         }
 
         .description {
             text-align: center;
             color: rgba(255,255,255,0.9);
-            margin-bottom: 20px;
-            font-size: 16px;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
 
         .flipbook-wrapper {
             perspective: 1200px;
             perspective-origin: 50% 50%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .viewer-controls {
             background: rgba(255, 255, 255, 0.95);
-            padding: 15px 30px;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            flex-shrink: 0;
         }
 
         .viewer-controls-left,
@@ -152,12 +160,13 @@ foreach ($pages as $index => $page) {
             background: white;
             border-radius: 10px;
             box-shadow: 0 10px 50px rgba(0,0,0,0.3);
-            padding: 40px;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 1000px;
+            flex: 1;
             position: relative;
+            overflow: hidden;
         }
 
         .loading-spinner {
@@ -279,20 +288,29 @@ foreach ($pages as $index => $page) {
 
         .page-flip-container {
             position: relative;
-            width: 700px;
-            height: 900px;
+            max-width: 90vw;
+            max-height: 85vh;
+            width: auto;
+            height: auto;
             transform-style: preserve-3d;
             opacity: 0;
             transition: opacity 0.5s ease;
         }
 
-        .page-flip-container.loaded {
-            opacity: 1;
+        /* Portrait: maintain aspect ratio */
+        .page-flip-container:not(.landscape) {
+            aspect-ratio: 7 / 9;
+            width: min(90vw, calc(85vh * 7 / 9));
         }
 
+        /* Landscape: maintain aspect ratio */
         .page-flip-container.landscape {
-            width: 1000px;
-            height: 700px;
+            aspect-ratio: 10 / 7;
+            width: min(90vw, calc(85vh * 10 / 7));
+        }
+
+        .page-flip-container.loaded {
+            opacity: 1;
         }
 
         .page {
@@ -420,33 +438,60 @@ foreach ($pages as $index => $page) {
         }
 
         @media (max-width: 768px) {
-            .page-flip-container {
-                width: 350px;
-                height: 500px;
+            body {
+                padding: 5px;
             }
 
-            .page-flip-container.landscape {
-                width: 500px;
-                height: 350px;
+            h1 {
+                font-size: 20px;
+                margin-bottom: 3px;
+            }
+
+            .description {
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+
+            .viewer-controls {
+                padding: 8px 12px;
+                margin-bottom: 5px;
+            }
+
+            .control-btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+
+            .audio-indicator {
+                padding: 6px 10px;
+                font-size: 12px;
             }
 
             .flipbook-container {
-                padding: 20px;
-                min-height: 550px;
+                padding: 10px;
+            }
+
+            /* Make flipbook even larger on mobile */
+            .page-flip-container:not(.landscape) {
+                width: min(95vw, calc(90vh * 7 / 9));
+            }
+
+            .page-flip-container.landscape {
+                width: min(95vw, calc(90vh * 10 / 7));
             }
 
             .page-nav-arrow {
-                width: 12px;
-                height: 250px;
-                font-size: 18px;
+                width: 8px;
+                height: 200px;
+                font-size: 16px;
             }
 
             .page-nav-arrow.left {
-                left: 5px;
+                left: 2px;
             }
 
             .page-nav-arrow.right {
-                right: 5px;
+                right: 2px;
             }
         }
     </style>
