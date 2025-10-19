@@ -1037,33 +1037,17 @@ foreach ($pages as $index => $page) {
         let audioInitialized = false;
         let userHasInteracted = false;
 
-        function initializeAudio() {
-            if (!audioInitialized && userHasInteracted) {
-                audioInitialized = true;
-                console.log('User has interacted, initializing audio for page:', currentPageIndex);
-                handlePageAudio(currentPageIndex);
-            }
-        }
-
-        // Wait for user interaction before playing audio (required on mobile)
-        const startAudioOnInteraction = () => {
-            if (!userHasInteracted) {
-                userHasInteracted = true;
-                console.log('First user interaction detected - unlocking audio');
-                initializeAudio();
-            }
-        };
-
-        // Listen for any user interaction
-        document.addEventListener('click', startAudioOnInteraction, { once: true });
-        document.addEventListener('keydown', startAudioOnInteraction, { once: true });
-        document.addEventListener('touchend', startAudioOnInteraction, { once: true });
-
-        // For desktop, try to start immediately
+        // For desktop, try to start immediately after page loads
         if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
             console.log('Desktop detected - trying immediate audio playback');
-            userHasInteracted = true;
-            setTimeout(() => initializeAudio(), 100);
+            setTimeout(() => {
+                if (!audioInitialized) {
+                    userHasInteracted = true;
+                    audioInitialized = true;
+                    console.log('Desktop auto-start - initializing audio for page 0');
+                    handlePageAudio(currentPageIndex);
+                }
+            }, 500);
         }
 
         // Initialize
