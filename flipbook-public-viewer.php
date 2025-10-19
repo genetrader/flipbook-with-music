@@ -744,14 +744,14 @@ foreach ($pages as $index => $page) {
                         const audioToFade = currentAudio;
                         currentAudio = null; // Clear reference immediately
 
-                        fadeOutAudio(audioToFade, 1000, () => {
+                        fadeOutAudio(audioToFade, 2000, () => {
                             audioToFade.pause();
                         });
 
                         // Start new audio after fade completes
                         setTimeout(() => {
                             startNewAudio(audio);
-                        }, 1000);
+                        }, 2000);
                     } else {
                         console.log('Starting new audio immediately');
                         startNewAudio(audio);
@@ -767,7 +767,7 @@ foreach ($pages as $index => $page) {
                     const audioToFade = currentAudio;
                     currentAudio = null;
 
-                    fadeOutAudio(audioToFade, 1000, () => {
+                    fadeOutAudio(audioToFade, 2000, () => {
                         audioToFade.pause();
                     });
                 }
