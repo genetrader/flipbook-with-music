@@ -840,6 +840,9 @@ foreach ($pages as $index => $page) {
             newAudio.loop = true;
             newAudio.volume = oldAudio ? 0 : 0.5; // Start at 0 if crossfading, otherwise 0.5
 
+            // Update current audio reference IMMEDIATELY (before play attempt)
+            currentAudio = newAudio;
+
             console.log('isMuted:', isMuted);
 
             if (!isMuted) {
@@ -847,9 +850,6 @@ foreach ($pages as $index => $page) {
                 newAudio.play()
                     .then(() => {
                         console.log('Audio playing successfully!');
-
-                        // Update current audio reference
-                        currentAudio = newAudio;
 
                         // Start crossfade if there's old audio
                         if (oldAudio) {
@@ -859,11 +859,9 @@ foreach ($pages as $index => $page) {
                     })
                     .catch(e => {
                         console.error('Audio play failed:', e);
-                        currentAudio = newAudio; // Still update reference even if play failed
                     });
             } else {
                 console.log('Audio is muted, not playing');
-                currentAudio = newAudio;
             }
         }
 
