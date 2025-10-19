@@ -615,19 +615,6 @@ foreach ($pages as $index => $page) {
                         console.log('First page loaded');
                         console.log('Page audio assignments:', pageAudioAssignments);
                         console.log('Current page index:', currentPageIndex);
-
-                        // Try to auto-play audio on desktop (after first page loads)
-                        if (!(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))) {
-                            console.log('Desktop detected - trying immediate audio playback');
-                            setTimeout(() => {
-                                if (!audioInitialized) {
-                                    userHasInteracted = true;
-                                    audioInitialized = true;
-                                    console.log('Desktop auto-start - initializing audio for page 0');
-                                    handlePageAudio(currentPageIndex);
-                                }
-                            }, 100);
-                        }
                     }
                 };
 
@@ -971,44 +958,20 @@ foreach ($pages as $index => $page) {
 
         // Navigation
         leftArrow.addEventListener('click', () => {
-            if (!audioInitialized) {
-                userHasInteracted = true;
-                audioInitialized = true;
-                console.log('First click detected - initializing audio for current page before navigation');
-                handlePageAudio(currentPageIndex);
-            }
             goToPage(currentPageIndex - 1, 'backward');
         });
 
         rightArrow.addEventListener('click', () => {
-            if (!audioInitialized) {
-                userHasInteracted = true;
-                audioInitialized = true;
-                console.log('First click detected - initializing audio for current page before navigation');
-                handlePageAudio(currentPageIndex);
-            }
             goToPage(currentPageIndex + 1, 'forward');
         });
 
         clickAreaLeft.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (!audioInitialized) {
-                userHasInteracted = true;
-                audioInitialized = true;
-                console.log('First click detected - initializing audio for current page before navigation');
-                handlePageAudio(currentPageIndex);
-            }
             goToPage(currentPageIndex - 1, 'backward');
         });
 
         clickAreaRight.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (!audioInitialized) {
-                userHasInteracted = true;
-                audioInitialized = true;
-                console.log('First click detected - initializing audio for current page before navigation');
-                handlePageAudio(currentPageIndex);
-            }
             goToPage(currentPageIndex + 1, 'forward');
         });
 
@@ -1024,20 +987,8 @@ foreach ($pages as $index => $page) {
             }
 
             if (e.key === 'ArrowLeft') {
-                if (!audioInitialized) {
-                    userHasInteracted = true;
-                    audioInitialized = true;
-                    console.log('First keyboard interaction - initializing audio for current page before navigation');
-                    handlePageAudio(currentPageIndex);
-                }
                 goToPage(currentPageIndex - 1, 'backward');
             } else if (e.key === 'ArrowRight') {
-                if (!audioInitialized) {
-                    userHasInteracted = true;
-                    audioInitialized = true;
-                    console.log('First keyboard interaction - initializing audio for current page before navigation');
-                    handlePageAudio(currentPageIndex);
-                }
                 goToPage(currentPageIndex + 1, 'forward');
             } else if (e.key === 'Escape' && isZoomMode) {
                 zoomBtn.click();
@@ -1047,6 +998,28 @@ foreach ($pages as $index => $page) {
         // Initialize audio - handle mobile autoplay restrictions
         let audioInitialized = false;
         let userHasInteracted = false;
+
+        // Universal interaction handler - start audio on ANY user interaction
+        function startAudioOnFirstInteraction() {
+            if (!audioInitialized) {
+                userHasInteracted = true;
+                audioInitialized = true;
+                console.log('First user interaction detected - starting audio for page:', currentPageIndex);
+                handlePageAudio(currentPageIndex);
+
+                // Remove listeners after first interaction
+                document.removeEventListener('click', startAudioOnFirstInteraction);
+                document.removeEventListener('keydown', startAudioOnFirstInteraction);
+                document.removeEventListener('touchstart', startAudioOnFirstInteraction);
+                document.removeEventListener('mousemove', startAudioOnFirstInteraction);
+            }
+        }
+
+        // Listen for ANY user interaction to unlock audio
+        document.addEventListener('click', startAudioOnFirstInteraction);
+        document.addEventListener('keydown', startAudioOnFirstInteraction);
+        document.addEventListener('touchstart', startAudioOnFirstInteraction);
+        document.addEventListener('mousemove', startAudioOnFirstInteraction, { once: true });
 
         // Initialize
         updateDisplay();
