@@ -339,7 +339,7 @@ foreach ($pages as $index => $page) {
         }
 
         .page-flip-container.zoom-mode.zoomed .page-content img {
-            transform: scale(2);
+            transform: scale(2.4);
             transform-origin: center;
         }
 

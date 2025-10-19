@@ -130,8 +130,8 @@ async function convertPDF() {
 
         for (let pageNum = 1; pageNum <= numPages; pageNum++) {
             const page = await pdf.getPage(pageNum);
-            // Scale 1.5 provides good resolution while keeping file sizes reasonable
-            const viewport = page.getViewport({ scale: 1.5 });
+            // Scale 1.8 provides higher resolution for cleaner artwork
+            const viewport = page.getViewport({ scale: 1.8 });
 
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
@@ -143,8 +143,8 @@ async function convertPDF() {
                 viewport: viewport
             }).promise;
 
-            // Quality 0.80 maintains clean artwork without excessive file size
-            const imageData = canvas.toDataURL('image/jpeg', 0.80);
+            // Quality 0.85 maintains very clean artwork
+            const imageData = canvas.toDataURL('image/jpeg', 0.85);
             pages.push({
                 pageNumber: pageNum,
                 data: imageData
