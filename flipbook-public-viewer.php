@@ -367,73 +367,79 @@ foreach ($pages as $index => $page) {
 
         .page.current {
             z-index: 10;
-            transform: rotateY(0deg);
-        }
-
-        .page.next-page {
-            z-index: 9;
-            transform: rotateY(-180deg);
-        }
-
-        .page.flipping {
-            z-index: 20;
-            animation: cardFlip 1s ease-in-out forwards;
-        }
-
-        .page.flipping-back {
-            z-index: 20;
-            animation: cardFlipBack 1s ease-in-out forwards;
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .page.hidden {
             display: none;
         }
 
-        @keyframes cardFlip {
+        /* Slide out to left and fade */
+        .page.sliding-out-left {
+            z-index: 9;
+            animation: slideOutLeft 0.6s ease-in-out forwards;
+        }
+
+        /* Slide out to right and fade */
+        .page.sliding-out-right {
+            z-index: 9;
+            animation: slideOutRight 0.6s ease-in-out forwards;
+        }
+
+        /* Slide in from right and fade in */
+        .page.sliding-in-right {
+            z-index: 10;
+            animation: slideInRight 0.6s ease-in-out forwards;
+        }
+
+        /* Slide in from left and fade in */
+        .page.sliding-in-left {
+            z-index: 10;
+            animation: slideInLeft 0.6s ease-in-out forwards;
+        }
+
+        @keyframes slideOutLeft {
             0% {
-                transform: rotateY(0deg) scale(1);
-            }
-            50% {
-                transform: rotateY(90deg) scale(0.95);
+                transform: translateX(0);
+                opacity: 1;
             }
             100% {
-                transform: rotateY(180deg) scale(1);
+                transform: translateX(-100%);
+                opacity: 0;
             }
         }
 
-        @keyframes cardFlipBack {
+        @keyframes slideOutRight {
             0% {
-                transform: rotateY(-180deg) scale(1);
-            }
-            50% {
-                transform: rotateY(-90deg) scale(0.95);
+                transform: translateX(0);
+                opacity: 1;
             }
             100% {
-                transform: rotateY(0deg) scale(1);
+                transform: translateX(100%);
+                opacity: 0;
             }
         }
 
-        @keyframes cardFlipReverse {
+        @keyframes slideInRight {
             0% {
-                transform: rotateY(0deg) scale(1);
-            }
-            50% {
-                transform: rotateY(-90deg) scale(0.95);
+                transform: translateX(100%);
+                opacity: 0;
             }
             100% {
-                transform: rotateY(-180deg) scale(1);
+                transform: translateX(0);
+                opacity: 1;
             }
         }
 
-        @keyframes cardFlipBackReverse {
+        @keyframes slideInLeft {
             0% {
-                transform: rotateY(180deg) scale(1);
-            }
-            50% {
-                transform: rotateY(90deg) scale(0.95);
+                transform: translateX(-100%);
+                opacity: 0;
             }
             100% {
-                transform: rotateY(0deg) scale(1);
+                transform: translateX(0);
+                opacity: 1;
             }
         }
 
@@ -660,64 +666,50 @@ foreach ($pages as $index => $page) {
             const currentPage = allPages[currentPageIndex];
             const nextPage = allPages[newIndex];
 
+            // Show the new page
+            nextPage.classList.remove('hidden');
+            nextPage.style.display = 'block';
+
             if (direction === 'forward') {
-                nextPage.classList.remove('hidden');
-                nextPage.style.display = 'block';
-                nextPage.classList.add('next-page');
+                // Current page slides out to the left and fades
+                currentPage.classList.remove('current');
+                currentPage.classList.add('sliding-out-left');
+
+                // Next page slides in from the right and fades in
+                nextPage.classList.add('sliding-in-right');
 
                 setTimeout(() => {
-                    currentPage.classList.remove('current');
-                    currentPage.classList.add('flipping');
-                    nextPage.classList.add('flipping-back');
+                    // Clean up after animation
+                    currentPage.classList.remove('sliding-out-left');
+                    currentPage.classList.add('hidden');
+                    currentPage.style.display = 'none';
 
-                    setTimeout(() => {
-                        currentPage.classList.remove('flipping');
-                        currentPage.classList.add('hidden');
-                        currentPage.style.display = 'none';
+                    nextPage.classList.remove('sliding-in-right');
+                    nextPage.classList.add('current');
 
-                        nextPage.classList.remove('next-page', 'flipping-back');
-                        nextPage.classList.add('current');
-
-                        isFlipping = false;
-                        updateDisplay();
-                    }, 1000);
-                }, 50);
+                    isFlipping = false;
+                    updateDisplay();
+                }, 600); // Match animation duration
             } else {
-                // Flip backwards - reverse of forward animation
-                // Position next page on the back (rotated 180deg)
-                nextPage.classList.remove('hidden');
-                nextPage.style.display = 'block';
-                nextPage.classList.add('next-page');
-                nextPage.style.transform = 'rotateY(180deg)';
+                // Going backward - current page slides out to the right and fades
+                currentPage.classList.remove('current');
+                currentPage.classList.add('sliding-out-right');
 
-                // Trigger both animations simultaneously
+                // Next page slides in from the left and fades in
+                nextPage.classList.add('sliding-in-left');
+
                 setTimeout(() => {
-                    // Current page flips away backwards (0 to -180deg)
-                    currentPage.classList.remove('current');
-                    currentPage.classList.add('flipping');
-                    currentPage.style.animation = 'cardFlipReverse 1s ease-in-out forwards';
+                    // Clean up after animation
+                    currentPage.classList.remove('sliding-out-right');
+                    currentPage.classList.add('hidden');
+                    currentPage.style.display = 'none';
 
-                    // Back page unfolds into view (180 to 0deg)
-                    nextPage.classList.add('flipping-back');
-                    nextPage.style.animation = 'cardFlipBackReverse 1s ease-in-out forwards';
+                    nextPage.classList.remove('sliding-in-left');
+                    nextPage.classList.add('current');
 
-                    // After flip completes
-                    setTimeout(() => {
-                        currentPage.classList.remove('flipping');
-                        currentPage.classList.add('hidden');
-                        currentPage.style.display = 'none';
-                        currentPage.style.animation = '';
-                        currentPage.style.transform = '';
-
-                        nextPage.classList.remove('next-page', 'flipping-back');
-                        nextPage.classList.add('current');
-                        nextPage.style.animation = '';
-                        nextPage.style.transform = 'rotateY(0deg)';
-
-                        isFlipping = false;
-                        updateDisplay();
-                    }, 1000);
-                }, 50);
+                    isFlipping = false;
+                    updateDisplay();
+                }, 600); // Match animation duration
             }
 
             currentPageIndex = newIndex;
