@@ -565,6 +565,11 @@ foreach ($pages as $index => $page) {
                             loadingSpinner.classList.add('hidden');
                         }
                         container.classList.add('loaded');
+
+                        // Initialize audio when first page loads
+                        setTimeout(() => {
+                            handlePageAudio(currentPageIndex);
+                        }, 100);
                     }
                 };
 
