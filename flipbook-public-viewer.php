@@ -723,8 +723,12 @@ foreach ($pages as $index => $page) {
 
         // Audio handling with crossfade transitions (iOS compatible)
         function handlePageAudio(pageIndex) {
+            console.log('handlePageAudio called for page:', pageIndex);
+            console.log('Audio assigned:', pageAudioAssignments[pageIndex]);
+
             if (pageAudioAssignments[pageIndex]) {
                 const audio = pageAudioAssignments[pageIndex];
+                console.log('Starting audio:', audio.name);
 
                 if (!currentAudio || currentAudio.dataset.audioId != audio.id) {
                     // Crossfade: start new audio while fading out old
@@ -736,6 +740,7 @@ foreach ($pages as $index => $page) {
                     viewerAudioTrack.textContent = audio.name;
                 }
             } else {
+                console.log('No audio for this page');
                 if (currentAudio) {
                     const audioToFade = currentAudio;
                     currentAudio = null;
@@ -815,6 +820,7 @@ foreach ($pages as $index => $page) {
         function startNewAudio(audio, oldAudio = null) {
             // Use audio_path if available (new system), otherwise audio_data (old system)
             const audioSrc = audio.audio_path || audio.audio_data;
+            console.log('Audio source:', audioSrc);
 
             const newAudio = new Audio(audioSrc);
             newAudio.dataset.audioId = audio.id;
@@ -822,8 +828,10 @@ foreach ($pages as $index => $page) {
             newAudio.volume = oldAudio ? 0 : 0.5; // Start at 0 if crossfading, otherwise 0.5
 
             if (!isMuted) {
+                console.log('Attempting to play audio...');
                 newAudio.play()
                     .then(() => {
+                        console.log('Audio playing!');
                         // Update current audio reference
                         currentAudio = newAudio;
 
@@ -833,9 +841,11 @@ foreach ($pages as $index => $page) {
                         }
                     })
                     .catch(e => {
+                        console.error('Audio play failed:', e);
                         currentAudio = newAudio; // Still update reference even if play failed
                     });
             } else {
+                console.log('Audio is muted');
                 currentAudio = newAudio;
             }
         }
@@ -1035,6 +1045,7 @@ foreach ($pages as $index => $page) {
         // Universal interaction handler - start audio on first active user interaction
         function startAudioOnFirstInteraction(e) {
             if (!audioInitialized) {
+                console.log('User interaction detected, initializing audio...');
                 userHasInteracted = true;
                 audioInitialized = true;
                 handlePageAudio(currentPageIndex);
