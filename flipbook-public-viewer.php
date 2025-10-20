@@ -559,11 +559,6 @@ foreach ($pages as $index => $page) {
         let isZoomMode = false;
         let isZoomed = false;
 
-        // Web Audio API context for better iOS support
-        let audioContext = null;
-        let currentSource = null;
-        let currentGainNode = null;
-
         const container = document.getElementById('pageFlipContainer');
         const leftArrow = document.getElementById('leftArrow');
         const rightArrow = document.getElementById('rightArrow');
@@ -621,17 +616,11 @@ foreach ($pages as $index => $page) {
                             loadingSpinner.classList.add('hidden');
                         }
                         container.classList.add('loaded');
-
-                        // Log audio availability for debugging
-                        console.log('First page loaded');
-                        console.log('Page audio assignments:', pageAudioAssignments);
-                        console.log('Current page index:', currentPageIndex);
                     }
                 };
 
                 // Use image_path if available (new system), otherwise image_data (old system)
                 const imageSrc = page.image_path || page.image_data;
-                console.log(`Page ${index + 1} - has image_path: ${!!page.image_path}, has image_data: ${!!page.image_data}, using: ${imageSrc ? imageSrc.substring(0, 50) + '...' : 'none'}`);
                 img.src = imageSrc;
                 pageDiv.querySelector('.page-content').appendChild(img);
             }
@@ -642,7 +631,6 @@ foreach ($pages as $index => $page) {
             // Fallback: if first page doesn't load in 5 seconds, show it anyway
             setTimeout(() => {
                 if (loadedCount === 0) {
-                    console.log('First page taking too long, showing spinner...');
                     if (loadingSpinner) {
                         loadingSpinner.classList.add('hidden');
                     }
@@ -733,170 +721,131 @@ foreach ($pages as $index => $page) {
             clickAreaRight.style.display = currentPageIndex === pages.length - 1 ? 'none' : 'block';
         }
 
-        // Initialize Web Audio API context (required for iOS)
-        function initAudioContext() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                console.log('Web Audio API context initialized');
-            }
-        }
-
-        // Audio handling with Web Audio API for iOS-compatible crossfade
+        // Audio handling with crossfade transitions (iOS compatible)
         function handlePageAudio(pageIndex) {
-            console.log('handlePageAudio called for page:', pageIndex);
-            console.log('Audio assigned to this page:', pageAudioAssignments[pageIndex]);
-
             if (pageAudioAssignments[pageIndex]) {
                 const audio = pageAudioAssignments[pageIndex];
-                console.log('Found audio for page:', audio.name);
 
-                if (!currentAudio || currentAudio.dataset?.audioId != audio.id) {
-                    // Start new audio with crossfade
-                    startNewAudioWithWebAPI(audio);
+                if (!currentAudio || currentAudio.dataset.audioId != audio.id) {
+                    // Crossfade: start new audio while fading out old
+                    const oldAudio = currentAudio;
+
+                    // Start new audio immediately at volume 0
+                    startNewAudio(audio, oldAudio);
 
                     viewerAudioTrack.textContent = audio.name;
-                } else {
-                    console.log('Audio already playing, no change needed');
                 }
             } else {
-                console.log('No audio assigned to page', pageIndex);
-                if (currentGainNode && audioContext) {
-                    // Fade out current audio
-                    const now = audioContext.currentTime;
-                    currentGainNode.gain.setValueAtTime(currentGainNode.gain.value, now);
-                    currentGainNode.gain.linearRampToValueAtTime(0, now + 2);
+                if (currentAudio) {
+                    const audioToFade = currentAudio;
+                    currentAudio = null;
 
-                    // Stop after fade
-                    setTimeout(() => {
-                        if (currentSource) {
-                            currentSource.stop();
-                            currentSource = null;
-                        }
-                        currentAudio = null;
-                        currentGainNode = null;
-                    }, 2100);
+                    fadeOutAndStop(audioToFade, 2000);
                 }
                 viewerAudioTrack.textContent = 'No music';
             }
         }
 
-        // Start new audio using Web Audio API with crossfade
-        async function startNewAudioWithWebAPI(audio) {
-            console.log('startNewAudioWithWebAPI called for:', audio.name);
+        // Fade out audio and stop it (for pages with no audio)
+        function fadeOutAndStop(audioElement, duration) {
+            if (!audioElement) return;
 
-            // Use audio_path if available, otherwise audio_data
-            const audioSrc = audio.audio_path || audio.audio_data;
+            const startVolume = audioElement.volume;
+            const fadeInterval = 50;
+            const steps = duration / fadeInterval;
+            const volumeStep = startVolume / steps;
+            let currentStep = 0;
 
-            // Check if audioContext exists
-            if (!audioContext) {
-                alert('ERROR: AudioContext is null!');
-                fallbackToRegularAudio(audio);
-                return;
-            }
+            const fadeTimer = setInterval(() => {
+                currentStep++;
+                const newVolume = Math.max(0, startVolume - (volumeStep * currentStep));
 
-            try {
-                alert('Fetching: ' + audioSrc.substring(0, 40));
-
-                // Fetch and decode audio
-                const response = await fetch(audioSrc);
-                alert('Fetch OK, status: ' + response.status);
-
-                const arrayBuffer = await response.arrayBuffer();
-                alert('Got buffer: ' + arrayBuffer.byteLength + ' bytes');
-
-                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-                alert('Decoded! Duration: ' + audioBuffer.duration + 's');
-
-                // Store old gain node for crossfade
-                const oldGainNode = currentGainNode;
-                const oldSource = currentSource;
-
-                // Create new source and gain node
-                const source = audioContext.createBufferSource();
-                const gainNode = audioContext.createGain();
-
-                source.buffer = audioBuffer;
-                source.loop = true;
-                source.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-
-                // Update references
-                currentSource = source;
-                currentGainNode = gainNode;
-                currentAudio = { dataset: { audioId: audio.id } };
-
-                if (!isMuted) {
-                    // iOS Safari fix: Start at full volume immediately, then fade
-                    const now = audioContext.currentTime;
-
-                    // Start playing BEFORE setting gain
-                    source.start(0);
-
-                    // Set initial volume to 0.5 immediately (iOS needs this)
-                    gainNode.gain.setValueAtTime(0.5, now);
-
-                    alert('Audio started at 0.5 volume immediately (iOS fix)');
-
-                    // If there's old audio, fade it out
-                    if (oldGainNode) {
-                        oldGainNode.gain.setValueAtTime(oldGainNode.gain.value, now);
-                        oldGainNode.gain.linearRampToValueAtTime(0, now + 2);
-
-                        // Stop old source after fade
-                        setTimeout(() => {
-                            if (oldSource) {
-                                try {
-                                    oldSource.stop();
-                                } catch (e) {}
-                            }
-                        }, 2100);
-                    }
-                } else {
-                    alert('isMuted is true - not playing');
+                try {
+                    audioElement.volume = newVolume;
+                } catch (e) {
+                    // iOS may reject volume changes
                 }
 
-            } catch (e) {
-                alert('Web Audio ERROR: ' + e.message);
-                console.error('Web Audio API failed:', e);
-                fallbackToRegularAudio(audio);
-            }
+                if (currentStep >= steps || newVolume <= 0) {
+                    clearInterval(fadeTimer);
+                    audioElement.pause();
+                    audioElement.src = ''; // iOS: properly destroy audio object
+                }
+            }, fadeInterval);
         }
 
-        // Fallback to regular audio if Web Audio API fails
-        function fallbackToRegularAudio(audio) {
-            console.log('Falling back to regular Audio element');
+        // Crossfade between audio tracks (iOS compatible)
+        function crossfadeAudio(oldAudio, newAudio, duration) {
+            if (!oldAudio || !newAudio) return;
+
+            const fadeInterval = 50;
+            const steps = duration / fadeInterval;
+            const volumeStep = 0.5 / steps; // Fade from/to 0.5 volume
+            let currentStep = 0;
+
+            const crossfadeTimer = setInterval(() => {
+                currentStep++;
+                const progress = currentStep / steps;
+
+                try {
+                    // Fade out old audio
+                    oldAudio.volume = Math.max(0, 0.5 * (1 - progress));
+                    // Fade in new audio
+                    newAudio.volume = Math.min(0.5, 0.5 * progress);
+                } catch (e) {
+                    // iOS may reject volume changes
+                }
+
+                if (currentStep >= steps) {
+                    clearInterval(crossfadeTimer);
+                    // Ensure final volumes
+                    try {
+                        oldAudio.volume = 0;
+                        newAudio.volume = 0.5;
+                    } catch (e) {}
+
+                    // Stop and destroy old audio
+                    oldAudio.pause();
+                    oldAudio.src = ''; // iOS: properly destroy audio object
+                }
+            }, fadeInterval);
+        }
+
+        // Start new audio track with optional crossfade
+        function startNewAudio(audio, oldAudio = null) {
+            // Use audio_path if available (new system), otherwise audio_data (old system)
             const audioSrc = audio.audio_path || audio.audio_data;
+
             const newAudio = new Audio(audioSrc);
             newAudio.dataset.audioId = audio.id;
             newAudio.loop = true;
-            newAudio.volume = 0.5;
-            currentAudio = newAudio;
+            newAudio.volume = oldAudio ? 0 : 0.5; // Start at 0 if crossfading, otherwise 0.5
 
             if (!isMuted) {
-                newAudio.play().catch(e => console.error('Fallback audio play failed:', e));
+                newAudio.play()
+                    .then(() => {
+                        // Update current audio reference
+                        currentAudio = newAudio;
+
+                        // Start crossfade if there's old audio
+                        if (oldAudio) {
+                            crossfadeAudio(oldAudio, newAudio, 2000);
+                        }
+                    })
+                    .catch(e => {
+                        currentAudio = newAudio; // Still update reference even if play failed
+                    });
+            } else {
+                currentAudio = newAudio;
             }
         }
 
         // Mute button
         viewerMuteBtn.addEventListener('click', () => {
             isMuted = !isMuted;
-
-            // Handle Web Audio API muting
-            if (currentGainNode && audioContext) {
-                const now = audioContext.currentTime;
-                if (isMuted) {
-                    currentGainNode.gain.setValueAtTime(currentGainNode.gain.value, now);
-                    currentGainNode.gain.linearRampToValueAtTime(0, now + 0.1);
-                } else {
-                    currentGainNode.gain.setValueAtTime(0, now);
-                    currentGainNode.gain.linearRampToValueAtTime(0.5, now + 0.1);
-                }
-            }
-            // Fallback for regular Audio element
-            else if (currentAudio && currentAudio.muted !== undefined) {
+            if (currentAudio) {
                 currentAudio.muted = isMuted;
             }
-
             updateViewerMuteBtn();
         });
 
@@ -1016,9 +965,7 @@ foreach ($pages as $index => $page) {
         leftArrow.addEventListener('click', () => {
             // If audio not initialized yet, wait a moment for the universal handler to run first
             if (!audioInitialized) {
-                console.log('First navigation - delaying to allow audio init');
                 setTimeout(() => {
-                    console.log('Delayed navigation executing, audioInitialized:', audioInitialized);
                     goToPage(currentPageIndex - 1, 'backward');
                 }, 100);
             } else {
@@ -1029,9 +976,7 @@ foreach ($pages as $index => $page) {
         rightArrow.addEventListener('click', () => {
             // If audio not initialized yet, wait a moment for the universal handler to run first
             if (!audioInitialized) {
-                console.log('First navigation - delaying to allow audio init');
                 setTimeout(() => {
-                    console.log('Delayed navigation executing, audioInitialized:', audioInitialized);
                     goToPage(currentPageIndex + 1, 'forward');
                 }, 100);
             } else {
@@ -1043,9 +988,7 @@ foreach ($pages as $index => $page) {
             e.stopPropagation();
             // If audio not initialized yet, wait a moment for the universal handler to run first
             if (!audioInitialized) {
-                console.log('First navigation - delaying to allow audio init');
                 setTimeout(() => {
-                    console.log('Delayed navigation executing, audioInitialized:', audioInitialized);
                     goToPage(currentPageIndex - 1, 'backward');
                 }, 100);
             } else {
@@ -1057,9 +1000,7 @@ foreach ($pages as $index => $page) {
             e.stopPropagation();
             // If audio not initialized yet, wait a moment for the universal handler to run first
             if (!audioInitialized) {
-                console.log('First navigation - delaying to allow audio init');
                 setTimeout(() => {
-                    console.log('Delayed navigation executing, audioInitialized:', audioInitialized);
                     goToPage(currentPageIndex + 1, 'forward');
                 }, 100);
             } else {
@@ -1096,49 +1037,12 @@ foreach ($pages as $index => $page) {
             if (!audioInitialized) {
                 userHasInteracted = true;
                 audioInitialized = true;
-                console.log('First user interaction detected (event:', e.type, ') - starting audio for page:', currentPageIndex);
+                handlePageAudio(currentPageIndex);
 
-                // Remove listeners immediately
+                // Remove listeners after first interaction
                 document.removeEventListener('click', startAudioOnFirstInteraction);
                 document.removeEventListener('keydown', startAudioOnFirstInteraction);
                 document.removeEventListener('touchend', startAudioOnFirstInteraction);
-
-                // iOS Safari workaround: Create and play a silent audio element first
-                // This "unlocks" iOS audio system
-                try {
-                    alert('iOS FIX: Creating dummy audio to unlock iOS...');
-
-                    const silentAudio = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAADhQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAA4X/gNxAAAAAAAD/+xDEAAPAAAGkAAAAIAAANIAAAARMQU1FMy4xMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/+xDEDwPAAAGkAAAAIAAANIAAAARMQU1FMy4xMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/+xDEHwPAAAGkAAAAIAAANIAAAARMQU1FMy4xMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==');
-
-                    silentAudio.play().then(() => {
-                        alert('Dummy audio played! Now initializing Web Audio API...');
-
-                        // NOW create AudioContext
-                        if (!audioContext) {
-                            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                            alert('AudioContext created. State: ' + audioContext.state);
-                        }
-
-                        // Resume it
-                        audioContext.resume().then(() => {
-                            alert('AudioContext resumed! State: ' + audioContext.state);
-
-                            // Small delay then play
-                            setTimeout(() => {
-                                handlePageAudio(currentPageIndex);
-                            }, 100);
-                        }).catch(err => {
-                            alert('Resume ERROR: ' + err.message);
-                        });
-
-                    }).catch(err => {
-                        alert('Dummy audio play ERROR: ' + err.message);
-                    });
-
-                } catch (err) {
-                    alert('Setup ERROR: ' + err.message);
-                    console.error('Audio init error:', err);
-                }
             }
         }
 
