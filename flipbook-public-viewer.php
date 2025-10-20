@@ -820,23 +820,24 @@ foreach ($pages as $index => $page) {
                 source.connect(gainNode);
                 gainNode.connect(audioContext.destination);
 
-                // Start new audio at volume 0
-                const now = audioContext.currentTime;
-                gainNode.gain.setValueAtTime(0, now);
-
                 // Update references
                 currentSource = source;
                 currentGainNode = gainNode;
                 currentAudio = { dataset: { audioId: audio.id } };
 
                 if (!isMuted) {
-                    // Start playing
+                    // iOS Safari fix: Start at full volume immediately, then fade
+                    const now = audioContext.currentTime;
+
+                    // Start playing BEFORE setting gain
                     source.start(0);
-                    alert('Audio started! Fading in to 0.5 volume...');
 
-                    // Crossfade: fade in new, fade out old over 2 seconds
-                    gainNode.gain.linearRampToValueAtTime(0.5, now + 2);
+                    // Set initial volume to 0.5 immediately (iOS needs this)
+                    gainNode.gain.setValueAtTime(0.5, now);
 
+                    alert('Audio started at 0.5 volume immediately (iOS fix)');
+
+                    // If there's old audio, fade it out
                     if (oldGainNode) {
                         oldGainNode.gain.setValueAtTime(oldGainNode.gain.value, now);
                         oldGainNode.gain.linearRampToValueAtTime(0, now + 2);
