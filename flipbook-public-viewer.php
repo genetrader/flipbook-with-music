@@ -1103,32 +1103,38 @@ foreach ($pages as $index => $page) {
                 document.removeEventListener('keydown', startAudioOnFirstInteraction);
                 document.removeEventListener('touchend', startAudioOnFirstInteraction);
 
-                // Initialize Web Audio API context on first interaction (required for iOS)
+                // iOS Safari workaround: Create and play a silent audio element first
+                // This "unlocks" iOS audio system
                 try {
-                    // Create AudioContext
-                    if (!audioContext) {
-                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        alert('Step 1: AudioContext created. State: ' + audioContext.state);
-                    }
+                    alert('iOS FIX: Creating dummy audio to unlock iOS...');
 
-                    // Resume it (critical for iOS)
-                    if (audioContext.state === 'suspended') {
-                        alert('Step 2: State is suspended, calling resume...');
+                    const silentAudio = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAADhQCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAA4X/gNxAAAAAAAD/+xDEAAPAAAGkAAAAIAAANIAAAARMQU1FMy4xMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/+xDEDwPAAAGkAAAAIAAANIAAAARMQU1FMy4xMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/+xDEHwPAAAGkAAAAIAAANIAAAARMQU1FMy4xMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==');
+
+                    silentAudio.play().then(() => {
+                        alert('Dummy audio played! Now initializing Web Audio API...');
+
+                        // NOW create AudioContext
+                        if (!audioContext) {
+                            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                            alert('AudioContext created. State: ' + audioContext.state);
+                        }
+
+                        // Resume it
                         audioContext.resume().then(() => {
-                            alert('Step 3: Resume succeeded! State: ' + audioContext.state);
+                            alert('AudioContext resumed! State: ' + audioContext.state);
 
-                            // Now try to play audio
+                            // Small delay then play
                             setTimeout(() => {
-                                alert('Step 4: Calling handlePageAudio...');
                                 handlePageAudio(currentPageIndex);
-                            }, 200);
+                            }, 100);
                         }).catch(err => {
                             alert('Resume ERROR: ' + err.message);
                         });
-                    } else {
-                        alert('Step 2b: State is already ' + audioContext.state + ', playing audio...');
-                        handlePageAudio(currentPageIndex);
-                    }
+
+                    }).catch(err => {
+                        alert('Dummy audio play ERROR: ' + err.message);
+                    });
+
                 } catch (err) {
                     alert('Setup ERROR: ' + err.message);
                     console.error('Audio init error:', err);
