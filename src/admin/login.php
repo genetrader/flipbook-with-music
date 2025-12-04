@@ -1,9 +1,16 @@
 <?php
-session_start();
+/**
+ * Flipbook Plugin - Admin Login
+ *
+ * @version 1.0.0
+ */
 
-// Admin credentials - CHANGE THESE!
-define('ADMIN_USERNAME', 'admin');
-define('ADMIN_PASSWORD', 'NameNeg-1!!@@!!'); // Change this to a secure password
+// Load configuration
+require_once __DIR__ . '/../config.php';
+
+// Start session with unique name
+session_name(FLIPBOOK_SESSION_NAME);
+session_start();
 
 $error = '';
 
@@ -11,10 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    if ($username === ADMIN_USERNAME && $password === ADMIN_PASSWORD) {
+    // Check credentials
+    if ($username === FLIPBOOK_ADMIN_USER && password_verify($password, FLIPBOOK_ADMIN_PASS)) {
         $_SESSION['flipbook_admin_logged_in'] = true;
         $_SESSION['flipbook_admin_username'] = $username;
-        header('Location: flipbook-admin-dashboard.php');
+        $_SESSION['flipbook_admin_last_activity'] = time();
+        header('Location: dashboard.php');
         exit;
     } else {
         $error = 'Invalid username or password';
@@ -23,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // If already logged in, redirect to dashboard
 if (isset($_SESSION['flipbook_admin_logged_in']) && $_SESSION['flipbook_admin_logged_in']) {
-    header('Location: flipbook-admin-dashboard.php');
+    header('Location: dashboard.php');
     exit;
 }
 ?>
@@ -41,7 +50,7 @@ if (isset($_SESSION['flipbook_admin_logged_in']) && $_SESSION['flipbook_admin_lo
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -69,6 +78,7 @@ if (isset($_SESSION['flipbook_admin_logged_in']) && $_SESSION['flipbook_admin_lo
             color: #666;
             text-align: center;
             margin-bottom: 30px;
+            font-size: 14px;
         }
 
         .form-group {
@@ -135,6 +145,15 @@ if (isset($_SESSION['flipbook_admin_logged_in']) && $_SESSION['flipbook_admin_lo
             font-size: 64px;
             margin-bottom: 20px;
         }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #999;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -160,6 +179,10 @@ if (isset($_SESSION['flipbook_admin_logged_in']) && $_SESSION['flipbook_admin_lo
 
             <button type="submit">Login</button>
         </form>
+
+        <div class="footer">
+            Flipbook Plugin v1.0.0
+        </div>
     </div>
 </body>
 </html>

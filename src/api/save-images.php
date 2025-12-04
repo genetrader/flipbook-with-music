@@ -4,6 +4,7 @@
  * Saves base64 images as actual JPG files on server
  */
 
+session_name(FLIPBOOK_SESSION_NAME);
 session_start();
 
 // Check authentication
@@ -28,7 +29,7 @@ try {
     $imageData = $data['imageData'];
 
     // Create directory for this flipbook if it doesn't exist
-    $uploadDir = __DIR__ . '/flipbook-images/' . $flipbookId;
+    $uploadDir = FLIPBOOK_FLIPBOOK_UPLOAD_DIR . 'pages/' . $flipbookId;
     if (!file_exists($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }

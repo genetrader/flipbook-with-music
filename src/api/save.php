@@ -4,6 +4,7 @@
  * Receives flipbook data and saves to database
  */
 
+session_name(FLIPBOOK_SESSION_NAME);
 session_start();
 
 // Check authentication
@@ -14,8 +15,8 @@ if (!isset($_SESSION['flipbook_admin_logged_in']) || !$_SESSION['flipbook_admin_
 }
 
 // Include dependencies
-require_once 'flipbook-config.php';
-require_once 'flipbook-db.php';
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../FlipbookDB.php';
 
 // Set JSON response header
 header('Content-Type: application/json');
@@ -73,7 +74,7 @@ try {
     }
 
     // Create directory for flipbook images
-    $imageDir = __DIR__ . '/flipbook-images/' . $flipbookId;
+    $imageDir = FLIPBOOK_FLIPBOOK_UPLOAD_DIR . 'pages/' . $flipbookId;
     if (!file_exists($imageDir)) {
         if (!mkdir($imageDir, 0755, true)) {
             throw new Exception('Failed to create image directory');

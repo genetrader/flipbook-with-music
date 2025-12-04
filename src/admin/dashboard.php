@@ -1,15 +1,26 @@
 <?php
+/**
+ * Flipbook Plugin - Admin Dashboard
+ *
+ * @version 1.0.0
+ */
+
+// Load configuration
+require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../FlipbookDB.php';
+
+// Start session with unique name
+session_name(FLIPBOOK_SESSION_NAME);
+
 session_start();
 
 // Check if logged in
 if (!isset($_SESSION['flipbook_admin_logged_in']) || !$_SESSION['flipbook_admin_logged_in']) {
-    header('Location: flipbook-admin-login.php');
+    header('Location: login.php');
     exit;
 }
 
 // Database connection
-require_once 'flipbook-config.php';
-require_once 'flipbook-db.php';
 
 $db = new FlipbookDB();
 $flipbooks = $db->getAllFlipbooks();
@@ -20,7 +31,7 @@ $flipbooks = $db->getAllFlipbooks();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flipbook Admin Dashboard</title>
-    <link rel="stylesheet" href="flipbook-admin-styles.css">
+    <link rel="stylesheet" href="assets/admin.css">
 </head>
 <body>
     <div class="container">
@@ -28,7 +39,7 @@ $flipbooks = $db->getAllFlipbooks();
             <h1>📚 Flipbook Admin Dashboard</h1>
             <div class="header-actions">
                 <span>Welcome, <?php echo htmlspecialchars($_SESSION['flipbook_admin_username']); ?></span>
-                <a href="flipbook-admin-logout.php" class="btn btn-secondary">Logout</a>
+                <a href="logout.php" class="btn btn-secondary">Logout</a>
             </div>
         </header>
 
@@ -169,6 +180,6 @@ $flipbooks = $db->getAllFlipbooks();
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
-    <script src="flipbook-admin.js"></script>
+    <script src="assets/admin.js"></script>
 </body>
 </html>
