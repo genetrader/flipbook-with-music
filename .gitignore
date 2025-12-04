@@ -1,0 +1,61 @@
+# Configuration
+src/config.php
+
+# Uploads directory
+uploads/*
+!uploads/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+error_log
+debug.log
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Backups
+*.bak
+*.backup
+*.old
+
+# Database dumps
+*.sql.gz
+*.sql.zip
+backup-*.sql
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Node modules (if using npm for dev tools)
+node_modules/
+
+# Composer
+vendor/
+composer.lock
+
+# Build artifacts
+dist/
+build/
+
+# Test files
+tests/tmp/
+coverage/
+
+# Documentation build
+docs/_build/
