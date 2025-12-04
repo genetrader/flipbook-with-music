@@ -2,6 +2,26 @@
 
 A professional, self-hosted flipbook system with page-flip animations and synchronized audio playback. Perfect for digital comics, magazines, catalogs, and interactive publications.
 
+## 📸 Screenshots
+
+<p align="center">
+  <img src=".github/screenshot-viewer.png" alt="Flipbook Viewer" width="800">
+  <br>
+  <em>Interactive flipbook viewer with page-flip animations</em>
+</p>
+
+<p align="center">
+  <img src=".github/screenshot-dashboard.png" alt="Admin Dashboard" width="800">
+  <br>
+  <em>Clean admin dashboard for managing flipbooks</em>
+</p>
+
+<p align="center">
+  <img src=".github/screenshot-admin.png" alt="Admin Panel" width="800">
+  <br>
+  <em>Easy-to-use admin interface with audio synchronization</em>
+</p>
+
 ## ✨ Features
 
 - **📖 PDF to Flipbook** - Upload PDFs and automatically convert to interactive flipbooks
@@ -26,8 +46,8 @@ A professional, self-hosted flipbook system with page-flip animations and synchr
 
 1. **Download the plugin**
    ```bash
-   git clone https://github.com/yourusername/flipbook-plugin.git
-   cd flipbook-plugin
+   git clone https://github.com/genetrader/flipbook-with-music.git
+   cd flipbook-with-music
    ```
 
 2. **Upload to your web server**
@@ -259,7 +279,7 @@ MIT License - See [LICENSE](LICENSE) file for details.
 ## 🔗 Links
 
 - **Documentation:** [/docs/](/docs/)
-- **Issues:** [GitHub Issues](https://github.com/yourusername/flipbook-plugin/issues)
+- **Issues:** [GitHub Issues](https://github.com/genetrader/flipbook-with-music/issues)
 - **Demo:** [Coming Soon]
 
 ## 📊 Version History
