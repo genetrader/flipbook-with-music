@@ -360,6 +360,7 @@ function displayFolderPreview() {
 
         // Add chapter images
         chapter.images.forEach((file) => {
+            const currentPageNum = pageNum++; // Capture page number before async call
             const reader = new FileReader();
             reader.onload = function(e) {
                 const previewDiv = document.createElement('div');
@@ -367,13 +368,12 @@ function displayFolderPreview() {
                 previewDiv.innerHTML = `
                     <img src="${e.target.result}" style="width: 100%; height: 120px; object-fit: cover; display: block;">
                     <div style="padding: 5px; background: #f5f5f5; font-size: 11px; text-align: center;">
-                        Page ${pageNum}
+                        Page ${currentPageNum}
                     </div>
                 `;
                 preview.appendChild(previewDiv);
             };
             reader.readAsDataURL(file);
-            pageNum++;
         });
     });
 }
@@ -945,7 +945,14 @@ async function saveFlipbook() {
     console.log('Audio assignments being sent:', audioAssignments);
     console.log('Audio library:', audioLibrary.map((a, i) => ({ index: i, name: a.name })));
 
-    // Prepare data to send
+    // If more than 50 pages, use batch upload to avoid 413 errors
+    if (pages.length > 50) {
+        console.log(`Large flipbook detected (${pages.length} pages). Using batch upload...`);
+        await saveFlipbookInBatches(title, description, orientation, audioAssignments);
+        return;
+    }
+
+    // Prepare data to send (for small flipbooks)
     const data = {
         title: title,
         description: description,
@@ -992,6 +999,141 @@ async function saveFlipbook() {
         }
     } catch (error) {
         console.error('Error saving flipbook:', error);
+        alert('Error saving flipbook: ' + error.message);
+    }
+}
+
+// Save large flipbooks in batches to avoid 413 errors
+async function saveFlipbookInBatches(title, description, orientation, audioAssignments) {
+    try {
+        // Show progress message
+        alert(`Saving large flipbook with ${pages.length} pages. This may take a minute...`);
+
+        // Step 1: Create flipbook with just 1 page (to get flipbook ID)
+        console.log('Step 1: Creating flipbook...');
+        const initialData = {
+            title: title,
+            description: description,
+            orientation: orientation,
+            pages: [pages[0]], // Just first page
+            audioLibrary: [],
+            audioAssignments: {}
+        };
+
+        const createResponse = await fetch('flipbook-api-save.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(initialData)
+        });
+
+        const createResult = await createResponse.json();
+        if (!createResponse.ok || !createResult.success) {
+            throw new Error(createResult.error || 'Failed to create flipbook');
+        }
+
+        const flipbookId = createResult.flipbookId;
+        console.log(`Flipbook created with ID: ${flipbookId}`);
+
+        // Step 2: Upload remaining pages in batches of 20
+        const BATCH_SIZE = 20;
+        const remainingPages = pages.slice(1); // Skip first page (already uploaded)
+        const totalBatches = Math.ceil(remainingPages.length / BATCH_SIZE);
+
+        console.log(`Step 2: Uploading ${remainingPages.length} remaining pages in ${totalBatches} batches...`);
+
+        for (let i = 0; i < remainingPages.length; i += BATCH_SIZE) {
+            const batch = remainingPages.slice(i, Math.min(i + BATCH_SIZE, remainingPages.length));
+            const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+
+            console.log(`Uploading batch ${batchNum}/${totalBatches} (${batch.length} pages)...`);
+
+            const batchData = {
+                flipbookId: flipbookId,
+                title: title,
+                description: description,
+                orientation: orientation,
+                pages: batch,
+                audioLibrary: [],
+                audioAssignments: {}
+            };
+
+            const batchResponse = await fetch('flipbook-api-save.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(batchData)
+            });
+
+            const batchResult = await batchResponse.json();
+            if (!batchResponse.ok || !batchResult.success) {
+                throw new Error(`Batch ${batchNum} failed: ${batchResult.error || 'Unknown error'}`);
+            }
+
+            console.log(`Batch ${batchNum}/${totalBatches} completed`);
+        }
+
+        // Step 3: Upload audio library
+        console.log('Step 3: Uploading audio library...');
+        if (audioLibrary.length > 0) {
+            const audioData = {
+                flipbookId: flipbookId,
+                title: title,
+                description: description,
+                orientation: orientation,
+                pages: [], // Empty - already saved
+                audioLibrary: audioLibrary,
+                audioAssignments: {}
+            };
+
+            const audioResponse = await fetch('flipbook-api-save.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(audioData)
+            });
+
+            const audioResult = await audioResponse.json();
+            if (!audioResponse.ok || !audioResult.success) {
+                console.error('Warning: Audio upload failed:', audioResult.error);
+                // Don't throw - audio is optional
+            } else {
+                console.log('Audio library uploaded successfully');
+            }
+        }
+
+        // Step 4: Save audio assignments
+        console.log('Step 4: Saving audio assignments...');
+        if (Object.keys(audioAssignments).length > 0) {
+            const assignData = {
+                flipbookId: flipbookId,
+                title: title,
+                description: description,
+                orientation: orientation,
+                pages: [], // Empty - already saved
+                audioLibrary: [], // Empty - already saved
+                audioAssignments: audioAssignments
+            };
+
+            const assignResponse = await fetch('flipbook-api-save.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(assignData)
+            });
+
+            const assignResult = await assignResponse.json();
+            if (!assignResponse.ok || !assignResult.success) {
+                console.error('Warning: Audio assignments failed:', assignResult.error);
+                // Don't throw - assignments are optional
+            } else {
+                console.log('Audio assignments saved successfully');
+            }
+        }
+
+        // Success!
+        currentFlipbookId = flipbookId;
+        document.getElementById('successMessage').textContent = `"${title}" has been created successfully with ${pages.length} pages!`;
+        goToStep(5);
+
+    } catch (error) {
+        console.error('Error in batch save:', error);
         alert('Error saving flipbook: ' + error.message);
     }
 }
