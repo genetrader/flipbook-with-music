@@ -269,7 +269,8 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ## 🙏 Credits
 
-**Created by:** Mike Waxman / [Larger Than Life Comics](https://largerthanlifecomics.com)
+**Created by:** Mike W / [Larger Than Life Comics](https://largerthanlifecomics.com)
+**Developer:** Gene W
 
 **Built with:**
 - [PDF.js](https://mozilla.github.io/pdf.js/) - PDF rendering
