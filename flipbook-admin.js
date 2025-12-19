@@ -10,6 +10,8 @@ let audioLibrary = [];
 let currentStep = 1;
 let uploadMethod = 'pdf'; // 'pdf' or 'images'
 let uploadedImages = [];
+let useFolderUpload = false;
+let chapters = []; // Array of {folderName, title, images}
 
 // PDF.js setup is done in the HTML file
 
@@ -42,8 +44,38 @@ function switchUploadMethod(method) {
         imagesLabel.style.borderWidth = '3px';
 
         // Enable button if images are loaded
-        processBtn.disabled = uploadedImages.length === 0;
+        processBtn.disabled = uploadedImages.length === 0 && chapters.length === 0;
     }
+}
+
+// Toggle folder upload mode
+function toggleFolderUpload() {
+    useFolderUpload = document.getElementById('useFolderUpload').checked;
+    const imagesUpload = document.getElementById('imagesUpload');
+    const uploadAreaText = document.getElementById('uploadAreaText');
+    const uploadAreaSubtext = document.getElementById('uploadAreaSubtext');
+
+    if (useFolderUpload) {
+        imagesUpload.setAttribute('webkitdirectory', '');
+        imagesUpload.setAttribute('directory', '');
+        imagesUpload.removeAttribute('multiple');
+        uploadAreaText.textContent = 'Select folders to upload';
+        uploadAreaSubtext.textContent = 'Choose a parent folder containing chapter folders';
+    } else {
+        imagesUpload.removeAttribute('webkitdirectory');
+        imagesUpload.removeAttribute('directory');
+        imagesUpload.setAttribute('multiple', '');
+        uploadAreaText.textContent = 'Drop images here or click to browse';
+        uploadAreaSubtext.textContent = 'Select multiple image files at once';
+    }
+
+    // Reset uploads
+    imagesUpload.value = '';
+    uploadedImages = [];
+    chapters = [];
+    document.getElementById('imagesPreview').innerHTML = '';
+    document.getElementById('chapterTitlesEditor').style.display = 'none';
+    document.getElementById('processBtn').disabled = true;
 }
 
 // Step navigation
@@ -82,7 +114,12 @@ function showCreateNew() {
     document.getElementById('imagesUpload').value = '';
     document.getElementById('pdfInfo').style.display = 'none';
     document.getElementById('imagesPreview').innerHTML = '';
+    document.getElementById('chapterTitlesEditor').style.display = 'none';
     document.getElementById('processBtn').disabled = true;
+
+    // Reset folder upload checkbox
+    document.getElementById('useFolderUpload').checked = false;
+    useFolderUpload = false;
 
     // Reset to PDF method
     document.getElementById('uploadMethodPDF').checked = true;
@@ -91,6 +128,7 @@ function showCreateNew() {
     pages = [];
     audioLibrary = [];
     uploadedImages = [];
+    chapters = [];
 }
 
 // PDF Upload handling
@@ -173,7 +211,11 @@ imagesUploadArea.addEventListener('drop', (e) => {
 
 imagesUpload.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
-        handleImagesUpload(Array.from(e.target.files));
+        if (useFolderUpload) {
+            handleFolderUpload(Array.from(e.target.files));
+        } else {
+            handleImagesUpload(Array.from(e.target.files));
+        }
     }
 });
 
@@ -201,6 +243,122 @@ function handleImagesUpload(files) {
     document.getElementById('processBtn').disabled = false;
 }
 
+function handleFolderUpload(files) {
+    // Organize files by folder
+    const folderMap = new Map();
+
+    files.forEach(file => {
+        // Get folder path from webkitRelativePath
+        const pathParts = file.webkitRelativePath.split('/');
+        if (pathParts.length < 2) return; // Skip files in root
+
+        const folderName = pathParts[pathParts.length - 2]; // Direct parent folder
+
+        if (!folderMap.has(folderName)) {
+            folderMap.set(folderName, []);
+        }
+        folderMap.get(folderName).push(file);
+    });
+
+    // Convert to chapters array
+    chapters = [];
+    folderMap.forEach((images, folderName) => {
+        // Sort images alphabetically within each folder
+        images.sort((a, b) => a.name.localeCompare(b.name));
+
+        chapters.push({
+            folderName: folderName,
+            title: formatChapterTitle(folderName),
+            images: images
+        });
+    });
+
+    // Sort chapters alphabetically
+    chapters.sort((a, b) => a.folderName.localeCompare(b.folderName));
+
+    console.log(`Detected ${chapters.length} chapters:`, chapters.map(c => c.folderName));
+
+    // Display chapter titles for editing
+    displayChapterTitles();
+
+    // Display preview
+    displayFolderPreview();
+
+    document.getElementById('processBtn').disabled = false;
+}
+
+function formatChapterTitle(folderName) {
+    // Convert folder name to title case
+    // Examples: "chapter-1" -> "Chapter 1", "cork_origin" -> "Cork Origin"
+    return folderName
+        .replace(/[-_]/g, ' ')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+}
+
+function displayChapterTitles() {
+    const editor = document.getElementById('chapterTitlesEditor');
+    const list = document.getElementById('chapterTitlesList');
+
+    list.innerHTML = chapters.map((chapter, index) => `
+        <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 8px; border: 2px solid #e0e0e0;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="font-size: 24px;">📖</div>
+                <div style="flex: 1;">
+                    <div style="font-size: 12px; color: #999; margin-bottom: 5px;">Chapter ${index + 1} (${chapter.images.length} pages)</div>
+                    <input type="text"
+                           id="chapterTitle${index}"
+                           value="${chapter.title}"
+                           onchange="updateChapterTitle(${index}, this.value)"
+                           style="width: 100%; padding: 8px; font-size: 16px; font-weight: 600; border: 2px solid #ddd; border-radius: 5px;"
+                           placeholder="Enter chapter title">
+                    <div style="font-size: 11px; color: #666; margin-top: 5px;">Folder: ${chapter.folderName}</div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    editor.style.display = 'block';
+}
+
+function updateChapterTitle(index, newTitle) {
+    chapters[index].title = newTitle;
+}
+
+function displayFolderPreview() {
+    const preview = document.getElementById('imagesPreview');
+    preview.innerHTML = '';
+
+    let pageNum = 1;
+
+    chapters.forEach((chapter, chapterIndex) => {
+        // Add chapter divider
+        const divider = document.createElement('div');
+        divider.style.cssText = 'grid-column: 1 / -1; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; margin: 10px 0; text-align: center; color: white; font-weight: 600; font-size: 14px;';
+        divider.textContent = `📖 ${chapter.title} (${chapter.images.length} pages)`;
+        preview.appendChild(divider);
+
+        // Add chapter images
+        chapter.images.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewDiv = document.createElement('div');
+                previewDiv.style.cssText = 'border: 2px solid #ddd; border-radius: 5px; overflow: hidden; position: relative;';
+                previewDiv.innerHTML = `
+                    <img src="${e.target.result}" style="width: 100%; height: 120px; object-fit: cover; display: block;">
+                    <div style="padding: 5px; background: #f5f5f5; font-size: 11px; text-align: center;">
+                        Page ${pageNum}
+                    </div>
+                `;
+                preview.appendChild(previewDiv);
+            };
+            reader.readAsDataURL(file);
+            pageNum++;
+        });
+    });
+}
+
 function removeImage(index) {
     const filesArray = Array.from(uploadedImages);
     filesArray.splice(index, 1);
@@ -226,7 +384,11 @@ async function processUpload() {
     if (uploadMethod === 'pdf') {
         await convertPDF();
     } else {
-        await processImages();
+        if (useFolderUpload && chapters.length > 0) {
+            await processChapters();
+        } else {
+            await processImages();
+        }
     }
 }
 
@@ -363,6 +525,164 @@ async function processImages() {
         alert('Error processing images: ' + error.message);
         goToStep(1);
     }
+}
+
+// Process chapters with title slides
+async function processChapters() {
+    if (chapters.length === 0) {
+        alert('No chapters detected');
+        return;
+    }
+
+    // Move to step 2
+    goToStep(2);
+
+    const progressFill = document.getElementById('conversionProgress');
+    const pagePreview = document.getElementById('pagePreview');
+    pagePreview.innerHTML = '';
+    pages = [];
+
+    try {
+        let totalImages = 0;
+        chapters.forEach(chapter => totalImages += chapter.images.length);
+        const totalPages = totalImages + chapters.length; // Add chapter title slides
+
+        let processedCount = 0;
+        let pageNum = 1;
+
+        console.log(`Processing ${chapters.length} chapters with ${totalPages} total pages...`);
+
+        for (let chapterIndex = 0; chapterIndex < chapters.length; chapterIndex++) {
+            const chapter = chapters[chapterIndex];
+
+            // Create chapter title slide
+            const titleSlide = await createChapterTitleSlide(chapter.title, chapterIndex + 1);
+            pages.push({
+                pageNumber: pageNum++,
+                data: titleSlide,
+                isChapterTitle: true
+            });
+
+            // Add preview for title slide
+            const titlePreview = document.createElement('div');
+            titlePreview.className = 'page-preview-item';
+            titlePreview.innerHTML = `
+                <img src="${titleSlide}" alt="Chapter ${chapterIndex + 1}">
+                <div class="page-label">📖 Chapter ${chapterIndex + 1}</div>
+            `;
+            pagePreview.appendChild(titlePreview);
+
+            processedCount++;
+            const progress = Math.round((processedCount / totalPages) * 100);
+            progressFill.style.width = progress + '%';
+            progressFill.textContent = progress + '%';
+
+            // Process chapter images
+            for (let i = 0; i < chapter.images.length; i++) {
+                const file = chapter.images[i];
+
+                const imageData = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+
+                pages.push({
+                    pageNumber: pageNum++,
+                    data: imageData
+                });
+
+                // Add preview
+                const previewDiv = document.createElement('div');
+                previewDiv.className = 'page-preview-item';
+                previewDiv.innerHTML = `
+                    <img src="${imageData}" alt="Page ${pageNum - 1}">
+                    <div class="page-label">Page ${pageNum - 1}</div>
+                `;
+                pagePreview.appendChild(previewDiv);
+
+                processedCount++;
+                const progressPct = Math.round((processedCount / totalPages) * 100);
+                progressFill.style.width = progressPct + '%';
+                progressFill.textContent = progressPct + '%';
+            }
+        }
+
+        console.log(`Created ${pages.length} pages (${chapters.length} title slides + ${totalImages} images)`);
+
+        // Show next button
+        document.getElementById('audioUploadBtn').style.display = 'block';
+
+    } catch (error) {
+        console.error('Error processing chapters:', error);
+        alert('Error processing chapters: ' + error.message);
+        goToStep(1);
+    }
+}
+
+// Create a chapter title slide as an image
+async function createChapterTitleSlide(title, chapterNumber) {
+    return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1200;
+        canvas.height = 1600;
+        const ctx = canvas.getContext('2d');
+
+        // Background gradient
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, '#667eea');
+        gradient.addColorStop(1, '#764ba2');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Add decorative elements
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(50, 50, canvas.width - 100, canvas.height - 100);
+        ctx.strokeRect(70, 70, canvas.width - 140, canvas.height - 140);
+
+        // Chapter number
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.font = 'bold 120px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`CHAPTER ${chapterNumber}`, canvas.width / 2, 350);
+
+        // Chapter title
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 80px Arial';
+
+        // Word wrap for long titles
+        const words = title.split(' ');
+        const lines = [];
+        let currentLine = words[0];
+
+        for (let i = 1; i < words.length; i++) {
+            const testLine = currentLine + ' ' + words[i];
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > canvas.width - 200) {
+                lines.push(currentLine);
+                currentLine = words[i];
+            } else {
+                currentLine = testLine;
+            }
+        }
+        lines.push(currentLine);
+
+        // Draw title lines centered
+        const lineHeight = 100;
+        const startY = canvas.height / 2 - ((lines.length - 1) * lineHeight / 2);
+        lines.forEach((line, index) => {
+            ctx.fillText(line, canvas.width / 2, startY + (index * lineHeight));
+        });
+
+        // Book icon
+        ctx.font = '100px Arial';
+        ctx.fillText('📖', canvas.width / 2, canvas.height - 200);
+
+        // Convert to data URL
+        resolve(canvas.toDataURL('image/png'));
+    });
 }
 
 // Audio upload handling

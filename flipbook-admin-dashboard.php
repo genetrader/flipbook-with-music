@@ -110,12 +110,28 @@ $flipbooks = $db->getAllFlipbooks();
                     <!-- Images Upload Section -->
                     <div id="imagesUploadSection" class="form-group" style="display: none;">
                         <label for="imagesUpload">Upload Images * (JPG, PNG, GIF)</label>
+
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="useFolderUpload" onchange="toggleFolderUpload()" style="width: 18px; height: 18px;">
+                                <span><strong>Upload by Folders</strong> (Auto-create chapter title slides from folder names)</span>
+                            </label>
+                        </div>
+
                         <div class="file-upload-area" id="imagesUploadArea">
                             <p style="font-size: 48px; margin-bottom: 10px;">🖼️</p>
-                            <p style="font-size: 18px; font-weight: 600;">Drop images here or click to browse</p>
-                            <p style="font-size: 14px; color: #666; margin-top: 10px;">Select multiple image files at once</p>
+                            <p style="font-size: 18px; font-weight: 600;" id="uploadAreaText">Drop images here or click to browse</p>
+                            <p style="font-size: 14px; color: #666; margin-top: 10px;" id="uploadAreaSubtext">Select multiple image files at once</p>
                             <input type="file" id="imagesUpload" accept="image/jpeg,image/jpg,image/png,image/gif" multiple style="display: none;">
                         </div>
+
+                        <!-- Chapter Titles Editor (shown when folders detected) -->
+                        <div id="chapterTitlesEditor" style="display: none; margin-top: 20px; padding: 20px; background: #f9f9f9; border-radius: 10px;">
+                            <h4 style="margin-top: 0; margin-bottom: 15px;">📖 Edit Chapter Titles</h4>
+                            <p style="color: #666; margin-bottom: 15px;">Click on any chapter title to edit it before processing</p>
+                            <div id="chapterTitlesList"></div>
+                        </div>
+
                         <div id="imagesPreview" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 15px;"></div>
                     </div>
 
