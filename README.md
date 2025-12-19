@@ -24,13 +24,15 @@ A professional, self-hosted flipbook system with page-flip animations and synchr
 
 ## ✨ Features
 
-- **📖 PDF to Flipbook** - Upload PDFs and automatically convert to interactive flipbooks
+- **📖 Multiple Upload Options** - Upload PDFs OR individual images to create flipbooks
+- **📁 Folder Upload with Chapter Slides** - Upload folders and automatically create beautiful chapter title slides
 - **🎵 Audio Integration** - Assign background music to specific pages with 2-second crossfades
+- **📦 Batch Upload** - Handle large flipbooks (50+ pages) with automatic batch processing
 - **📱 Mobile-First** - Fully responsive design works on all devices
 - **⚡ Fast & Lightweight** - No external dependencies, all self-hosted
 - **🎨 Customizable** - Easy to theme and integrate into any website
 - **🔒 Secure** - Session-based authentication, prepared statements, file validation
-- **💾 Dual Storage** - Supports both base64 and file-based storage
+- **💾 File-Based Storage** - Efficient storage using image and audio files
 
 ## 🚀 Quick Start
 
@@ -76,11 +78,45 @@ A professional, self-hosted flipbook system with page-flip animations and synchr
 
 1. **Login** to the admin dashboard
 2. Click **"+ Create New Flipbook"**
-3. **Step 1:** Enter title, description, upload PDF
-4. **Step 2:** Wait for automatic page conversion
+3. **Step 1:** Enter title and description
+   - **Choose upload method:**
+     - **📄 Upload PDF** - Automatically converts PDF pages to flipbook
+     - **🖼️ Upload Images** - Upload individual image files (JPG, PNG, GIF)
+     - **📁 Upload by Folders** - Upload folders to auto-create chapter title slides
+4. **Step 2:** Wait for automatic page processing
 5. **Step 3:** Upload audio files (optional)
 6. **Step 4:** Assign audio to specific pages (optional)
 7. **Save** and get your public viewer URL!
+
+### Upload Methods Explained
+
+#### PDF Upload
+- Upload any PDF file
+- Pages are automatically converted to high-quality images
+- Perfect for existing documents and comics
+
+#### Image Upload
+- Select multiple JPG, PNG, or GIF files
+- Files are processed in the order you select them
+- Ideal for pre-rendered comic pages
+
+#### Folder Upload with Chapters
+- Upload a parent folder containing chapter subfolders
+- System automatically detects chapters and creates title slides
+- Example structure:
+  ```
+  Cork Episode 5/
+  ├── Chapter 1 - Origins/
+  │   ├── page-01.jpg
+  │   └── page-02.jpg
+  ├── Chapter 2 - Discovery/
+  │   └── page-01.jpg
+  └── Chapter 3 - Adventure/
+      └── page-01.jpg
+  ```
+- Each chapter gets a beautiful auto-generated title slide
+- Edit chapter titles before processing
+- Perfect for multi-chapter comics and magazines
 
 ### Embedding Flipbooks
 
