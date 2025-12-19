@@ -66,3 +66,14 @@ docs/_build/
 
 # Zip files
 *.zip
+
+# Large video/media files
+*.mov
+*.MOV
+*.mp4
+*.MP4
+*.avi
+*.AVI
+IMG_3152.MOV
+IMG_4338.MOV
+MIKES FEEDBACK.mp4
