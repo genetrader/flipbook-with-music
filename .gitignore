@@ -1,19 +1,68 @@
+# Configuration
+src/config.php
+flipbook-config.php
+
+# Uploads directory
+uploads/*
+!uploads/.gitkeep
+flipbook-uploads/*
+flipbook-images/*
+flipbook-audio/*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+error_log
+debug.log
+
 # Temporary files
 *.tmp
 *.temp
-.DS_Store
-Thumbs.db
+*.cache
 
-# Backup files
+# Backups
 *.bak
 *.backup
+*.old
 
-# Editor files
-.vscode/
-.idea/
+# Database dumps
+*.sql.gz
+*.sql.zip
+backup-*.sql
 
-# Zip files (since we extracted them)
+# Environment files
+.env
+.env.local
+.env.production
+
+# Node modules (if using npm for dev tools)
+node_modules/
+
+# Composer
+vendor/
+composer.lock
+
+# Build artifacts
+dist/
+build/
+
+# Test files
+tests/tmp/
+coverage/
+
+# Documentation build
+docs/_build/
+
+# Zip files
 *.zip
-
-# Original mockup image (optional - remove this line if you want to include it)
-# larger then life mockup image.jpg
