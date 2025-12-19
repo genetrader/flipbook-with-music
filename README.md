@@ -19,7 +19,13 @@ A professional, self-hosted flipbook system with page-flip animations and synchr
 <p align="center">
   <img src=".github/screenshot-admin.png" alt="Admin Panel" width="800">
   <br>
-  <em>Easy-to-use admin interface with audio synchronization</em>
+  <em>Upload PDFs, images, or folders with drag-and-drop simplicity</em>
+</p>
+
+<p align="center">
+  <img src=".github/screenshot-chapters.png" alt="Chapter Creator" width="800">
+  <br>
+  <em>Auto-generated chapter title slides with thumbnail preview and page organization</em>
 </p>
 
 ## ✨ Features
