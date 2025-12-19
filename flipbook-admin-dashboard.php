@@ -64,9 +64,9 @@ $flipbooks = $db->getAllFlipbooks();
                     </div>
                 </div>
 
-                <!-- Step 1: Basic Info & PDF Upload -->
+                <!-- Step 1: Basic Info & Upload Method -->
                 <div id="step1" class="step-content active">
-                    <h3>Step 1: Basic Information & PDF Upload</h3>
+                    <h3>Step 1: Basic Information & Upload Content</h3>
 
                     <div class="form-group">
                         <label for="flipbookTitle">Flipbook Title *</label>
@@ -79,6 +79,25 @@ $flipbooks = $db->getAllFlipbooks();
                     </div>
 
                     <div class="form-group">
+                        <label>Upload Method *</label>
+                        <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                            <label style="flex: 1; padding: 20px; border: 2px solid #ddd; border-radius: 10px; cursor: pointer; text-align: center;" id="pdfMethodLabel">
+                                <input type="radio" name="uploadMethod" value="pdf" id="uploadMethodPDF" checked onchange="switchUploadMethod('pdf')">
+                                <div style="font-size: 48px; margin: 10px 0;">📄</div>
+                                <strong>Upload PDF</strong>
+                                <p style="color: #666; margin-top: 5px; font-size: 14px;">Upload a PDF file to convert</p>
+                            </label>
+                            <label style="flex: 1; padding: 20px; border: 2px solid #ddd; border-radius: 10px; cursor: pointer; text-align: center;" id="imagesMethodLabel">
+                                <input type="radio" name="uploadMethod" value="images" id="uploadMethodImages" onchange="switchUploadMethod('images')">
+                                <div style="font-size: 48px; margin: 10px 0;">🖼️</div>
+                                <strong>Upload Images</strong>
+                                <p style="color: #666; margin-top: 5px; font-size: 14px;">Upload multiple image files</p>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- PDF Upload Section -->
+                    <div id="pdfUploadSection" class="form-group">
                         <label for="pdfUpload">Upload PDF *</label>
                         <div class="file-upload-area" id="pdfUploadArea">
                             <p style="font-size: 48px; margin-bottom: 10px;">📄</p>
@@ -88,12 +107,24 @@ $flipbooks = $db->getAllFlipbooks();
                         <div id="pdfInfo" style="display: none; margin-top: 10px;"></div>
                     </div>
 
-                    <button onclick="convertPDF()" id="convertBtn" class="btn btn-primary" disabled>Next: Convert to Pages</button>
+                    <!-- Images Upload Section -->
+                    <div id="imagesUploadSection" class="form-group" style="display: none;">
+                        <label for="imagesUpload">Upload Images * (JPG, PNG, GIF)</label>
+                        <div class="file-upload-area" id="imagesUploadArea">
+                            <p style="font-size: 48px; margin-bottom: 10px;">🖼️</p>
+                            <p style="font-size: 18px; font-weight: 600;">Drop images here or click to browse</p>
+                            <p style="font-size: 14px; color: #666; margin-top: 10px;">Select multiple image files at once</p>
+                            <input type="file" id="imagesUpload" accept="image/jpeg,image/jpg,image/png,image/gif" multiple style="display: none;">
+                        </div>
+                        <div id="imagesPreview" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 15px;"></div>
+                    </div>
+
+                    <button onclick="processUpload()" id="processBtn" class="btn btn-primary" disabled>Next: Process Pages</button>
                 </div>
 
-                <!-- Step 2: PDF Conversion -->
+                <!-- Step 2: Processing Pages -->
                 <div id="step2" class="step-content">
-                    <h3>Step 2: Converting PDF to Images</h3>
+                    <h3>Step 2: Processing Pages</h3>
                     <div class="progress-container">
                         <div class="progress-bar">
                             <div class="progress-fill" id="conversionProgress">0%</div>

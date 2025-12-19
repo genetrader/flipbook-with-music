@@ -8,8 +8,43 @@ let currentFlipbookId = null;
 let pages = [];
 let audioLibrary = [];
 let currentStep = 1;
+let uploadMethod = 'pdf'; // 'pdf' or 'images'
+let uploadedImages = [];
 
 // PDF.js setup is done in the HTML file
+
+// Switch upload method
+function switchUploadMethod(method) {
+    uploadMethod = method;
+    const pdfSection = document.getElementById('pdfUploadSection');
+    const imagesSection = document.getElementById('imagesUploadSection');
+    const pdfLabel = document.getElementById('pdfMethodLabel');
+    const imagesLabel = document.getElementById('imagesMethodLabel');
+    const processBtn = document.getElementById('processBtn');
+
+    if (method === 'pdf') {
+        pdfSection.style.display = 'block';
+        imagesSection.style.display = 'none';
+        pdfLabel.style.borderColor = '#667eea';
+        pdfLabel.style.borderWidth = '3px';
+        imagesLabel.style.borderColor = '#ddd';
+        imagesLabel.style.borderWidth = '2px';
+
+        // Enable button if PDF is loaded
+        const pdfFile = document.getElementById('pdfUpload').files[0];
+        processBtn.disabled = !pdfFile;
+    } else {
+        pdfSection.style.display = 'none';
+        imagesSection.style.display = 'block';
+        pdfLabel.style.borderColor = '#ddd';
+        pdfLabel.style.borderWidth = '2px';
+        imagesLabel.style.borderColor = '#667eea';
+        imagesLabel.style.borderWidth = '3px';
+
+        // Enable button if images are loaded
+        processBtn.disabled = uploadedImages.length === 0;
+    }
+}
 
 // Step navigation
 function goToStep(stepNumber) {
@@ -44,10 +79,18 @@ function showCreateNew() {
     document.getElementById('flipbookTitle').value = '';
     document.getElementById('flipbookDescription').value = '';
     document.getElementById('pdfUpload').value = '';
+    document.getElementById('imagesUpload').value = '';
     document.getElementById('pdfInfo').style.display = 'none';
-    document.getElementById('convertBtn').disabled = true;
+    document.getElementById('imagesPreview').innerHTML = '';
+    document.getElementById('processBtn').disabled = true;
+
+    // Reset to PDF method
+    document.getElementById('uploadMethodPDF').checked = true;
+    switchUploadMethod('pdf');
+
     pages = [];
     audioLibrary = [];
+    uploadedImages = [];
 }
 
 // PDF Upload handling
@@ -94,19 +137,102 @@ function handlePDFUpload(file) {
             Size: ${(file.size / 1024 / 1024).toFixed(2)} MB
         </div>
     `;
-    convertBtn.disabled = false;
+    document.getElementById('processBtn').disabled = false;
 }
 
-// Convert PDF to images
-async function convertPDF() {
+// Images Upload handling
+const imagesUploadArea = document.getElementById('imagesUploadArea');
+const imagesUpload = document.getElementById('imagesUpload');
+const imagesPreview = document.getElementById('imagesPreview');
+
+imagesUploadArea.addEventListener('click', () => {
+    imagesUpload.click();
+});
+
+imagesUploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    imagesUploadArea.classList.add('dragover');
+});
+
+imagesUploadArea.addEventListener('dragleave', () => {
+    imagesUploadArea.classList.remove('dragover');
+});
+
+imagesUploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    imagesUploadArea.classList.remove('dragover');
+
+    const files = Array.from(e.dataTransfer.files).filter(file =>
+        file.type.startsWith('image/')
+    );
+
+    if (files.length > 0) {
+        handleImagesUpload(files);
+    }
+});
+
+imagesUpload.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleImagesUpload(Array.from(e.target.files));
+    }
+});
+
+function handleImagesUpload(files) {
+    uploadedImages = files;
+    imagesPreview.innerHTML = '';
+
+    files.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const previewDiv = document.createElement('div');
+            previewDiv.style.cssText = 'border: 2px solid #ddd; border-radius: 5px; overflow: hidden; position: relative;';
+            previewDiv.innerHTML = `
+                <img src="${e.target.result}" style="width: 100%; height: 120px; object-fit: cover; display: block;">
+                <div style="padding: 5px; background: #f5f5f5; font-size: 11px; text-align: center;">
+                    Page ${index + 1}
+                </div>
+                <button onclick="removeImage(${index})" style="position: absolute; top: 5px; right: 5px; background: red; color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px; line-height: 1;">×</button>
+            `;
+            imagesPreview.appendChild(previewDiv);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById('processBtn').disabled = false;
+}
+
+function removeImage(index) {
+    const filesArray = Array.from(uploadedImages);
+    filesArray.splice(index, 1);
+
+    // Create new FileList
+    const dt = new DataTransfer();
+    filesArray.forEach(file => dt.items.add(file));
+    uploadedImages = dt.files;
+    imagesUpload.files = dt.files;
+
+    handleImagesUpload(filesArray);
+}
+
+// Process upload (PDF or Images)
+async function processUpload() {
     const title = document.getElementById('flipbookTitle').value.trim();
-    const description = document.getElementById('flipbookDescription').value.trim();
-    const pdfFile = pdfUpload.files[0];
 
     if (!title) {
         alert('Please enter a flipbook title');
         return;
     }
+
+    if (uploadMethod === 'pdf') {
+        await convertPDF();
+    } else {
+        await processImages();
+    }
+}
+
+// Convert PDF to images
+async function convertPDF() {
+    const pdfFile = pdfUpload.files[0];
 
     if (!pdfFile) {
         alert('Please upload a PDF file');
@@ -175,6 +301,66 @@ async function convertPDF() {
     } catch (error) {
         console.error('Error converting PDF:', error);
         alert('Error converting PDF: ' + error.message);
+        goToStep(1);
+    }
+}
+
+// Process uploaded images
+async function processImages() {
+    if (uploadedImages.length === 0) {
+        alert('Please upload at least one image');
+        return;
+    }
+
+    // Move to step 2
+    goToStep(2);
+
+    const progressFill = document.getElementById('conversionProgress');
+    const pagePreview = document.getElementById('pagePreview');
+    pagePreview.innerHTML = '';
+    pages = [];
+
+    try {
+        const numImages = uploadedImages.length;
+        console.log(`Processing ${numImages} images...`);
+
+        for (let i = 0; i < numImages; i++) {
+            const file = uploadedImages[i];
+
+            // Read image as data URL
+            const imageData = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+
+            pages.push({
+                pageNumber: i + 1,
+                data: imageData
+            });
+
+            // Update progress
+            const progress = Math.round(((i + 1) / numImages) * 100);
+            progressFill.style.width = progress + '%';
+            progressFill.textContent = progress + '%';
+
+            // Add preview
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'page-preview-item';
+            previewDiv.innerHTML = `
+                <img src="${imageData}" alt="Page ${i + 1}">
+                <div class="page-label">Page ${i + 1}</div>
+            `;
+            pagePreview.appendChild(previewDiv);
+        }
+
+        // Show next button
+        document.getElementById('audioUploadBtn').style.display = 'block';
+
+    } catch (error) {
+        console.error('Error processing images:', error);
+        alert('Error processing images: ' + error.message);
         goToStep(1);
     }
 }
