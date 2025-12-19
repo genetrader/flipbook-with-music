@@ -116,6 +116,16 @@ $flipbooks = $db->getAllFlipbooks();
                                 <input type="checkbox" id="useFolderUpload" onchange="toggleFolderUpload()" style="width: 18px; height: 18px;">
                                 <span><strong>Upload by Folders</strong> (Auto-create chapter title slides from folder names)</span>
                             </label>
+                            <div id="folderUploadInstructions" style="display: none; margin-top: 10px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
+                                <strong>📁 How to upload folders:</strong>
+                                <ol style="margin: 10px 0 0 20px; padding: 0;">
+                                    <li>Click the upload area below</li>
+                                    <li>Navigate to the PARENT folder containing your chapter folders</li>
+                                    <li><strong>Click ONCE</strong> on the parent folder to select it (don't double-click to open it)</li>
+                                    <li>Click the "Select Folder" or "Upload" button</li>
+                                    <li>All subfolders will be detected as chapters</li>
+                                </ol>
+                            </div>
                         </div>
 
                         <div class="file-upload-area" id="imagesUploadArea">
@@ -123,6 +133,7 @@ $flipbooks = $db->getAllFlipbooks();
                             <p style="font-size: 18px; font-weight: 600;" id="uploadAreaText">Drop images here or click to browse</p>
                             <p style="font-size: 14px; color: #666; margin-top: 10px;" id="uploadAreaSubtext">Select multiple image files at once</p>
                             <input type="file" id="imagesUpload" accept="image/jpeg,image/jpg,image/png,image/gif" multiple style="display: none;">
+                            <input type="file" id="folderUpload" webkitdirectory directory style="display: none;">
                         </div>
 
                         <!-- Chapter Titles Editor (shown when folders detected) -->

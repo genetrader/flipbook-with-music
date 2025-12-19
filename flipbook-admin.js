@@ -51,26 +51,23 @@ function switchUploadMethod(method) {
 // Toggle folder upload mode
 function toggleFolderUpload() {
     useFolderUpload = document.getElementById('useFolderUpload').checked;
-    const imagesUpload = document.getElementById('imagesUpload');
     const uploadAreaText = document.getElementById('uploadAreaText');
     const uploadAreaSubtext = document.getElementById('uploadAreaSubtext');
+    const instructions = document.getElementById('folderUploadInstructions');
 
     if (useFolderUpload) {
-        imagesUpload.setAttribute('webkitdirectory', '');
-        imagesUpload.setAttribute('directory', '');
-        imagesUpload.removeAttribute('multiple');
-        uploadAreaText.textContent = 'Select folders to upload';
-        uploadAreaSubtext.textContent = 'Choose a parent folder containing chapter folders';
+        uploadAreaText.textContent = 'Click here to select parent folder';
+        uploadAreaSubtext.innerHTML = '<strong style="color: #dc3545;">Your browser will show ALL files in the selected folder tree - this is normal!</strong>';
+        instructions.style.display = 'block';
     } else {
-        imagesUpload.removeAttribute('webkitdirectory');
-        imagesUpload.removeAttribute('directory');
-        imagesUpload.setAttribute('multiple', '');
         uploadAreaText.textContent = 'Drop images here or click to browse';
         uploadAreaSubtext.textContent = 'Select multiple image files at once';
+        instructions.style.display = 'none';
     }
 
     // Reset uploads
-    imagesUpload.value = '';
+    document.getElementById('imagesUpload').value = '';
+    document.getElementById('folderUpload').value = '';
     uploadedImages = [];
     chapters = [];
     document.getElementById('imagesPreview').innerHTML = '';
@@ -181,10 +178,15 @@ function handlePDFUpload(file) {
 // Images Upload handling
 const imagesUploadArea = document.getElementById('imagesUploadArea');
 const imagesUpload = document.getElementById('imagesUpload');
+const folderUpload = document.getElementById('folderUpload');
 const imagesPreview = document.getElementById('imagesPreview');
 
 imagesUploadArea.addEventListener('click', () => {
-    imagesUpload.click();
+    if (useFolderUpload) {
+        folderUpload.click();
+    } else {
+        imagesUpload.click();
+    }
 });
 
 imagesUploadArea.addEventListener('dragover', (e) => {
@@ -211,11 +213,13 @@ imagesUploadArea.addEventListener('drop', (e) => {
 
 imagesUpload.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
-        if (useFolderUpload) {
-            handleFolderUpload(Array.from(e.target.files));
-        } else {
-            handleImagesUpload(Array.from(e.target.files));
-        }
+        handleImagesUpload(Array.from(e.target.files));
+    }
+});
+
+folderUpload.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleFolderUpload(Array.from(e.target.files));
     }
 });
 
@@ -244,21 +248,31 @@ function handleImagesUpload(files) {
 }
 
 function handleFolderUpload(files) {
+    console.log(`handleFolderUpload called with ${files.length} files`);
+
     // Organize files by folder
     const folderMap = new Map();
 
     files.forEach(file => {
         // Get folder path from webkitRelativePath
         const pathParts = file.webkitRelativePath.split('/');
-        if (pathParts.length < 2) return; // Skip files in root
+        console.log(`File: ${file.name}, Path: ${file.webkitRelativePath}, Parts:`, pathParts);
+
+        if (pathParts.length < 2) {
+            console.log(`Skipping file in root: ${file.name}`);
+            return; // Skip files in root
+        }
 
         const folderName = pathParts[pathParts.length - 2]; // Direct parent folder
+        console.log(`Adding ${file.name} to folder: ${folderName}`);
 
         if (!folderMap.has(folderName)) {
             folderMap.set(folderName, []);
         }
         folderMap.get(folderName).push(file);
     });
+
+    console.log(`Folder map has ${folderMap.size} folders:`, Array.from(folderMap.keys()));
 
     // Convert to chapters array
     chapters = [];
@@ -276,7 +290,12 @@ function handleFolderUpload(files) {
     // Sort chapters alphabetically
     chapters.sort((a, b) => a.folderName.localeCompare(b.folderName));
 
-    console.log(`Detected ${chapters.length} chapters:`, chapters.map(c => c.folderName));
+    console.log(`Detected ${chapters.length} chapters:`, chapters.map(c => `${c.folderName} (${c.images.length} images)`));
+
+    if (chapters.length === 0) {
+        alert('No chapters detected. Please make sure you selected a parent folder containing subfolders with images.');
+        return;
+    }
 
     // Display chapter titles for editing
     displayChapterTitles();
