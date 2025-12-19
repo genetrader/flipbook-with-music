@@ -316,15 +316,18 @@ function handleFolderUpload(files) {
 
     // Convert to chapters array
     chapters = [];
+    let chapterNum = 1;
     folderMap.forEach((images, folderName) => {
         // Sort images using natural sort (handles numbers in filenames correctly)
         images.sort(naturalSort);
 
         chapters.push({
             folderName: folderName,
-            title: formatChapterTitle(folderName),
+            headerText: `CHAPTER ${chapterNum}`, // Big text at top (editable)
+            title: formatChapterTitle(folderName), // Subtitle below (editable)
             images: images
         });
+        chapterNum++;
     });
 
     // Sort chapters using natural sort (handles chapter numbers correctly)
@@ -362,17 +365,30 @@ function displayChapterTitles() {
 
     list.innerHTML = chapters.map((chapter, index) => `
         <div style="margin-bottom: 15px; padding: 15px; background: white; border-radius: 8px; border: 2px solid #e0e0e0;">
-            <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="display: flex; align-items: flex-start; gap: 15px;">
                 <div style="font-size: 24px;">📖</div>
                 <div style="flex: 1;">
-                    <div style="font-size: 12px; color: #999; margin-bottom: 5px;">Chapter ${index + 1} (${chapter.images.length} pages)</div>
-                    <input type="text"
-                           id="chapterTitle${index}"
-                           value="${chapter.title}"
-                           onchange="updateChapterTitle(${index}, this.value)"
-                           style="width: 100%; padding: 8px; font-size: 16px; font-weight: 600; border: 2px solid #ddd; border-radius: 5px;"
-                           placeholder="Enter chapter title">
-                    <div style="font-size: 11px; color: #666; margin-top: 5px;">Folder: ${chapter.folderName}</div>
+                    <div style="font-size: 12px; color: #999; margin-bottom: 10px;">Chapter ${index + 1} (${chapter.images.length} pages) - Folder: ${chapter.folderName}</div>
+
+                    <div style="margin-bottom: 10px;">
+                        <label style="display: block; font-size: 11px; color: #666; margin-bottom: 3px;">Big Header Text (leave blank to hide):</label>
+                        <input type="text"
+                               id="chapterHeader${index}"
+                               value="${chapter.headerText}"
+                               onchange="updateChapterHeader(${index}, this.value)"
+                               style="width: 100%; padding: 8px; font-size: 14px; font-weight: 600; border: 2px solid #ddd; border-radius: 5px; background: #f8f8f8;"
+                               placeholder="e.g., CHAPTER 1 or leave blank">
+                    </div>
+
+                    <div>
+                        <label style="display: block; font-size: 11px; color: #666; margin-bottom: 3px;">Subtitle Text (leave blank to hide):</label>
+                        <input type="text"
+                               id="chapterTitle${index}"
+                               value="${chapter.title}"
+                               onchange="updateChapterTitle(${index}, this.value)"
+                               style="width: 100%; padding: 8px; font-size: 16px; font-weight: 600; border: 2px solid #ddd; border-radius: 5px;"
+                               placeholder="e.g., The Beginning or leave blank">
+                    </div>
                 </div>
             </div>
         </div>
@@ -385,6 +401,10 @@ function updateChapterTitle(index, newTitle) {
     chapters[index].title = newTitle;
 }
 
+function updateChapterHeader(index, newHeader) {
+    chapters[index].headerText = newHeader;
+}
+
 function displayFolderPreview() {
     const preview = document.getElementById('imagesPreview');
     preview.innerHTML = '';
@@ -395,7 +415,22 @@ function displayFolderPreview() {
         // Add chapter divider
         const divider = document.createElement('div');
         divider.style.cssText = 'grid-column: 1 / -1; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; margin: 10px 0; text-align: center; color: white; font-weight: 600; font-size: 14px;';
-        divider.textContent = `📖 ${chapter.title} (${chapter.images.length} pages)`;
+
+        // Show header and/or title
+        let dividerText = '📖 ';
+        if (chapter.headerText && chapter.headerText.trim() !== '') {
+            dividerText += chapter.headerText;
+            if (chapter.title && chapter.title.trim() !== '') {
+                dividerText += ' - ' + chapter.title;
+            }
+        } else if (chapter.title && chapter.title.trim() !== '') {
+            dividerText += chapter.title;
+        } else {
+            dividerText += `Chapter ${chapterIndex + 1}`;
+        }
+        dividerText += ` (${chapter.images.length} pages)`;
+
+        divider.textContent = dividerText;
         preview.appendChild(divider);
 
         // Add chapter images
@@ -618,7 +653,7 @@ async function processChapters() {
             const chapter = chapters[chapterIndex];
 
             // Create chapter title slide
-            const titleSlide = await createChapterTitleSlide(chapter.title, chapterIndex + 1);
+            const titleSlide = await createChapterTitleSlide(chapter.headerText, chapter.title);
             pages.push({
                 pageNumber: pageNum++,
                 data: titleSlide,
@@ -684,7 +719,7 @@ async function processChapters() {
 }
 
 // Create a chapter title slide as an image
-async function createChapterTitleSlide(title, chapterNumber) {
+async function createChapterTitleSlide(headerText, title) {
     return new Promise((resolve) => {
         const canvas = document.createElement('canvas');
         canvas.width = 1200;
@@ -698,49 +733,56 @@ async function createChapterTitleSlide(title, chapterNumber) {
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Add decorative elements
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(50, 50, canvas.width - 100, canvas.height - 100);
-        ctx.strokeRect(70, 70, canvas.width - 140, canvas.height - 140);
+        // Add thin border 15 pixels from edges
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
 
-        // Chapter number
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.font = 'bold 120px Arial';
+        // Center vertically based on what's shown
         ctx.textAlign = 'center';
-        ctx.fillText(`CHAPTER ${chapterNumber}`, canvas.width / 2, 350);
+        let currentY = canvas.height / 2;
 
-        // Chapter title
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 80px Arial';
-
-        // Word wrap for long titles
-        const words = title.split(' ');
-        const lines = [];
-        let currentLine = words[0];
-
-        for (let i = 1; i < words.length; i++) {
-            const testLine = currentLine + ' ' + words[i];
-            const metrics = ctx.measureText(testLine);
-            if (metrics.width > canvas.width - 200) {
-                lines.push(currentLine);
-                currentLine = words[i];
-            } else {
-                currentLine = testLine;
-            }
+        // If we have both header and title, position them together
+        if (headerText && headerText.trim() !== '' && title && title.trim() !== '') {
+            currentY = canvas.height / 2 - 100; // Move up a bit for both
         }
-        lines.push(currentLine);
 
-        // Draw title lines centered
-        const lineHeight = 100;
-        const startY = canvas.height / 2 - ((lines.length - 1) * lineHeight / 2);
-        lines.forEach((line, index) => {
-            ctx.fillText(line, canvas.width / 2, startY + (index * lineHeight));
-        });
+        // Draw header text (big text at top) if not blank
+        if (headerText && headerText.trim() !== '') {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.font = 'bold 120px Arial';
+            ctx.fillText(headerText.trim(), canvas.width / 2, currentY);
+            currentY += 200; // Space before subtitle
+        }
 
-        // Book icon
-        ctx.font = '100px Arial';
-        ctx.fillText('📖', canvas.width / 2, canvas.height - 200);
+        // Draw title (subtitle) if not blank
+        if (title && title.trim() !== '') {
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 80px Arial';
+
+            // Word wrap for long titles
+            const words = title.trim().split(' ');
+            const lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                const testLine = currentLine + ' ' + words[i];
+                const metrics = ctx.measureText(testLine);
+                if (metrics.width > canvas.width - 200) {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            lines.push(currentLine);
+
+            // Draw title lines
+            const lineHeight = 100;
+            lines.forEach((line, index) => {
+                ctx.fillText(line, canvas.width / 2, currentY + (index * lineHeight));
+            });
+        }
 
         // Convert to data URL
         resolve(canvas.toDataURL('image/png'));
