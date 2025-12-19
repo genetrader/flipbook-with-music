@@ -15,6 +15,44 @@ let chapters = []; // Array of {folderName, title, images}
 
 // PDF.js setup is done in the HTML file
 
+// Natural sort function for filenames with numbers
+function naturalSort(a, b) {
+    // Extract filename without extension for comparison
+    const aName = a.name || a;
+    const bName = b.name || b;
+
+    // Split into parts of text and numbers
+    const aParts = aName.match(/(\d+|\D+)/g) || [];
+    const bParts = bName.match(/(\d+|\D+)/g) || [];
+
+    const len = Math.min(aParts.length, bParts.length);
+
+    for (let i = 0; i < len; i++) {
+        const aPart = aParts[i];
+        const bPart = bParts[i];
+
+        // Check if both parts are numbers
+        const aNum = parseInt(aPart, 10);
+        const bNum = parseInt(bPart, 10);
+
+        if (!isNaN(aNum) && !isNaN(bNum)) {
+            // Both are numbers - compare numerically
+            if (aNum !== bNum) {
+                return aNum - bNum;
+            }
+        } else {
+            // At least one is text - compare alphabetically
+            const compare = aPart.localeCompare(bPart);
+            if (compare !== 0) {
+                return compare;
+            }
+        }
+    }
+
+    // If all parts are equal, shorter name comes first
+    return aParts.length - bParts.length;
+}
+
 // Switch upload method
 function switchUploadMethod(method) {
     uploadMethod = method;
@@ -224,10 +262,12 @@ folderUpload.addEventListener('change', (e) => {
 });
 
 function handleImagesUpload(files) {
-    uploadedImages = files;
+    // Sort files using natural sort (handles numbers in filenames correctly)
+    const sortedFiles = Array.from(files).sort(naturalSort);
+    uploadedImages = sortedFiles;
     imagesPreview.innerHTML = '';
 
-    files.forEach((file, index) => {
+    sortedFiles.forEach((file, index) => {
         const reader = new FileReader();
         reader.onload = function(e) {
             const previewDiv = document.createElement('div');
@@ -277,8 +317,8 @@ function handleFolderUpload(files) {
     // Convert to chapters array
     chapters = [];
     folderMap.forEach((images, folderName) => {
-        // Sort images alphabetically within each folder
-        images.sort((a, b) => a.name.localeCompare(b.name));
+        // Sort images using natural sort (handles numbers in filenames correctly)
+        images.sort(naturalSort);
 
         chapters.push({
             folderName: folderName,
@@ -287,8 +327,8 @@ function handleFolderUpload(files) {
         });
     });
 
-    // Sort chapters alphabetically
-    chapters.sort((a, b) => a.folderName.localeCompare(b.folderName));
+    // Sort chapters using natural sort (handles chapter numbers correctly)
+    chapters.sort((a, b) => naturalSort(a.folderName, b.folderName));
 
     console.log(`Detected ${chapters.length} chapters:`, chapters.map(c => `${c.folderName} (${c.images.length} images)`));
 
@@ -381,6 +421,9 @@ function displayFolderPreview() {
 function removeImage(index) {
     const filesArray = Array.from(uploadedImages);
     filesArray.splice(index, 1);
+
+    // Sort remaining files to maintain order
+    filesArray.sort(naturalSort);
 
     // Create new FileList
     const dt = new DataTransfer();
