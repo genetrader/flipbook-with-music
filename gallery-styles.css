@@ -1,0 +1,187 @@
+/* Art Gallery Styles */
+.art-gallery-section {
+    width: 100%;
+    padding: 20px;
+}
+
+.gallery-title {
+    margin-bottom: 40px;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.gallery-item {
+    background-color: #fff;
+    border: 3px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+    transform: rotate(-1deg);
+    overflow: hidden;
+    aspect-ratio: 1;
+}
+
+.gallery-item:nth-child(even) {
+    transform: rotate(1deg);
+}
+
+.gallery-item:hover {
+    transform: rotate(0deg) scale(1.05);
+    box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
+    z-index: 10;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+/* Gallery Lightbox */
+.gallery-lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    z-index: 3000;
+    justify-content: center;
+    align-items: center;
+}
+
+.gallery-lightbox.active {
+    display: flex;
+}
+
+.gallery-lightbox-content {
+    max-width: 90%;
+    max-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gallery-lightbox-content img {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.gallery-close {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 3rem;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    font-family: 'Bangers', 'Comic Neue', cursive;
+}
+
+.gallery-close:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+    color: #1083F6;
+}
+
+.gallery-nav {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 3rem;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gallery-nav:hover {
+    background: rgba(0, 0, 0, 0.8);
+    color: #1083F6;
+}
+
+.gallery-prev {
+    left: 20px;
+}
+
+.gallery-next {
+    right: 20px;
+}
+
+.gallery-counter {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-size: 1.2rem;
+    font-family: 'Bangers', 'Comic Neue', cursive;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    border-radius: 25px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+    
+    .gallery-nav {
+        width: 45px;
+        height: 45px;
+        font-size: 2rem;
+    }
+    
+    .gallery-close {
+        width: 40px;
+        height: 40px;
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .gallery-item {
+        padding: 5px;
+    }
+}
