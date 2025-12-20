@@ -60,6 +60,10 @@ $flipbooks = $db->getAllFlipbooks();
                     </div>
                     <div class="step" data-step="5">
                         <div class="step-number">5</div>
+                        <div class="step-label">Reorder Pages</div>
+                    </div>
+                    <div class="step" data-step="6">
+                        <div class="step-number">6</div>
                         <div class="step-label">Save</div>
                     </div>
                 </div>
@@ -180,11 +184,19 @@ $flipbooks = $db->getAllFlipbooks();
                 <div id="step4" class="step-content">
                     <h3>Step 4: Assign Audio to Pages</h3>
                     <div id="audioAssignmentList" class="audio-assignment-list"></div>
+                    <button onclick="goToPageReorder()" class="btn btn-primary" style="margin-top: 20px;">Continue to Reorder Pages</button>
+                </div>
+
+                <!-- Step 5: Reorder Pages -->
+                <div id="step5" class="step-content">
+                    <h3>Step 5: Reorder Pages (Optional)</h3>
+                    <p style="color: #666; margin-bottom: 20px;">Drag and drop pages to reorder them. The original filename is shown below each thumbnail.</p>
+                    <div id="pageReorderGrid" class="page-reorder-grid"></div>
                     <button onclick="saveFlipbook()" class="btn btn-success" style="margin-top: 20px;">Save Flipbook</button>
                 </div>
 
-                <!-- Step 5: Success -->
-                <div id="step5" class="step-content">
+                <!-- Step 6: Success -->
+                <div id="step6" class="step-content">
                     <div class="success-message-large">
                         <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
                         <h2>Flipbook Created Successfully!</h2>

@@ -12,6 +12,7 @@ let uploadMethod = 'pdf'; // 'pdf' or 'images'
 let uploadedImages = [];
 let useFolderUpload = false;
 let chapters = []; // Array of {folderName, title, images}
+let pageFilenames = []; // Array to store original filenames for each page
 
 // PDF.js setup is done in the HTML file
 
@@ -505,6 +506,7 @@ async function convertPDF() {
     const pagePreview = document.getElementById('pagePreview');
     pagePreview.innerHTML = '';
     pages = [];
+    pageFilenames = [];
 
     try {
         const arrayBuffer = await pdfFile.arrayBuffer();
@@ -538,6 +540,7 @@ async function convertPDF() {
                 pageNumber: pageNum,
                 data: imageData
             });
+            pageFilenames.push(`PDF Page ${pageNum}`);
 
             // Update progress
             const progress = Math.round((pageNum / numPages) * 100);
@@ -578,6 +581,7 @@ async function processImages() {
     const pagePreview = document.getElementById('pagePreview');
     pagePreview.innerHTML = '';
     pages = [];
+    pageFilenames = [];
 
     try {
         const numImages = uploadedImages.length;
@@ -598,6 +602,7 @@ async function processImages() {
                 pageNumber: i + 1,
                 data: imageData
             });
+            pageFilenames.push(file.name);
 
             // Update progress
             const progress = Math.round(((i + 1) / numImages) * 100);
@@ -638,6 +643,7 @@ async function processChapters() {
     const pagePreview = document.getElementById('pagePreview');
     pagePreview.innerHTML = '';
     pages = [];
+    pageFilenames = [];
 
     try {
         let totalImages = 0;
@@ -659,6 +665,9 @@ async function processChapters() {
                 data: titleSlide,
                 isChapterTitle: true
             });
+            const titleText = chapter.headerText && chapter.title ? `${chapter.headerText} - ${chapter.title}` :
+                              chapter.headerText || chapter.title || `Chapter ${chapterIndex + 1}`;
+            pageFilenames.push(`📖 ${titleText}`);
 
             // Add preview for title slide
             const titlePreview = document.createElement('div');
@@ -689,6 +698,7 @@ async function processChapters() {
                     pageNumber: pageNum++,
                     data: imageData
                 });
+                pageFilenames.push(file.name);
 
                 // Add preview
                 const previewDiv = document.createElement('div');
@@ -1005,6 +1015,102 @@ document.querySelectorAll('button[onclick^="goToStep(4)"]').forEach(btn => {
     });
 });
 
+// Navigate to page reorder step
+function goToPageReorder() {
+    goToStep(5);
+    displayPageReorderGrid();
+}
+
+// Display the page reorder grid with drag-and-drop
+function displayPageReorderGrid() {
+    const grid = document.getElementById('pageReorderGrid');
+    grid.innerHTML = '';
+
+    pages.forEach((page, index) => {
+        const item = document.createElement('div');
+        item.className = 'page-reorder-item';
+        item.draggable = true;
+        item.dataset.index = index;
+
+        item.innerHTML = `
+            <img src="${page.data}" alt="Page ${index + 1}">
+            <div class="page-number">Page ${index + 1}</div>
+            <div class="page-filename">${pageFilenames[index] || 'Unknown'}</div>
+        `;
+
+        // Drag events
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragenter', handleDragEnter);
+        item.addEventListener('dragleave', handleDragLeave);
+        item.addEventListener('dragend', handleDragEnd);
+
+        grid.appendChild(item);
+    });
+}
+
+let draggedIndex = null;
+
+function handleDragStart(e) {
+    draggedIndex = parseInt(this.dataset.index);
+    this.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    }
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter(e) {
+    this.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    if (e.stopPropagation) {
+        e.stopPropagation();
+    }
+
+    const dropIndex = parseInt(this.dataset.index);
+
+    if (draggedIndex !== dropIndex) {
+        // Reorder arrays
+        const movedPage = pages[draggedIndex];
+        const movedFilename = pageFilenames[draggedIndex];
+
+        pages.splice(draggedIndex, 1);
+        pageFilenames.splice(draggedIndex, 1);
+
+        pages.splice(dropIndex, 0, movedPage);
+        pageFilenames.splice(dropIndex, 0, movedFilename);
+
+        // Update page numbers
+        pages.forEach((page, idx) => {
+            page.pageNumber = idx + 1;
+        });
+
+        // Refresh the grid
+        displayPageReorderGrid();
+    }
+
+    return false;
+}
+
+function handleDragEnd(e) {
+    document.querySelectorAll('.page-reorder-item').forEach(item => {
+        item.classList.remove('dragging');
+        item.classList.remove('drag-over');
+    });
+}
+
 // Save flipbook
 async function saveFlipbook() {
     const title = document.getElementById('flipbookTitle').value.trim();
@@ -1078,7 +1184,7 @@ async function saveFlipbook() {
         if (result.success) {
             currentFlipbookId = result.flipbookId;
             document.getElementById('successMessage').textContent = `"${title}" has been created successfully!`;
-            goToStep(5);
+            goToStep(6);
         } else {
             alert('Error saving flipbook: ' + (result.error || 'Unknown error'));
         }
@@ -1215,7 +1321,7 @@ async function saveFlipbookInBatches(title, description, orientation, audioAssig
         // Success!
         currentFlipbookId = flipbookId;
         document.getElementById('successMessage').textContent = `"${title}" has been created successfully with ${pages.length} pages!`;
-        goToStep(5);
+        goToStep(6);
 
     } catch (error) {
         console.error('Error in batch save:', error);
