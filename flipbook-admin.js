@@ -538,7 +538,8 @@ async function convertPDF() {
             const imageData = canvas.toDataURL('image/jpeg', quality);
             pages.push({
                 pageNumber: pageNum,
-                data: imageData
+                data: imageData,
+                originalFilename: `PDF Page ${pageNum}`
             });
             pageFilenames.push(`PDF Page ${pageNum}`);
 
@@ -600,7 +601,8 @@ async function processImages() {
 
             pages.push({
                 pageNumber: i + 1,
-                data: imageData
+                data: imageData,
+                originalFilename: file.name
             });
             pageFilenames.push(file.name);
 
@@ -660,13 +662,14 @@ async function processChapters() {
 
             // Create chapter title slide
             const titleSlide = await createChapterTitleSlide(chapter.headerText, chapter.title);
+            const titleText = chapter.headerText && chapter.title ? `${chapter.headerText} - ${chapter.title}` :
+                              chapter.headerText || chapter.title || `Chapter ${chapterIndex + 1}`;
             pages.push({
                 pageNumber: pageNum++,
                 data: titleSlide,
-                isChapterTitle: true
+                isChapterTitle: true,
+                originalFilename: `📖 ${titleText}`
             });
-            const titleText = chapter.headerText && chapter.title ? `${chapter.headerText} - ${chapter.title}` :
-                              chapter.headerText || chapter.title || `Chapter ${chapterIndex + 1}`;
             pageFilenames.push(`📖 ${titleText}`);
 
             // Add preview for title slide
@@ -696,7 +699,8 @@ async function processChapters() {
 
                 pages.push({
                     pageNumber: pageNum++,
-                    data: imageData
+                    data: imageData,
+                    originalFilename: file.name
                 });
                 pageFilenames.push(file.name);
 
@@ -1037,21 +1041,6 @@ function displayPageReorderGrid() {
     grid.innerHTML = '';
 
     console.log('displayPageReorderGrid - pages:', pages.length, 'pageFilenames:', pageFilenames.length);
-    console.log('pageFilenames array:', pageFilenames);
-
-    // Ensure pageFilenames array matches pages array length
-    if (pageFilenames.length !== pages.length) {
-        console.warn('pageFilenames length mismatch! Regenerating...');
-        pageFilenames = pages.map((page, idx) => {
-            if (uploadedImages[idx]) {
-                return uploadedImages[idx].name;
-            } else if (page.isChapterTitle) {
-                return `Chapter Title ${idx + 1}`;
-            } else {
-                return `Page ${idx + 1}`;
-            }
-        });
-    }
 
     pages.forEach((page, index) => {
         const item = document.createElement('div');
@@ -1059,15 +1048,13 @@ function displayPageReorderGrid() {
         item.draggable = true;
         item.dataset.index = index;
 
-        // Get filename with better fallback
-        let filename = pageFilenames[index];
+        // Get filename from page object (most reliable) or use fallback
+        let filename = page.originalFilename || pageFilenames[index];
         if (!filename || filename === '') {
-            if (uploadedImages[index]) {
-                filename = uploadedImages[index].name;
-            } else if (page.isChapterTitle) {
+            if (page.isChapterTitle) {
                 filename = '📖 Chapter Title';
             } else {
-                filename = `image-${index + 1}.jpg`;
+                filename = `Page ${index + 1}`;
             }
         }
 
