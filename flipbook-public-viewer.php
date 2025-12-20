@@ -562,6 +562,32 @@ foreach ($pages as $index => $page) {
         let lastTouchX = 0;
         let lastTouchY = 0;
 
+        // Constrain pan to prevent image from being completely moved out of view
+        function constrainPan() {
+            const currentPageImg = container.querySelector('.page.current img');
+            if (!currentPageImg) return;
+
+            const containerRect = container.getBoundingClientRect();
+            const imgRect = currentPageImg.getBoundingClientRect();
+
+            // Get the image display size (before zoom)
+            const displayWidth = imgRect.width / 2.4; // Divide by scale to get original size
+            const displayHeight = imgRect.height / 2.4;
+
+            // Calculate scaled dimensions
+            const scaledWidth = displayWidth * 2.4;
+            const scaledHeight = displayHeight * 2.4;
+
+            // Maximum pan is half the difference between scaled size and container size
+            // This keeps the image edge from going past the container edge
+            const maxPanX = Math.max(0, (scaledWidth - containerRect.width) / (2 * 2.4));
+            const maxPanY = Math.max(0, (scaledHeight - containerRect.height) / (2 * 2.4));
+
+            // Constrain pan values
+            panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
+            panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
+        }
+
         const container = document.getElementById('pageFlipContainer');
         const leftArrow = document.getElementById('leftArrow');
         const rightArrow = document.getElementById('rightArrow');
@@ -985,6 +1011,9 @@ foreach ($pages as $index => $page) {
             panX += deltaX;
             panY += deltaY;
 
+            // Constrain pan to keep image visible
+            constrainPan();
+
             // Update last position for next move
             lastTouchX = e.clientX;
             lastTouchY = e.clientY;
@@ -1042,6 +1071,9 @@ foreach ($pages as $index => $page) {
                 // Update pan position
                 panX += moveDeltaX;
                 panY += moveDeltaY;
+
+                // Constrain pan to keep image visible
+                constrainPan();
 
                 // Update last position for next move
                 lastTouchX = touchCurrentX;
