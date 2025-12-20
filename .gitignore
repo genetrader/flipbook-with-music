@@ -1,0 +1,29 @@
+# Uploads and user data
+flipbook-uploads/
+flipbook-images/
+flipbook-pdfs/
+
+# Configuration with credentials (use template instead)
+flipbook-config-local.php
+
+# Logs
+*.log
+error_log
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+*.tmp
+*.bak
+*.cache
