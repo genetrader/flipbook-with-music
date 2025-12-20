@@ -120,15 +120,18 @@ $flipbooks = $db->getAllFlipbooks();
                                 <input type="checkbox" id="useFolderUpload" onchange="toggleFolderUpload()" style="width: 18px; height: 18px;">
                                 <span><strong>Upload by Folders</strong> (Auto-create chapter title slides from folder names)</span>
                             </label>
-                            <div id="folderUploadInstructions" style="display: none; margin-top: 10px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
-                                <strong>📁 How to upload folders:</strong>
-                                <ol style="margin: 10px 0 0 20px; padding: 0;">
+                            <div id="folderUploadInstructions" style="display: none; margin: 20px 0; padding: 20px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                                <strong style="font-size: 16px;">📁 How to Upload Folders with Chapters:</strong>
+                                <ol style="margin: 15px 0 0 25px; padding: 0; line-height: 1.8;">
                                     <li>Click the upload area below</li>
-                                    <li>Navigate to the PARENT folder containing your chapter folders</li>
+                                    <li>Navigate to the <strong>PARENT folder</strong> containing your chapter folders</li>
                                     <li><strong>Click ONCE</strong> on the parent folder to select it (don't double-click to open it)</li>
                                     <li>Click the "Select Folder" or "Upload" button</li>
-                                    <li>All subfolders will be detected as chapters</li>
+                                    <li>All subfolders will be detected as chapters automatically</li>
                                 </ol>
+                                <p style="margin: 15px 0 0 0; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 5px; font-size: 14px; color: #856404;">
+                                    <strong>💡 Tip:</strong> Each subfolder will become a chapter with an auto-generated title slide. You can customize the titles before processing.
+                                </p>
                             </div>
                         </div>
 
@@ -288,6 +291,6 @@ $flipbooks = $db->getAllFlipbooks();
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     </script>
-    <script src="flipbook-admin.js"></script>
+    <script src="flipbook-admin.js?v=2"></script>
 </body>
 </html>
