@@ -1,29 +1,79 @@
-# Uploads and user data
-flipbook-uploads/
-flipbook-images/
-flipbook-pdfs/
+# Configuration
+src/config.php
+flipbook-config.php
 
-# Configuration with credentials (use template instead)
-flipbook-config-local.php
-
-# Logs
-*.log
-error_log
-
-# System files
-.DS_Store
-Thumbs.db
-*.swp
-*.swo
-*~
+# Uploads directory
+uploads/*
+!uploads/.gitkeep
+flipbook-uploads/*
+flipbook-images/*
+flipbook-audio/*
 
 # IDE
 .vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+error_log
+debug.log
 
 # Temporary files
 *.tmp
-*.bak
+*.temp
 *.cache
+
+# Backups
+*.bak
+*.backup
+*.old
+
+# Database dumps
+*.sql.gz
+*.sql.zip
+backup-*.sql
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Node modules (if using npm for dev tools)
+node_modules/
+
+# Composer
+vendor/
+composer.lock
+
+# Build artifacts
+dist/
+build/
+
+# Test files
+tests/tmp/
+coverage/
+
+# Documentation build
+docs/_build/
+
+# Zip files
+*.zip
+
+# Large video/media files
+*.mov
+*.MOV
+*.mp4
+*.MP4
+*.avi
+*.AVI
+IMG_3152.MOV
+IMG_4338.MOV
+MIKES FEEDBACK.mp4

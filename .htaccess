@@ -1,0 +1,37 @@
+# Protect admin area with HTTP authentication
+<Files "admin.html">
+    AuthType Basic
+    AuthName "Admin Area - Restricted Access"
+    AuthUserFile /home/customer/www/largerthanlifecomics.com/.htpasswd
+    Require valid-user
+</Files>
+
+<Files "admin.js">
+    AuthType Basic
+    AuthName "Admin Area - Restricted Access"
+    AuthUserFile /home/customer/www/largerthanlifecomics.com/.htpasswd
+    Require valid-user
+</Files>
+
+<Files "admin-styles.css">
+    AuthType Basic
+    AuthName "Admin Area - Restricted Access"
+    AuthUserFile /home/customer/www/largerthanlifecomics.com/.htpasswd
+    Require valid-user
+</Files>
+
+# General security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Prevent directory browsing
+Options -Indexes
+
+# Protect .htaccess and .htpasswd files
+<Files ~ "^\.ht">
+    Order allow,deny
+    Deny from all
+</Files>

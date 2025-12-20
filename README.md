@@ -1,201 +1,340 @@
-# PDF Flipbook System
+# 📚 Flipbook Plugin
 
-A complete PHP-based flipbook system for creating interactive, mobile-friendly digital flipbooks from PDFs or images with audio narration support.
+A professional, self-hosted flipbook system with page-flip animations and synchronized audio playback. Perfect for digital comics, magazines, catalogs, and interactive publications.
 
-## Features
+## 📸 Screenshots
 
-- **PDF & Image Upload**: Convert PDFs or upload images to create flipbooks
-- **Batch Upload**: Support for large flipbooks (143+ pages) with automatic batching
-- **Folder Upload**: Upload entire folders with chapter organization and auto-generated title slides
-- **Audio Narration**: Assign MP3 audio files to individual pages
-- **Page Reordering**: Drag-and-drop interface to reorder pages before finalizing
-- **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
-- **Touch Gestures**: Swipe left/right on mobile to navigate pages
-- **Zoom Mode**: Click-to-zoom functionality with pan support (enabled by default)
-- **Embed Codes**: Generate iframe embed codes (fixed height or responsive)
-- **Natural Sorting**: Intelligent filename sorting (page-1, page-2, page-10 instead of page-1, page-10, page-2)
+<p align="center">
+  <img src=".github/screenshot-viewer.png" alt="Flipbook Viewer" width="800">
+  <br>
+  <em>Interactive flipbook viewer with page-flip animations</em>
+</p>
 
-## Workflow
+<p align="center">
+  <img src=".github/screenshot-dashboard.png" alt="Admin Dashboard" width="800">
+  <br>
+  <em>Clean admin dashboard for managing flipbooks</em>
+</p>
 
-1. **Upload PDF/Images** - Choose PDF file, images, or folder with chapters
-2. **Convert Pages** - System processes and displays page previews
-3. **Reorder Pages** - Drag and drop to arrange pages in desired order
-4. **Upload Audio** - Add MP3 files for narration (optional)
-5. **Assign Audio** - Link audio files to specific pages (optional)
-6. **Save** - Finalize and publish flipbook
+<p align="center">
+  <img src=".github/screenshot-admin.png" alt="Admin Panel" width="800">
+  <br>
+  <em>Upload PDFs, images, or folders with drag-and-drop simplicity</em>
+</p>
 
-## Requirements
+<p align="center">
+  <img src=".github/screenshot-chapters.png" alt="Chapter Creator" width="800">
+  <br>
+  <em>Auto-generated chapter title slides with thumbnail preview and page organization</em>
+</p>
 
-- PHP 7.4 or higher
-- MySQL 5.7 or higher / MariaDB 10.2 or higher
-- GD Library (for image processing)
-- PDO MySQL extension
-- At least 256MB PHP memory limit (512MB recommended for large PDFs)
+## ✨ Features
 
-## Installation
+- **📖 Multiple Upload Options** - Upload PDFs OR individual images to create flipbooks
+- **📁 Folder Upload with Chapter Slides** - Upload folders and automatically create beautiful chapter title slides
+- **🎵 Audio Integration** - Assign background music to specific pages with 2-second crossfades
+- **📦 Batch Upload** - Handle large flipbooks (50+ pages) with automatic batch processing
+- **📱 Mobile-First** - Fully responsive design works on all devices
+- **⚡ Fast & Lightweight** - No external dependencies, all self-hosted
+- **🎨 Customizable** - Easy to theme and integrate into any website
+- **🔒 Secure** - Session-based authentication, prepared statements, file validation
+- **💾 File-Based Storage** - Efficient storage using image and audio files
 
-1. **Clone the repository:**
+## 🚀 Quick Start
+
+### Requirements
+
+- **PHP**: 7.4 or higher
+- **MySQL/MariaDB**: 5.7 or higher
+- **PHP Extensions**: PDO, PDO_MySQL, GD (for image handling)
+- **Web Server**: Apache or Nginx
+- **Disk Space**: Varies by flipbook size (50MB+ recommended per flipbook)
+
+### Installation
+
+1. **Download the plugin**
    ```bash
-   git clone https://github.com/yourusername/flipbook-system.git
-   cd flipbook-system
+   git clone https://github.com/genetrader/flipbook-with-music.git
+   cd flipbook-with-music
    ```
 
-2. **Create MySQL database:**
-   ```sql
-   CREATE DATABASE flipbook_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-   ```
+2. **Upload to your web server**
+   - Via FTP/SFTP to your web directory
+   - Or place in your local development environment
 
-3. **Import database schema:**
+3. **Run the installer**
+   - Navigate to: `http://yoursite.com/flipbook-plugin/install/install.php`
+   - Follow the installation wizard
+   - Enter your database credentials
+   - Create admin account
+   - Complete installation
+
+4. **Delete the install folder** (Security!)
    ```bash
-   mysql -u your_user -p flipbook_db < flipbook-schema.sql
+   rm -rf install/
    ```
 
-4. **Configure database connection:**
-   - Edit `flipbook-config.php`
-   - Update `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS` with your credentials
+5. **Login to admin**
+   - Go to: `http://yoursite.com/flipbook-plugin/src/admin/login.php`
+   - Use the credentials you created during installation
 
-5. **Set permissions:**
-   ```bash
-   chmod 755 flipbook-uploads/
-   chmod 755 flipbook-images/
-   ```
+## 📖 Usage
 
-6. **Access the admin panel:**
-   - Navigate to `flipbook-admin-login.php`
-   - Default credentials: (you should change these in the database)
+### Creating Your First Flipbook
 
-## File Structure
+1. **Login** to the admin dashboard
+2. Click **"+ Create New Flipbook"**
+3. **Step 1:** Enter title and description
+   - **Choose upload method:**
+     - **📄 Upload PDF** - Automatically converts PDF pages to flipbook
+     - **🖼️ Upload Images** - Upload individual image files (JPG, PNG, GIF)
+     - **📁 Upload by Folders** - Upload folders to auto-create chapter title slides
+4. **Step 2:** Wait for automatic page processing
+5. **Step 3:** Upload audio files (optional)
+6. **Step 4:** Assign audio to specific pages (optional)
+7. **Save** and get your public viewer URL!
 
-```
-flipbook-system/
-├── flipbook-admin-dashboard.php    # Admin interface
-├── flipbook-admin-v6.js           # Admin JavaScript (latest version)
-├── flipbook-admin-styles.css      # Admin styles
-├── flipbook-admin-login.php       # Login page
-├── flipbook-admin-logout.php      # Logout handler
-├── flipbook-public-viewer.php     # Public flipbook viewer
-├── flipbook-api-save.php          # Save/update flipbooks
-├── flipbook-api-get.php           # Retrieve flipbook data
-├── flipbook-api-delete.php        # Delete flipbooks
-├── flipbook-db.php                # Database class
-├── flipbook-config.php            # Configuration file
-├── flipbook-schema.sql            # Database schema
-└── README.md                      # This file
-```
+### Upload Methods Explained
 
-## Usage
+#### PDF Upload
+- Upload any PDF file
+- Pages are automatically converted to high-quality images
+- Perfect for existing documents and comics
 
-### Creating a Flipbook
+#### Image Upload
+- Select multiple JPG, PNG, or GIF files
+- Files are processed in the order you select them
+- Ideal for pre-rendered comic pages
 
-1. Log in to the admin dashboard
-2. Click "Create New Flipbook"
-3. Upload your PDF or images
-4. Reorder pages if needed
-5. Add audio narration (optional)
-6. Save and publish
+#### Folder Upload with Chapters
+- Upload a parent folder containing chapter subfolders
+- System automatically detects chapters and creates title slides
+- Example structure:
+  ```
+  Cork Episode 5/
+  ├── Chapter 1 - Origins/
+  │   ├── page-01.jpg
+  │   └── page-02.jpg
+  ├── Chapter 2 - Discovery/
+  │   └── page-01.jpg
+  └── Chapter 3 - Adventure/
+      └── page-01.jpg
+  ```
+- Each chapter gets a beautiful auto-generated title slide
+- Edit chapter titles before processing
+- Perfect for multi-chapter comics and magazines
 
-### Embedding a Flipbook
+### Embedding Flipbooks
 
-After creating a flipbook, click the "Embed Code" button to get:
-
-**Fixed Height Embed:**
+#### Direct Link
 ```html
-<iframe src="https://yoursite.com/flipbook-public-viewer.php?id=1"
-        allowfullscreen="allowfullscreen"
-        scrolling="no"
-        style="border: 1px solid lightgray; width: 100%; height: 600px;"
-        allow="clipboard-write">
+<a href="/flipbook-plugin/src/public/viewer.php?id=1">View Flipbook</a>
+```
+
+#### iFrame Embed
+```html
+<iframe src="/flipbook-plugin/src/public/viewer.php?id=1"
+        width="100%" height="800px" frameborder="0">
 </iframe>
 ```
 
-**Responsive Embed:**
-```html
-<div style="position: relative; width: 100%; padding-bottom: 133.33%; overflow: hidden;">
-    <iframe src="https://yoursite.com/flipbook-public-viewer.php?id=1"
-            allowfullscreen="allowfullscreen"
-            scrolling="no"
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 1px solid lightgray;"
-            allow="clipboard-write">
-    </iframe>
-</div>
+#### JavaScript Integration
+```javascript
+const flipbooks = {
+    'book-1': '/flipbook-plugin/src/public/viewer.php?id=1',
+    'book-2': '/flipbook-plugin/src/public/viewer.php?id=2',
+};
+
+document.getElementById('book-button').addEventListener('click', () => {
+    window.location.href = flipbooks['book-1'];
+});
 ```
 
-## Features Details
+## 🎨 Customization
 
-### Zoom Mode (Default ON)
-- Click/tap on flipbook to zoom in/out
-- Mouse/touch drag to pan around zoomed image
-- Automatically enabled when flipbook loads
-- Can be toggled with zoom button
+### Theming
 
-### Touch Gestures (Mobile)
-- **Swipe left**: Next page
-- **Swipe right**: Previous page
-- **Tap**: Toggle zoom
-- **Drag (when zoomed)**: Pan around image
+Edit `/src/admin/assets/admin.css` to customize the admin interface.
 
-### Batch Upload
-- Automatically handles large flipbooks (50+ pages)
-- Splits uploads into 20-page batches to avoid server limits
-- Processes seamlessly in background
+The public viewer can be themed by editing `/src/public/viewer.php` (embedded CSS).
 
-### Page Reordering
-- Drag-and-drop interface
-- Shows original filenames for reference
-- Preserves audio assignments when reordering
-- Updates database with new page order
+### Configuration
 
-## Database Schema
+After installation, edit `/src/config.php`:
 
-The system uses 4 main tables:
-- `flipbooks` - Stores flipbook metadata
-- `pages` - Individual page data
-- `audio_library` - MP3 audio files
-- `page_audio_assignments` - Links pages to audio
+```php
+// Upload size limit
+define('FLIPBOOK_MAX_FILE_SIZE', 50 * 1024 * 1024); // 50MB
 
-See `flipbook-schema.sql` for complete schema.
+// Debug mode (set to 0 in production)
+define('FLIPBOOK_DEBUG', 0);
 
-## Configuration Options
+// Session timeout (in seconds)
+define('FLIPBOOK_SESSION_TIMEOUT', 3600); // 1 hour
+```
 
-Edit `flipbook-config.php` to customize:
-- Upload directory location
-- Maximum file size (default: 50MB)
-- Allowed file types
-- Error reporting settings
+## 🔧 Advanced Configuration
 
-## Security Notes
+### Apache Configuration
 
-- Always use HTTPS in production
-- Change default admin credentials
-- Set appropriate file permissions (755 for directories, 644 for files)
-- Keep `flipbook-config.php` outside web root if possible
-- Validate and sanitize all user inputs
-- Use prepared statements for all database queries (already implemented)
+Add to your `.htaccess`:
 
-## Browser Support
+```apache
+# Protect config file
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>
 
-- Chrome 90+
-- Firefox 88+
-- Safari 14+
-- Edge 90+
-- Mobile Safari (iOS 12+)
-- Chrome Mobile (Android 8+)
+# Enable compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css application/json
+</IfModule>
+```
 
-## Credits
+### Nginx Configuration
 
-Built with:
-- PDF.js for PDF processing
-- Native drag-and-drop API
-- Touch events API for mobile gestures
+```nginx
+location ~* \.(pdf|mp3)$ {
+    expires 30d;
+    add_header Cache-Control "public, immutable";
+}
 
-## License
+location ~ /config\.php$ {
+    deny all;
+}
+```
 
-MIT License - Feel free to use and modify for your projects
+## 📁 Directory Structure
 
-## Support
+```
+flipbook-plugin/
+├── src/
+│   ├── config.php              # Configuration (generated by installer)
+│   ├── FlipbookDB.php         # Database abstraction layer
+│   ├── admin/                 # Admin interface
+│   │   ├── login.php
+│   │   ├── dashboard.php
+│   │   ├── logout.php
+│   │   └── assets/
+│   │       ├── admin.css
+│   │       └── admin.js
+│   ├── api/                   # API endpoints
+│   │   ├── save.php
+│   │   ├── get.php
+│   │   ├── delete.php
+│   │   └── save-images.php
+│   └── public/                # Public-facing
+│       └── viewer.php         # Flipbook viewer
+├── uploads/                   # User uploads (auto-created)
+│   ├── pdfs/
+│   ├── audio/
+│   └── pages/
+├── docs/                      # Documentation
+├── install/                   # Installer (DELETE after install!)
+└── README.md
+```
 
-For issues or questions, please open an issue on GitHub.
+## 🔐 Security
+
+- **Session-based authentication** for admin panel
+- **Prepared SQL statements** prevent SQL injection
+- **File type validation** on uploads
+- **Password hashing** with bcrypt
+- **CSRF protection** recommended (implement based on your framework)
+
+### Best Practices
+
+1. **Delete the install folder** after installation
+2. **Use strong admin passwords** (12+ characters)
+3. **Restrict file permissions** (755 for directories, 644 for files)
+4. **Enable HTTPS** on production
+5. **Regular backups** of database and uploads folder
+6. **Keep PHP updated** to latest stable version
+
+## 🐛 Troubleshooting
+
+### "Database connection failed"
+- Check database credentials in `/src/config.php`
+- Ensure MySQL is running
+- Verify database user has proper permissions
+
+### "Upload failed" or "File too large"
+- Check PHP upload limits: `upload_max_filesize` and `post_max_size` in `php.ini`
+- Verify disk space available
+- Check upload directory permissions (755 or 775)
+
+### Audio not playing on iOS
+- iOS requires user interaction before audio plays
+- The plugin includes iOS autoplay workarounds
+- Ensure MP3 files are properly encoded
+
+### Pages not loading
+- Check browser console for errors (F12)
+- Verify image paths in database
+- Check file permissions on uploads directory
+
+## 📚 API Reference
+
+### Get Flipbook Data
+
+```php
+require_once 'src/config.php';
+require_once 'src/FlipbookDB.php';
+
+$db = new FlipbookDB();
+$flipbook = $db->getCompleteFlipbook(1);
+```
+
+### Create Flipbook Programmatically
+
+```php
+$db = new FlipbookDB();
+$id = $db->createFlipbook('My Book', 'Description', 'portrait');
+```
+
+See `/docs/API.md` for complete API documentation.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+MIT License - See [LICENSE](LICENSE) file for details.
+
+## 🙏 Credits
+
+**Created by:** Mike W / [Larger Than Life Comics](https://largerthanlifecomics.com)
+**Developer:** Gene W
+
+**Built with:**
+- [PDF.js](https://mozilla.github.io/pdf.js/) - PDF rendering
+- [StPageFlip](https://github.com/Nodlik/StPageFlip) - Page flip animations
+- Web Audio API - Audio crossfades
+
+## 🔗 Links
+
+- **Documentation:** [/docs/](/docs/)
+- **Issues:** [GitHub Issues](https://github.com/genetrader/flipbook-with-music/issues)
+- **Demo:** [Coming Soon]
+
+## 📊 Version History
+
+### v1.0.0 (2025-01-XX)
+- Initial release
+- PDF to flipbook conversion
+- Audio synchronization with 2-second crossfades
+- Admin dashboard
+- Public viewer
+- Installation wizard
 
 ---
 
-Built with ❤️ and Claude Code
+**Made with ❤️ for digital publishers everywhere**

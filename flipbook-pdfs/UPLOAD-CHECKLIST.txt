@@ -1,0 +1,65 @@
+===============================================
+  FLIPBOOK UPLOAD QUICK CHECKLIST
+===============================================
+
+Admin URL: https://largerthanlifecomics.com/flipbook-admin-login.php
+Username: admin
+Password: NameNeg-1!!@@!!
+
+===============================================
+
+[ ] CORK CHAPTER 1
+    File: Cork_1.pdf (9.4 MB)
+    Title: Cork Chapter 1
+    Description: The beginning of Cork's adventure
+    New URL: _________________________________
+    Notes: ___________________________________
+
+[ ] CORK CHAPTER 2
+    File: Cork_2.pdf (17 MB, 26 pages)
+    Title: Cork Chapter 2
+    Description: Cork's journey continues
+    New URL: _________________________________
+    Notes: ___________________________________
+
+[ ] CORK CHAPTER 3
+    File: Cork_3.pdf (22 MB, 25 pages)
+    Title: Cork Chapter 3 - Dark, Damp & Dusty
+    Description: Cork faces new challenges in the darkness
+    New URL: _________________________________
+    Notes: ___________________________________
+
+[ ] CORK CHAPTER 5
+    File: Cork_5.pdf (18 MB, 43 pages)
+    Title: Cork Chapter 5
+    Description: Cork's adventure deepens
+    New URL: _________________________________
+    Notes: ___________________________________
+
+[ ] CORK CHAPTER 6 (PRODIGY)
+    File: Cork_6_Prodigy.pdf (19 MB, 24 pages)
+    Title: Prodigy (Cork Chapter 6)
+    Description: The tale of a young prodigy in Cork's world
+    New URL: _________________________________
+    Notes: ___________________________________
+
+===============================================
+  AFTER ALL UPLOADS
+===============================================
+
+[ ] Update script.js with new URLs (lines 3-9)
+[ ] Test all flipbooks on desktop
+[ ] Test all flipbooks on mobile
+[ ] Deploy updated code to production
+[ ] Verify old Heyzine URLs still work (backup)
+
+===============================================
+  URL FORMAT
+===============================================
+
+New URLs will be:
+https://largerthanlifecomics.com/flipbook-public-viewer.php?id=X
+
+Where X is the Flipbook ID shown in the admin panel.
+
+===============================================
