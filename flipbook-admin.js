@@ -1026,16 +1026,45 @@ function displayPageReorderGrid() {
     const grid = document.getElementById('pageReorderGrid');
     grid.innerHTML = '';
 
+    console.log('displayPageReorderGrid - pages:', pages.length, 'pageFilenames:', pageFilenames.length);
+    console.log('pageFilenames array:', pageFilenames);
+
+    // Ensure pageFilenames array matches pages array length
+    if (pageFilenames.length !== pages.length) {
+        console.warn('pageFilenames length mismatch! Regenerating...');
+        pageFilenames = pages.map((page, idx) => {
+            if (uploadedImages[idx]) {
+                return uploadedImages[idx].name;
+            } else if (page.isChapterTitle) {
+                return `Chapter Title ${idx + 1}`;
+            } else {
+                return `Page ${idx + 1}`;
+            }
+        });
+    }
+
     pages.forEach((page, index) => {
         const item = document.createElement('div');
         item.className = 'page-reorder-item';
         item.draggable = true;
         item.dataset.index = index;
 
+        // Get filename with better fallback
+        let filename = pageFilenames[index];
+        if (!filename || filename === '') {
+            if (uploadedImages[index]) {
+                filename = uploadedImages[index].name;
+            } else if (page.isChapterTitle) {
+                filename = '📖 Chapter Title';
+            } else {
+                filename = `image-${index + 1}.jpg`;
+            }
+        }
+
         item.innerHTML = `
             <img src="${page.data}" alt="Page ${index + 1}">
             <div class="page-number">Page ${index + 1}</div>
-            <div class="page-filename">${pageFilenames[index] || 'Unknown'}</div>
+            <div class="page-filename">${filename}</div>
         `;
 
         // Drag events
