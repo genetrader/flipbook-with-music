@@ -288,8 +288,8 @@ foreach ($pages as $index => $page) {
 
         .page-flip-container {
             position: relative;
-            max-width: 90vw;
-            max-height: 85vh;
+            max-width: 98vw;
+            max-height: 90vh;
             width: auto;
             height: auto;
             transform-style: preserve-3d;
@@ -300,13 +300,13 @@ foreach ($pages as $index => $page) {
         /* Portrait: maintain aspect ratio */
         .page-flip-container:not(.landscape) {
             aspect-ratio: 7 / 9;
-            width: min(90vw, calc(85vh * 7 / 9));
+            width: min(98vw, calc(90vh * 7 / 9));
         }
 
         /* Landscape: maintain aspect ratio */
         .page-flip-container.landscape {
             aspect-ratio: 10 / 7;
-            width: min(90vw, calc(85vh * 10 / 7));
+            width: min(98vw, calc(90vh * 10 / 7));
         }
 
         .page-flip-container.loaded {
@@ -357,8 +357,7 @@ foreach ($pages as $index => $page) {
         }
 
         .page-flip-container.zoom-mode.zoomed .page-content img {
-            transform: scale(2.4);
-            transform-origin: center;
+            /* Transform is now controlled via JavaScript for smooth panning */
         }
 
         .page-flip-container.zoom-mode .page-click-area {
@@ -479,11 +478,11 @@ foreach ($pages as $index => $page) {
 
             /* Make flipbook even larger on mobile */
             .page-flip-container:not(.landscape) {
-                width: min(95vw, calc(90vh * 7 / 9));
+                width: min(98vw, calc(90vh * 7 / 9));
             }
 
             .page-flip-container.landscape {
-                width: min(95vw, calc(90vh * 10 / 7));
+                width: min(98vw, calc(90vh * 10 / 7));
             }
 
             .page-nav-arrow {
@@ -558,6 +557,10 @@ foreach ($pages as $index => $page) {
         let isMuted = false;
         let isZoomMode = true; // Default zoom mode ON
         let isZoomed = false;
+        let panX = 0;
+        let panY = 0;
+        let lastTouchX = 0;
+        let lastTouchY = 0;
 
         const container = document.getElementById('pageFlipContainer');
         const leftArrow = document.getElementById('leftArrow');
@@ -905,13 +908,23 @@ foreach ($pages as $index => $page) {
                 isZoomed = true;
                 container.classList.add('zoomed');
                 container.style.cursor = 'move';
+                // Reset pan position when zooming in
+                panX = 0;
+                panY = 0;
+                const currentPageImg = container.querySelector('.page.current img');
+                if (currentPageImg) {
+                    currentPageImg.style.transform = 'scale(2.4) translate(0px, 0px)';
+                }
             } else {
                 isZoomed = false;
                 container.classList.remove('zoomed');
                 container.style.cursor = 'zoom-in';
+                // Reset pan and transform when zooming out
+                panX = 0;
+                panY = 0;
                 const currentPageImg = container.querySelector('.page.current img');
                 if (currentPageImg) {
-                    currentPageImg.style.transformOrigin = 'center';
+                    currentPageImg.style.transform = '';
                 }
             }
 
@@ -951,17 +964,46 @@ foreach ($pages as $index => $page) {
         });
 
         // Mouse panning for desktop
-        container.addEventListener('mousemove', (e) => {
+        let isMouseDown = false;
+
+        container.addEventListener('mousedown', (e) => {
             if (!isZoomMode || !isZoomed) return;
+            isMouseDown = true;
+            lastTouchX = e.clientX;
+            lastTouchY = e.clientY;
+            e.preventDefault();
+        });
 
-            const rect = container.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
+        container.addEventListener('mousemove', (e) => {
+            if (!isZoomMode || !isZoomed || !isMouseDown) return;
 
+            // Calculate how far the mouse moved since last position
+            const deltaX = e.clientX - lastTouchX;
+            const deltaY = e.clientY - lastTouchY;
+
+            // Update pan position
+            panX += deltaX;
+            panY += deltaY;
+
+            // Update last position for next move
+            lastTouchX = e.clientX;
+            lastTouchY = e.clientY;
+
+            // Apply transform with both scale and translate
             const currentPageImg = container.querySelector('.page.current img');
             if (currentPageImg) {
-                currentPageImg.style.transformOrigin = `${x}% ${y}%`;
+                currentPageImg.style.transform = `scale(2.4) translate(${panX}px, ${panY}px)`;
             }
+
+            e.preventDefault();
+        });
+
+        container.addEventListener('mouseup', () => {
+            isMouseDown = false;
+        });
+
+        container.addEventListener('mouseleave', () => {
+            isMouseDown = false;
         });
 
         // Touch panning and swipe detection for mobile
@@ -973,11 +1015,12 @@ foreach ($pages as $index => $page) {
         container.addEventListener('touchstart', (e) => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
+            lastTouchX = e.touches[0].clientX;
+            lastTouchY = e.touches[0].clientY;
             touchMoved = false;
         }, { passive: true });
 
         container.addEventListener('touchmove', (e) => {
-            // Mark that touch moved (for distinguishing tap from drag)
             const touchCurrentX = e.touches[0].clientX;
             const touchCurrentY = e.touches[0].clientY;
             const deltaX = Math.abs(touchCurrentX - touchStartX);
@@ -988,24 +1031,27 @@ foreach ($pages as $index => $page) {
                 touchMoved = true;
             }
 
-            if (!isZoomMode || !isZoomed) return;
+            // If zoomed in, pan the image
+            if (isZoomMode && isZoomed) {
+                e.preventDefault(); // Prevent default scrolling
 
-            e.preventDefault(); // Prevent default scrolling
+                // Calculate how far the touch moved since last position
+                const moveDeltaX = touchCurrentX - lastTouchX;
+                const moveDeltaY = touchCurrentY - lastTouchY;
 
-            const touch = e.touches[0];
-            const rect = container.getBoundingClientRect();
+                // Update pan position
+                panX += moveDeltaX;
+                panY += moveDeltaY;
 
-            // Calculate position relative to container
-            const x = ((touch.clientX - rect.left) / rect.width) * 100;
-            const y = ((touch.clientY - rect.top) / rect.height) * 100;
+                // Update last position for next move
+                lastTouchX = touchCurrentX;
+                lastTouchY = touchCurrentY;
 
-            // Clamp values between 0 and 100
-            const clampedX = Math.max(0, Math.min(100, x));
-            const clampedY = Math.max(0, Math.min(100, y));
-
-            const currentPageImg = container.querySelector('.page.current img');
-            if (currentPageImg) {
-                currentPageImg.style.transformOrigin = `${clampedX}% ${clampedY}%`;
+                // Apply transform with both scale and translate
+                const currentPageImg = container.querySelector('.page.current img');
+                if (currentPageImg) {
+                    currentPageImg.style.transform = `scale(2.4) translate(${panX}px, ${panY}px)`;
+                }
             }
         }, { passive: false });
 
