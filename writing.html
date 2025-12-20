@@ -6,7 +6,7 @@
     <title>Writing - Head in the Clouds | Larger Than Life Comics</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Read 'Head in the Clouds' and other original writing by Mike Waxman. Literary works presented on beautiful medieval parchment scrolls.">
+    <meta name="description" content="Discover original literary works by Mike Waxman, including 'Head in the Clouds' and more. Experience compelling storytelling with new works regularly added to our growing collection.">
     <meta name="keywords" content="Larger Than Life Comics writing, Head in the Clouds, Mike Waxman stories, comic book writing">
     
     <link rel="stylesheet" href="styles.css?v=13">
@@ -14,115 +14,114 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     
     <style>
-        /* Parchment Scroll Design */
+        /* ============================================= */
+        /* CHECKPOINT: PARCHMENT DESIGN VERSION          */
+        /* To restore parchment design, uncomment the    */
+        /* code between PARCHMENT START and PARCHMENT END */
+        /* ============================================= */
+        
+        /* === PARCHMENT START === */
+        /*
         .writing-content {
             background: #2a2a2a;
             min-height: 100vh;
             position: relative;
-            padding: 20px;
+            padding: 40px 0;
             margin: 0 -30px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
         }
         
         .scroll-container {
             position: relative;
-            width: 100%;
+            width: 90%;
             max-width: 1000px;
             margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
         
-        /* Header section */
-        .scroll-header {
+        .parchment-header,
+        .parchment-middle,
+        .parchment-footer {
             width: 100%;
-            max-width: 900px;
-            height: auto;
-            position: relative;
-            z-index: 10;
-            margin-bottom: -10px;
-        }
-        
-        .scroll-header img {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        /* Middle repeating section container */
-        .scroll-middle-container {
-            width: 100%;
-            max-width: 900px;
-            position: relative;
-            background-color: #f5e6d3;
-            min-height: 600px;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Individual middle sections */
-        .scroll-middle-section {
-            width: 100%;
-            height: auto;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 100% auto;
             position: relative;
         }
         
-        .scroll-middle-section img {
-            width: 100%;
-            height: auto;
-            display: block;
+        .parchment-header {
+            background-image: url('writing/header.png');
+            padding-bottom: 27.6%;
         }
         
-        /* Content overlay */
+        .parchment-middle {
+            background-image: url('writing/middle.png');
+            background-repeat: repeat-y;
+            min-height: 500px;
+            position: relative;
+        }
+        
+        .parchment-footer {
+            background-image: url('writing/footer.png');
+            padding-bottom: 22.8%;
+        }
+        */
+        /* === PARCHMENT END === */
+        
+        /* Simple Off-White Design */
+        .writing-content {
+            background: #fffef5;
+            min-height: 100vh;
+            position: relative;
+            padding: 60px 0;
+            margin: 0 -30px;
+        }
+        
+        .scroll-container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 60px;
+        }
+        
+        /* Content wrapper */
         .scroll-content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            padding: 40px 120px;
-            overflow: visible;
-            z-index: 5;
-        }
-        
-        /* Footer section */
-        .scroll-footer {
-            width: 100%;
-            max-width: 900px;
-            height: auto;
             position: relative;
-            z-index: 10;
-            margin-top: -10px;
-        }
-        
-        .scroll-footer img {
             width: 100%;
-            height: auto;
-            display: block;
+            max-width: 650px;
+            margin: 0 auto;
         }
         
         /* Typography */
         .writing-title {
-            font-family: 'UnifrakturMaguntia', cursive;
+            font-family: 'Libre Baskerville', serif;
             font-size: 3.5rem;
-            color: #3a2317;
+            font-weight: 700;
+            color: #2a2a2a;
             text-align: center;
-            margin: 60px 0 50px 0;
-            text-shadow: 2px 2px 4px rgba(139, 69, 19, 0.3);
-            letter-spacing: 2px;
+            margin: 0 0 10px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 1px;
+        }
+        
+        .writing-author {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            color: #666666;
+            text-align: center;
+            margin: 0 0 50px 0;
         }
         
         .writing-text {
             font-family: 'Libre Baskerville', serif;
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             line-height: 2;
-            color: #3a2317;
+            color: #333333;
             text-align: justify;
             position: relative;
-            z-index: 10;
         }
         
         .writing-text p {
@@ -130,73 +129,41 @@
             text-indent: 50px;
         }
         
-        /* Illuminated first letter */
-        .writing-text p:first-of-type::first-letter {
-            font-family: 'UnifrakturMaguntia', cursive;
-            font-size: 6rem;
-            float: left;
-            line-height: 0.8;
-            margin: 5px 15px -5px 0;
-            padding: 15px;
-            background: 
-                linear-gradient(135deg, #8B4513 0%, #D2691E 50%, #8B4513 100%);
-            color: #f5e6d3;
-            text-shadow: 
-                2px 2px 4px rgba(0,0,0,0.5),
-                -1px -1px 2px rgba(255,255,255,0.3);
-            border: 3px solid #3a2317;
-            border-radius: 5px;
-            box-shadow: 
-                5px 5px 10px rgba(0,0,0,0.3),
-                inset 0 0 20px rgba(0,0,0,0.2);
-        }
-        
-        /* Subtle texture overlay */
-        .texture-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            opacity: 0.15;
-            pointer-events: none;
-            background: 
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(139, 69, 19, 0.1) 2px,
-                    rgba(139, 69, 19, 0.1) 4px
-                );
-        }
         
         /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .scroll-container {
+                width: 95%;
+                padding: 40px;
+            }
+        }
+        
         @media (max-width: 768px) {
-            .scroll-content {
-                padding: 30px 60px;
+            .scroll-container {
+                width: 98%;
+                padding: 30px;
             }
             
             .writing-title {
                 font-size: 2.5rem;
+                margin: 0 0 40px 0;
             }
             
             .writing-text {
                 font-size: 1.1rem;
             }
-            
-            .writing-text p:first-of-type::first-letter {
-                font-size: 4rem;
-                padding: 10px;
-            }
         }
         
         @media (max-width: 480px) {
-            .scroll-content {
-                padding: 20px 40px;
+            .scroll-container {
+                width: 100%;
+                padding: 20px;
+                border-radius: 0;
             }
             
             .writing-title {
                 font-size: 2rem;
+                margin: 0 0 30px 0;
             }
             
             .writing-text {
@@ -260,45 +227,37 @@
         <main class="content">
             <div class="writing-content">
                 <div class="scroll-container">
-                    <!-- Scroll Header -->
-                    <div class="scroll-header">
-                        <img src="writing/header.png" alt="Parchment scroll top">
-                    </div>
-                    
-                    <!-- Middle Container with Content -->
-                    <div class="scroll-middle-container">
-                        <!-- Background middle sections will be added dynamically -->
-                        <div id="middle-sections"></div>
+                    <div class="scroll-content">
+                        <h2 class="writing-title">Head in the Clouds</h2>
+                        <p class="writing-author">Written by Michael Waxman</p>
                         
-                        <!-- Actual content overlay -->
-                        <div class="scroll-content">
-                            <div class="texture-overlay"></div>
+                        <div class="writing-text">
+                            <p>The soccer field was abustle with cleat-footed first graders. Despite the mild mannered referee's best efforts, they shoved and clawed and kicked turf into each other's eyes. The families in the sidelines only cheered louder at the barbarism, with only the occasional grumble from a parent when a member of the opposing team managed to shove his way to the ball. All notions of position had been ignored by the stubby-legged mob, and they moved as a large, writhing mass back and forth across the grass as they scrambled for a breakaway. Even both teams' goalies had long since grown tired of their posts and joined in the ruckus, which the coaches met with exasperated shouts that they knew wouldn't be heard over the unrestrained shouting of parents and players alike. As all this happened, Casper followed a safe distance away, not daring to enter the swarm.</p>
                             
-                            <h2 class="writing-title">Head in the Clouds</h2>
+                            <p>Casper had little interest in soccer, but his older brother had loved it enough to set his elementary school's record for most goals scored in a single season. That was sufficient reason for Casper's parents to wrestle him into his brother's old uniform, drape a green pinny over his head, and shove him onto the field. Casper tugged absentmindedly at his shorts, which didn't fit him quite right, and stared blankly at the sky overhead. It was a warm September, and the clouds swirled lazily in overlapping layers which made the heavens look deep and distant. He wondered to himself how long it would take to reach the clouds if he could take a staircase straight up to them. He yearned to know what it was like up there, face to face with the sun.</p>
                             
-                            <div class="writing-text">
-                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. In the medieval tradition of illuminated manuscripts, this text begins with an ornate capital letter, drawing the reader into the narrative with visual splendor.</p>
-                                
-                                <p>The parchment scroll unfurls to reveal tales of adventure and wonder, written in the timeless style of classical literature. Each word is carefully placed upon the aged vellum, creating a reading experience that transcends the ordinary.</p>
-                                
-                                <p>As you journey through these pages, imagine the scribe's careful hand, the scratch of quill upon parchment, and the flickering candlelight that once illuminated these very words. The stories contained herein speak to the eternal human experience.</p>
-                                
-                                <p>Through valleys deep and mountains high, our tale winds like the very scroll upon which it is written. Characters emerge from the mists of imagination, their voices echoing across the centuries to reach your eager eyes.</p>
-                                
-                                <p>The manuscript continues with rich descriptions and vivid imagery, painting scenes that dance before the mind's eye. Each paragraph builds upon the last, creating a tapestry of narrative that captures the essence of storytelling itself.</p>
-                                
-                                <p>Here, in this digital age, we honor the ancient art of the written word, presenting it upon a virtual scroll that bridges past and present. The technology may have changed, but the magic of stories remains eternal.</p>
-                                
-                                <p>As our tale draws toward its conclusion, we reflect upon the journey taken, the lessons learned, and the memories forged. Like the scroll that contains it, our story rolls ever onward, inviting readers to return again and again.</p>
-                                
-                                <p>And so, dear reader, we leave you with these final thoughts, inscribed upon this timeless parchment. May the stories contained within inspire your own adventures, both on the page and in the world beyond.</p>
-                            </div>
+                            <p>Something bumped into Casper's shin, dragging his eyes back to the ground. There at his feet sat the ball, still gently rolling as the last of its recoil was taken by friction with the grass. His eyes shot up once again to find the horde of green and orange pinnies closing in on him fast. They came barreling over each other, hooting and hollering, but the only sound Casper could hear was his father's voice from the edge of the field.</p>
+                            
+                            <p>"Go!"</p>
+                            
+                            <p>There was no time to think. Casper turned his back to the incoming stampede and began dribbling the ball toward the unguarded goal. He nearly stumbled over his own feet as he tried desperately to stay ahead of the mob while keeping the ball under control. His frantic, wheezy breaths meshed with the spectators' screams to form a ragged cacophony of unintelligible noise. His vision blurred. He heard an army of footsteps closing in from behind. This was it. Casper closed his eyes tight and kicked the ball as hard as he could.</p>
+                            
+                            <p>The grass was damp from rain the night before. Casper hated the way grass, especially wet grass, felt on his skin. Still, he spent several moments lying facedown in the dirt, fighting for every breath. When he at last could bear the discomfort no longer, he mustered up what little energy he could scrape together and pushed himself up onto his hands and knees. His eyes immediately fell upon the goal. Then they fell upon the ball nestled comfortably inside it.</p>
+                            
+                            <p>Casper's desperate exhaustion turned to unbridled jubilation. His reddened, sweat-soaked face glowed with a triumphant grin. Around him he heard cheers from the other boys on the field. Some of them were giggling with glee, and the sidelines likewise were alive with roaring laughter. Casper turned eagerly, still beaming, to find his father among the crowd, but his joy was swiftly halted upon seeing his father's face.</p>
+                            
+                            <p>Casper's father stood, fists clenched, among the parents of Casper's teammates, who Casper now saw were not among those laughing and cheering. Confused, he looked back at his peers and discovered that the ones celebrating all wore orange pinnies. Only then did the horrific realization dawn upon him. His overwhelming joy vanished just as quickly as it had appeared, and in its place came an insurmountable tidal wave of shame and humiliation.</p>
+                            
+                            <p>Unable to bear the jeering onlookers or the scolding of his teammates and coaches, and most of all unable to bear his father's disappointment, Casper turned away again, running this time with no goal in sight. His breath grew more ragged even than when he had been evading the other players, but he didn't stop. Casper kept running even as he passed the edge of the field. Casper kept running even as the shouting of the others faded out behind him. Casper kept running until his legs burned so fiercely that he thought they might fall off, and only then did he finally slow his pace to a walk.</p>
+                            
+                            <p>He had run far past the soccer fields and had reached the woods which surrounded the yard. Resting his hand on the bark of a tree, he turned back, panting, and looked at the field.</p>
+                            
+                            <p>Nobody was coming after him. Casper wasn't sure whether to be relieved or hurt at this observation. He tried to find his father, but the people blurred into distant, indistinguishable dots on the horizon from that distance. All he could make out clearly was the goal he'd so foolishly ran to. It looked no different from the goal on the other side of the field, especially from this far away. Had the goalies been at their posts, perhaps he would've known he was going the wrong way.</p>
+                            
+                            <p>Casper sniffled, fighting in vain against the white-hot tears which began to roll down his sweaty, dirty face. He tried to wipe his nose with his hand, but realized all too late that the tree he'd rested it against had soaked his palm in sap. Casper froze, taking stock of what had happened. His face was coated in sweat from the running, grass and dirt from his fall, tears and snot from the crying, and now tree sap from his own carelessness. His hand trembled.</p>
+                            
+                            <p>An anguished scream burst from Casper's throat, his voice cracking under the weight of despair. He gripped his pinny as tightly as he could and buried his face in it, fighting futilely to wipe himself clean. It did little good, and in his frustration Casper tore the pinny from his body and threw it into the dirt, stomping it under his cleat with another rageful scream. Now, having exhausted himself completely, Casper could do nothing but fall to his knees and weep. His misty eyes turned once more to the sky, but it looked farther away than ever.</p>
                         </div>
-                    </div>
-                    
-                    <!-- Scroll Footer -->
-                    <div class="scroll-footer">
-                        <img src="writing/footer.png" alt="Parchment scroll bottom">
                     </div>
                 </div>
             </div>
@@ -321,53 +280,5 @@
     </div>
     
     <script src="script.js?v=7"></script>
-    <script>
-    // Dynamic middle section management
-    $(document).ready(function() {
-        function adjustMiddleSections() {
-            const container = $('.scroll-middle-container');
-            const content = $('.scroll-content');
-            const middleSections = $('#middle-sections');
-            
-            // Clear existing sections
-            middleSections.empty();
-            
-            // Get content height
-            const contentHeight = content.outerHeight();
-            const containerWidth = container.width();
-            
-            // Calculate how many middle sections we need
-            // Assuming each middle section is approximately 200px tall when scaled
-            const sectionHeight = 200;
-            const sectionsNeeded = Math.ceil(contentHeight / sectionHeight);
-            
-            // Add middle sections
-            for (let i = 0; i < sectionsNeeded; i++) {
-                const section = $('<div class="scroll-middle-section"></div>');
-                const img = $('<img src="writing/middle.png" alt="">');
-                section.append(img);
-                middleSections.append(section);
-            }
-            
-            // Set container height to match content
-            container.css('min-height', contentHeight + 'px');
-        }
-        
-        // Initial adjustment
-        adjustMiddleSections();
-        
-        // Readjust on window resize
-        $(window).resize(function() {
-            adjustMiddleSections();
-        });
-        
-        // Readjust when fonts load
-        if (document.fonts) {
-            document.fonts.ready.then(function() {
-                adjustMiddleSections();
-            });
-        }
-    });
-    </script>
 </body>
 </html>
