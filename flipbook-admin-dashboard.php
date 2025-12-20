@@ -243,29 +243,40 @@ $flipbooks = $db->getAllFlipbooks();
                 <button class="embed-close-btn" onclick="closeEmbedModal()">&times;</button>
             </div>
 
-            <!-- Responsive iFrame Code -->
+            <!-- Fixed Height iFrame Code -->
             <div class="embed-code-section">
-                <h3>📦 Responsive iFrame Embed Code</h3>
-                <p>Copy and paste this code into your website. The flipbook will automatically update when you make changes.</p>
+                <h3>📦 Fixed Height Embed (Recommended)</h3>
+                <p>Simple iframe with fixed 600px height - works like Heyzine embeds. Best for most websites.</p>
                 <div class="embed-code-box" id="embedIframeCode"></div>
-                <button class="embed-copy-btn" onclick="copyEmbedCode('iframe')">Copy iFrame Code</button>
+                <button class="embed-copy-btn" onclick="copyEmbedCode('iframe')">Copy Fixed Height Code</button>
+            </div>
+
+            <!-- Responsive Container Code -->
+            <div class="embed-code-section">
+                <h3>📱 Responsive Container Embed</h3>
+                <p>Maintains 3:4 aspect ratio and scales with page width. Good for responsive designs.</p>
+                <div class="embed-code-box" id="embedResponsiveCode"></div>
+                <button class="embed-copy-btn" onclick="copyEmbedCode('responsive')">Copy Responsive Code</button>
             </div>
 
             <!-- Direct Link -->
             <div class="embed-code-section">
                 <h3>🔗 Direct Link</h3>
-                <p>Use this link to share your flipbook directly.</p>
+                <p>Use this link to share your flipbook directly or open in a new window.</p>
                 <div class="embed-code-box" id="embedDirectLink"></div>
                 <button class="embed-copy-btn" onclick="copyEmbedCode('link')">Copy Link</button>
             </div>
 
             <!-- Preview -->
             <div class="embed-preview">
-                <h3>Preview</h3>
-                <div style="position: relative; width: 100%; padding-bottom: 66.66%; overflow: hidden; max-width: 600px; margin: 0 auto;">
+                <h3>Live Preview</h3>
+                <p style="color: #666; font-size: 14px; margin-bottom: 10px;">This is how your flipbook will appear when embedded:</p>
+                <div style="background: white; padding: 20px; border-radius: 5px;">
                     <iframe id="embedPreviewFrame"
-                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 1px solid #ddd;"
-                            allowfullscreen>
+                            allowfullscreen="allowfullscreen"
+                            scrolling="no"
+                            style="border: 1px solid lightgray; width: 100%; height: 500px; display: block;"
+                            allow="clipboard-write">
                     </iframe>
                 </div>
             </div>

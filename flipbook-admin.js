@@ -1507,11 +1507,21 @@ function showEmbedCode(flipbookId, title) {
     const baseUrl = window.location.origin + window.location.pathname.replace('flipbook-admin-dashboard.php', '');
     const viewerUrl = baseUrl + 'flipbook-public-viewer.php?id=' + flipbookId;
 
-    // Responsive iframe embed code
-    const iframeCode = `<div style="position: relative; width: 100%; padding-bottom: 133.33%; overflow: hidden;">
+    // Fixed height iframe embed code (like heyzine - simple and clean)
+    const iframeCode = `<iframe src="${viewerUrl}"
+        allowfullscreen="allowfullscreen"
+        scrolling="no"
+        style="border: 1px solid lightgray; width: 100%; height: 600px;"
+        allow="clipboard-write">
+</iframe>`;
+
+    // Responsive container version (maintains aspect ratio)
+    const responsiveCode = `<div style="position: relative; width: 100%; padding-bottom: 133.33%; overflow: hidden;">
     <iframe src="${viewerUrl}"
-            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
-            allowfullscreen>
+            allowfullscreen="allowfullscreen"
+            scrolling="no"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 1px solid lightgray;"
+            allow="clipboard-write">
     </iframe>
 </div>`;
 
@@ -1521,6 +1531,7 @@ function showEmbedCode(flipbookId, title) {
     // Update modal content
     document.getElementById('embedTitle').textContent = title;
     document.getElementById('embedIframeCode').textContent = iframeCode;
+    document.getElementById('embedResponsiveCode').textContent = responsiveCode;
     document.getElementById('embedDirectLink').textContent = directLink;
     document.getElementById('embedPreviewFrame').src = viewerUrl;
 
@@ -1538,7 +1549,21 @@ function closeEmbedModal() {
 
 // Copy embed code to clipboard
 function copyEmbedCode(type) {
-    const element = document.getElementById(type === 'iframe' ? 'embedIframeCode' : 'embedDirectLink');
+    let elementId;
+    if (type === 'iframe') {
+        elementId = 'embedIframeCode';
+    } else if (type === 'responsive') {
+        elementId = 'embedResponsiveCode';
+    } else if (type === 'link') {
+        elementId = 'embedDirectLink';
+    }
+
+    const element = document.getElementById(elementId);
+    if (!element) {
+        console.error('Element not found:', elementId);
+        return;
+    }
+
     const text = element.textContent;
 
     navigator.clipboard.writeText(text).then(() => {
