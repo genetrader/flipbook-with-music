@@ -154,12 +154,18 @@ document.addEventListener('DOMContentLoaded', function() {
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             const target = this.getAttribute('href');
-            
+
             // Only prevent default for anchor links (starting with #)
             if (target.startsWith('#')) {
                 e.preventDefault();
                 if (target === '#home') {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    // Scroll to the target section
+                    const targetElement = document.querySelector(target);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
                 }
             }
             // Let normal links (like index.html, art-gallery.html) work normally
