@@ -969,10 +969,11 @@ foreach ($pages as $index => $page) {
             const absX = Math.abs(deltaX);
             const absY = Math.abs(deltaY);
 
-            // Swipe detection: horizontal swipe must be > 50px and more horizontal than vertical
+            // Only detect swipes for page navigation when NOT zoomed in
+            // When zoomed in, all touch movements should be for panning only
             const SWIPE_THRESHOLD = 50;
-            if (absX > SWIPE_THRESHOLD && absX > absY) {
-                // Horizontal swipe detected
+            if (!isZoomed && absX > SWIPE_THRESHOLD && absX > absY) {
+                // Horizontal swipe detected (only when not zoomed)
                 if (deltaX > 0) {
                     // Swipe right - go to previous page
                     goToPage(currentPageIndex - 1, 'backward');
