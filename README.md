@@ -5,6 +5,12 @@ A professional, self-hosted flipbook system with page-flip animations and synchr
 ## 📸 Screenshots
 
 <p align="center">
+  <img src="flipbook-demo.gif" alt="Flipbook Demo" width="800">
+  <br>
+  <em>Live demo: Smooth page navigation with zoom, pan, and swipe gestures on desktop and mobile</em>
+</p>
+
+<p align="center">
   <img src=".github/screenshot-viewer.png" alt="Flipbook Viewer" width="800">
   <br>
   <em>Interactive flipbook viewer with page-flip animations</em>
@@ -30,15 +36,27 @@ A professional, self-hosted flipbook system with page-flip animations and synchr
 
 ## ✨ Features
 
+### Content Management
 - **📖 Multiple Upload Options** - Upload PDFs OR individual images to create flipbooks
 - **📁 Folder Upload with Chapter Slides** - Upload folders and automatically create beautiful chapter title slides
+- **🔄 Page Reordering** - Drag-and-drop interface to rearrange pages before publishing
 - **🎵 Audio Integration** - Assign background music to specific pages with 2-second crossfades
-- **📦 Batch Upload** - Handle large flipbooks (50+ pages) with automatic batch processing
-- **📱 Mobile-First** - Fully responsive design works on all devices
+- **📦 Batch Upload** - Handle large flipbooks (143+ pages) with automatic batch processing
+
+### Viewer Experience
+- **🔍 Smart Zoom** - Zoom enabled by default with intelligent pan constraints
+- **👆 Touch Gestures** - Swipe left/right to navigate (disabled when zoomed for smooth panning)
+- **📱 Persistent Pan** - Image stays where you left it when lifting finger/mouse
+- **🎯 Boundary Detection** - Image edge always stays visible, prevents blank space
+- **↔️ Arrow Navigation** - Always-accessible navigation buttons that work with zoom
+- **📐 Maximized Screen** - Uses 98% viewport width for optimal viewing on mobile
+
+### Technical
 - **⚡ Fast & Lightweight** - No external dependencies, all self-hosted
 - **🎨 Customizable** - Easy to theme and integrate into any website
 - **🔒 Secure** - Session-based authentication, prepared statements, file validation
 - **💾 File-Based Storage** - Efficient storage using image and audio files
+- **🔗 Embed Ready** - Generate responsive or fixed-height iframe embed codes
 
 ## 🚀 Quick Start
 
