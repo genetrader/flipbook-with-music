@@ -1496,4 +1496,66 @@ async function deleteFlipbook(id) {
     }
 }
 
+// Show embed code modal
+function showEmbedCode(flipbookId, title) {
+    const modal = document.getElementById('embedModal');
+    if (!modal) {
+        console.error('Embed modal not found');
+        return;
+    }
+
+    const baseUrl = window.location.origin + window.location.pathname.replace('flipbook-admin-dashboard.php', '');
+    const viewerUrl = baseUrl + 'flipbook-public-viewer.php?id=' + flipbookId;
+
+    // Responsive iframe embed code
+    const iframeCode = `<div style="position: relative; width: 100%; padding-bottom: 133.33%; overflow: hidden;">
+    <iframe src="${viewerUrl}"
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+            allowfullscreen>
+    </iframe>
+</div>`;
+
+    // Direct link
+    const directLink = viewerUrl;
+
+    // Update modal content
+    document.getElementById('embedTitle').textContent = title;
+    document.getElementById('embedIframeCode').textContent = iframeCode;
+    document.getElementById('embedDirectLink').textContent = directLink;
+    document.getElementById('embedPreviewFrame').src = viewerUrl;
+
+    // Show modal
+    modal.classList.add('active');
+}
+
+// Close embed modal
+function closeEmbedModal() {
+    const modal = document.getElementById('embedModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+// Copy embed code to clipboard
+function copyEmbedCode(type) {
+    const element = document.getElementById(type === 'iframe' ? 'embedIframeCode' : 'embedDirectLink');
+    const text = element.textContent;
+
+    navigator.clipboard.writeText(text).then(() => {
+        // Show copied feedback
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        btn.classList.add('copied');
+
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.classList.remove('copied');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy to clipboard. Please copy manually.');
+    });
+}
+
 console.log('📚 Flipbook Admin Dashboard loaded!');

@@ -223,12 +223,50 @@ $flipbooks = $db->getAllFlipbooks();
                                 <p class="meta">Pages: <?php echo $flipbook['page_count']; ?> | Created: <?php echo date('M d, Y', strtotime($flipbook['created_at'])); ?></p>
                                 <div class="card-actions">
                                     <a href="flipbook-public-viewer.php?id=<?php echo $flipbook['id']; ?>" target="_blank" class="btn btn-sm">View</a>
+                                    <button onclick="showEmbedCode(<?php echo $flipbook['id']; ?>, '<?php echo htmlspecialchars($flipbook['title'], ENT_QUOTES); ?>')" class="btn btn-sm btn-primary">Embed Code</button>
                                     <button onclick="editFlipbook(<?php echo $flipbook['id']; ?>)" class="btn btn-sm btn-secondary">Edit</button>
                                     <button onclick="deleteFlipbook(<?php echo $flipbook['id']; ?>)" class="btn btn-sm btn-danger">Delete</button>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Embed Code Modal -->
+    <div id="embedModal" class="embed-modal">
+        <div class="embed-modal-content">
+            <div class="embed-modal-header">
+                <h2>Embed Code: <span id="embedTitle"></span></h2>
+                <button class="embed-close-btn" onclick="closeEmbedModal()">&times;</button>
+            </div>
+
+            <!-- Responsive iFrame Code -->
+            <div class="embed-code-section">
+                <h3>📦 Responsive iFrame Embed Code</h3>
+                <p>Copy and paste this code into your website. The flipbook will automatically update when you make changes.</p>
+                <div class="embed-code-box" id="embedIframeCode"></div>
+                <button class="embed-copy-btn" onclick="copyEmbedCode('iframe')">Copy iFrame Code</button>
+            </div>
+
+            <!-- Direct Link -->
+            <div class="embed-code-section">
+                <h3>🔗 Direct Link</h3>
+                <p>Use this link to share your flipbook directly.</p>
+                <div class="embed-code-box" id="embedDirectLink"></div>
+                <button class="embed-copy-btn" onclick="copyEmbedCode('link')">Copy Link</button>
+            </div>
+
+            <!-- Preview -->
+            <div class="embed-preview">
+                <h3>Preview</h3>
+                <div style="position: relative; width: 100%; padding-bottom: 66.66%; overflow: hidden; max-width: 600px; margin: 0 auto;">
+                    <iframe id="embedPreviewFrame"
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 1px solid #ddd;"
+                            allowfullscreen>
+                    </iframe>
                 </div>
             </div>
         </div>
