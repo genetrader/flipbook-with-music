@@ -81,21 +81,42 @@ try {
     }
 
     // Save pages as actual image files (only for new flipbooks or base64 data)
-    // If editing an existing flipbook with file paths, skip page re-saving
+    // If editing an existing flipbook with file paths, skip page re-saving UNLESS forcePageUpdate is set
     $hasFilePaths = false;
     if (!empty($data['pages'][0]['data'])) {
         $firstPageData = $data['pages'][0]['data'];
         $hasFilePaths = (strpos($firstPageData, 'flipbook-images/') === 0);
     }
 
-    if (!$hasFilePaths) {
+    $forcePageUpdate = !empty($data['forcePageUpdate']);
+
+    if (!$hasFilePaths || $forcePageUpdate) {
+        // Clear existing pages if force updating (e.g., page reordering)
+        if ($isUpdate && $forcePageUpdate) {
+            error_log("Force page update requested - clearing existing pages for flipbook $flipbookId");
+            $db->deletePages($flipbookId);
+        }
         // New flipbook or old base64 flipbook - save pages as files
         foreach ($data['pages'] as $page) {
             $pageNumber = $page['pageNumber'];
             $imageData = $page['data'];
 
-            // Extract base64 data and save as JPG file
-            if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
+            // Check if this is a file path (reordering existing pages)
+            if ($hasFilePaths && $forcePageUpdate) {
+                // This is a reorder operation - just add page record with existing file path
+                error_log("Reordering page $pageNumber with existing path: $imageData");
+                $success = $db->addPage(
+                    $flipbookId,
+                    $pageNumber,
+                    '', // Empty base64 data
+                    $imageData // Existing file path
+                );
+
+                if (!$success) {
+                    throw new Exception('Failed to reorder page ' . $pageNumber);
+                }
+            } else if (preg_match('/^data:image\/(\w+);base64,/', $imageData, $type)) {
+                // Extract base64 data and save as JPG file
             $base64Data = substr($imageData, strpos($imageData, ',') + 1);
             $decodedImage = base64_decode($base64Data);
 

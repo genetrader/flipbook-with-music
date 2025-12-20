@@ -1017,6 +1017,16 @@ document.querySelectorAll('button[onclick^="goToStep(4)"]').forEach(btn => {
 
 // Navigate to page reorder step
 function goToPageReorder() {
+    // Save current audio assignments before going to reorder step
+    pages.forEach((page, index) => {
+        const select = document.getElementById(`audio-page-${index}`);
+        if (select && select.value !== '') {
+            page.audioAssignment = parseInt(select.value);
+        } else {
+            page.audioAssignment = null;
+        }
+    });
+
     goToStep(5);
     displayPageReorderGrid();
 }
@@ -1156,14 +1166,21 @@ async function saveFlipbook() {
     // Collect audio assignments
     const audioAssignments = {};
     pages.forEach((page, index) => {
-        const select = document.getElementById(`audio-page-${index}`);
-        if (select && select.value !== '') {
-            audioAssignments[index] = parseInt(select.value);
+        // First check if audio assignment is stored in the page object (from reordering)
+        if (page.audioAssignment !== undefined && page.audioAssignment !== null) {
+            audioAssignments[index] = page.audioAssignment;
+        } else {
+            // Otherwise try to read from dropdown (normal flow)
+            const select = document.getElementById(`audio-page-${index}`);
+            if (select && select.value !== '') {
+                audioAssignments[index] = parseInt(select.value);
+            }
         }
     });
 
     console.log('Audio assignments being sent:', audioAssignments);
     console.log('Audio library:', audioLibrary.map((a, i) => ({ index: i, name: a.name })));
+    console.log('Pages being saved:', pages.map((p, i) => ({ index: i, pageNumber: p.pageNumber, audio: p.audioAssignment })));
 
     // If more than 50 pages, use batch upload to avoid 413 errors
     if (pages.length > 50) {
@@ -1179,7 +1196,8 @@ async function saveFlipbook() {
         orientation: orientation,
         pages: pages,
         audioLibrary: audioLibrary,
-        audioAssignments: audioAssignments
+        audioAssignments: audioAssignments,
+        forcePageUpdate: true // Force backend to update page order even with file paths
     };
 
     // If editing, include the flipbook ID

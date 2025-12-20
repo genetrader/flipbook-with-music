@@ -177,6 +177,19 @@ class FlipbookDB {
     }
 
     /**
+     * Delete all pages for a flipbook (used when reordering)
+     */
+    public function deletePages($flipbookId) {
+        try {
+            $stmt = $this->conn->prepare("DELETE FROM pages WHERE flipbook_id = ?");
+            return $stmt->execute([$flipbookId]);
+        } catch (PDOException $e) {
+            error_log("Error deleting pages: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Add an audio file (supports both base64 and file path)
      */
     public function addAudioFile($flipbookId, $name, $audioData, $audioPath = null) {
