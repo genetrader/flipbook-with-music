@@ -562,7 +562,7 @@ foreach ($pages as $index => $page) {
         let lastTouchX = 0;
         let lastTouchY = 0;
 
-        // Constrain pan to prevent image from being completely moved out of view
+        // Constrain pan to prevent blank space while allowing full panning freedom
         function constrainPan() {
             const currentPageImg = container.querySelector('.page.current img');
             if (!currentPageImg) return;
@@ -571,19 +571,19 @@ foreach ($pages as $index => $page) {
             const imgRect = currentPageImg.getBoundingClientRect();
 
             // Get the image display size (before zoom)
-            const displayWidth = imgRect.width / 2.4; // Divide by scale to get original size
+            const displayWidth = imgRect.width / 2.4;
             const displayHeight = imgRect.height / 2.4;
 
             // Calculate scaled dimensions
             const scaledWidth = displayWidth * 2.4;
             const scaledHeight = displayHeight * 2.4;
 
-            // Maximum pan is half the difference between scaled size and container size
-            // This keeps the image edge from going past the container edge
-            const maxPanX = Math.max(0, (scaledWidth - containerRect.width) / (2 * 2.4));
-            const maxPanY = Math.max(0, (scaledHeight - containerRect.height) / (2 * 2.4));
+            // Maximum pan allows image edge to reach container edge (no blank space)
+            // Divide by scale factor only (not by 2) because translate is in unscaled space
+            const maxPanX = Math.max(0, (scaledWidth - containerRect.width) / 2.4);
+            const maxPanY = Math.max(0, (scaledHeight - containerRect.height) / 2.4);
 
-            // Constrain pan values
+            // Constrain pan values to prevent blank space
             panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
             panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
         }
@@ -957,7 +957,14 @@ foreach ($pages as $index => $page) {
             // Don't stop propagation - allow audio init to work
         }
 
-        container.addEventListener('click', toggleZoom);
+        container.addEventListener('click', (e) => {
+            // Don't toggle zoom if user was panning (mouseMoved will be true)
+            if (!mouseMoved) {
+                toggleZoom(e);
+            }
+            // Reset for next interaction
+            mouseMoved = false;
+        });
 
         container.addEventListener('touchend', (e) => {
             touchEndX = e.changedTouches[0].clientX;
@@ -992,10 +999,12 @@ foreach ($pages as $index => $page) {
 
         // Mouse panning for desktop
         let isMouseDown = false;
+        let mouseMoved = false;
 
         container.addEventListener('mousedown', (e) => {
             if (!isZoomMode || !isZoomed) return;
             isMouseDown = true;
+            mouseMoved = false;
             lastTouchX = e.clientX;
             lastTouchY = e.clientY;
             e.preventDefault();
@@ -1003,6 +1012,9 @@ foreach ($pages as $index => $page) {
 
         container.addEventListener('mousemove', (e) => {
             if (!isZoomMode || !isZoomed || !isMouseDown) return;
+
+            // Mark that mouse moved (panning occurred)
+            mouseMoved = true;
 
             // Calculate how far the mouse moved since last position
             const deltaX = e.clientX - lastTouchX;
