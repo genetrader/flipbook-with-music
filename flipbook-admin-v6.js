@@ -1273,8 +1273,8 @@ async function saveFlipbookInBatches(title, description, orientation, audioAssig
                 orientation: orientation,
                 pages: [pages[0]], // Just first page
                 audioLibrary: [],
-                audioAssignments: {},
-                forcePageUpdate: true // Force backend to update page order even with file paths
+                audioAssignments: {}
+                // No forcePageUpdate needed - this is a brand new flipbook
             };
 
             const createResponse = await fetch('flipbook-api-save.php', {
@@ -1297,6 +1297,9 @@ async function saveFlipbookInBatches(title, description, orientation, audioAssig
         // If updating existing flipbook, upload ALL pages. If creating new, skip first page (already uploaded)
         const pagesToUpload = currentFlipbookId ? pages : pages.slice(1);
         const totalBatches = Math.ceil(pagesToUpload.length / BATCH_SIZE);
+        // IMPORTANT: totalPageCount should ALWAYS be pages.length (not pagesToUpload.length)
+        // When creating new, we upload first page separately, then batch upload remaining pages
+        const totalPageCount = pages.length;
 
         console.log(`Step 2: Uploading ${pagesToUpload.length} pages in ${totalBatches} batches...`);
 
@@ -1314,7 +1317,10 @@ async function saveFlipbookInBatches(title, description, orientation, audioAssig
                 pages: batch,
                 audioLibrary: [],
                 audioAssignments: {},
-                forcePageUpdate: true // Force backend to update page order even with file paths
+                forcePageUpdate: !!currentFlipbookId, // Only force update when EDITING (not creating new)
+                isFirstBatch: batchNum === 1, // Only delete existing pages on first batch
+                isLastBatch: batchNum === totalBatches, // Only update page count on last batch
+                totalPageCount: totalPageCount // Total pages INCLUDING first page uploaded separately
             };
 
             const batchResponse = await fetch('flipbook-api-save.php', {
@@ -1456,55 +1462,24 @@ async function editFlipbook(id) {
         // Store the flipbook ID for updating
         currentFlipbookId = id;
 
-        // Show create section and go to step 2 (skip PDF upload)
+        // Show create section and go to step 3 (page reordering - skip upload/conversion)
         const section = document.getElementById('createSection');
         section.style.display = 'block';
         section.scrollIntoView({ behavior: 'smooth' });
 
-        // Display converted pages
-        goToStep(2);
-        const pagePreview = document.getElementById('pagePreview');
-        pagePreview.innerHTML = '';
-
-        pages.forEach((page, index) => {
-            const previewDiv = document.createElement('div');
-            previewDiv.className = 'page-preview-item';
-            previewDiv.innerHTML = `
-                <img src="${page.data}" alt="Page ${page.pageNumber}">
-                <div class="page-label">Page ${page.pageNumber}</div>
-            `;
-            pagePreview.appendChild(previewDiv);
-        });
+        // Go directly to step 3 (Reorder Pages) for editing
+        goToStep(3);
 
         // Update progress bar
         document.getElementById('conversionProgress').style.width = '100%';
         document.getElementById('conversionProgress').textContent = '100%';
         document.getElementById('audioUploadBtn').style.display = 'block';
 
-        // Move to step 4 to show audio (skip reorder when editing)
-        setTimeout(() => {
-            goToStep(4);
-            updateAudioLibrary();
+        // Load audio library for later steps
+        updateAudioLibrary();
 
-            // Go to step 5 for assignments
-            setTimeout(() => {
-                goToStep(5);
-                updateAudioAssignmentList();
-
-                // Load existing assignments
-                data.assignments.forEach(assignment => {
-                    const pageIndex = pages.findIndex(p => p.pageNumber === assignment.page_number);
-                    const audioIndex = audioLibrary.findIndex(a => a.id === assignment.audio_id);
-
-                    if (pageIndex !== -1 && audioIndex !== -1) {
-                        const select = document.getElementById(`audio-page-${pageIndex}`);
-                        if (select) {
-                            select.value = audioIndex;
-                        }
-                    }
-                });
-            }, 500);
-        }, 500);
+        // Store existing assignments to restore them later when user reaches step 5
+        window.existingAssignments = data.assignments;
 
     } catch (error) {
         console.error('Error editing flipbook:', error);

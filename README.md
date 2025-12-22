@@ -345,13 +345,35 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ## 📊 Version History
 
-### v1.0.0 (2025-01-XX)
+### v1.1.0 (2025-12-21)
+**Critical Bug Fixes:**
+- Fixed first page deletion bug when creating new flipbooks
+- Fixed page count calculation for large flipbooks (143+ pages)
+- Fixed batch upload page count overwrite issue
+- Fixed page reordering not saving new order
+- Fixed edit flow to start at reorder step for proper chapter label editing
+
+**Viewer Improvements:**
+- Fixed desktop zoom/pan behavior - image now stays where released
+- Improved mouse movement tracking to distinguish clicks from drags
+- Enhanced pan persistence when lifting mouse button
+
+**Performance:**
+- Optimized batch upload system to prevent data loss
+- Added `isFirstBatch` and `isLastBatch` flags for proper batch handling
+- Improved totalPageCount tracking across all upload scenarios
+
+### v1.0.0 (2025-01-15)
 - Initial release
 - PDF to flipbook conversion
 - Audio synchronization with 2-second crossfades
 - Admin dashboard
 - Public viewer
 - Installation wizard
+- Folder upload with automatic chapter slides
+- Drag-and-drop page reordering
+- Smart zoom with pan constraints
+- Mobile swipe navigation
 
 ---
 

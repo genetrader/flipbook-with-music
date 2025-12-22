@@ -91,8 +91,9 @@ try {
     $forcePageUpdate = !empty($data['forcePageUpdate']);
 
     if (!$hasFilePaths || $forcePageUpdate) {
-        // Clear existing pages if force updating (e.g., page reordering)
-        if ($isUpdate && $forcePageUpdate) {
+        // Clear existing pages ONLY on first batch (prevents data loss when saving in batches)
+        $isFirstBatch = !empty($data['isFirstBatch']);
+        if ($isUpdate && $forcePageUpdate && $isFirstBatch) {
             error_log("Force page update requested - clearing existing pages for flipbook $flipbookId");
             $db->deletePages($flipbookId);
         }
@@ -153,8 +154,14 @@ try {
             }
         }
 
-        // Update page count
-        $db->updatePageCount($flipbookId, count($data['pages']));
+        // Update page count ONLY on last batch (prevents count overwrite on each batch)
+        $isLastBatch = !empty($data['isLastBatch']);
+        $totalPageCount = !empty($data['totalPageCount']) ? (int)$data['totalPageCount'] : count($data['pages']);
+
+        if ($isLastBatch) {
+            error_log("Last batch - updating page count to: $totalPageCount");
+            $db->updatePageCount($flipbookId, $totalPageCount);
+        }
     } else {
         // Editing flipbook with file paths - pages already exist, skip re-saving
         error_log("Editing flipbook with file paths - skipping page re-save");
